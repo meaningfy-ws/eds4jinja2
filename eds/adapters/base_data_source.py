@@ -46,6 +46,12 @@ class DataSource(ABC):
         else:
             raise UnknownRepresentation(f"The representation {str(_repr)} is not supported")
 
+    def fetch_tabular(self) -> (object, str):
+        return self._fetch_tabular()
+
+    def fetch_tree(self) -> (object, str):
+        return self._fetch_tree()
+
     @abstractmethod
     def _fetch_tabular(self) -> (object, str):
         """
