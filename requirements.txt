@@ -1,0 +1,4 @@
+jinja2
+flask
+sparqlwrapper
+pandas
