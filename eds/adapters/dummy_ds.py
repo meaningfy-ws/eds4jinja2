@@ -5,6 +5,8 @@ Author: Eugeniu Costetchi
 Email: costezki.eugen@gmail.com 
 """
 # from eds.adapters import DataSource, Representation
+from typing import Tuple, Optional
+
 import pandas as pd
 
 from eds.adapters.base_data_source import DataSource
@@ -18,10 +20,10 @@ class DummyDataSource(DataSource):
     def __init__(self, value=None):
         self.value
 
-    def _fetch_tree(self) -> (object, str):
+    def _fetch_tree(self) -> Tuple[object, Optional[str]]:
         return {"value": self.value}
 
-    def _fetch_tabular(self) -> (object, str):
+    def _fetch_tabular(self) -> Tuple[object, Optional[str]]:
         if isinstance(self.value, (str, int)):
             return pd.Dataframe({"values": [self.value]})
         elif isinstance(self.value, (list, tuple, set)):

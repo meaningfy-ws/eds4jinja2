@@ -8,6 +8,7 @@ A generic data source.
 """
 import enum
 from abc import ABC, abstractmethod
+from typing import Tuple, Optional
 
 
 class Representation(enum.Enum):
@@ -32,7 +33,7 @@ class DataSource(ABC):
     generic data source
     """
 
-    def fetch(self, _repr: Representation) -> (object, str):
+    def fetch(self, _repr: Representation) -> Tuple[object, Optional[str]]:
         """
             read the content from the data source in either tree or tabular structure
         :type _repr: specifies a representation of the read data: as tabular or tree
@@ -46,14 +47,14 @@ class DataSource(ABC):
         else:
             raise UnknownRepresentation(f"The representation {str(_repr)} is not supported")
 
-    def fetch_tabular(self) -> (object, str):
+    def fetch_tabular(self) -> Tuple[object, Optional[str]]:
         return self._fetch_tabular()
 
-    def fetch_tree(self) -> (object, str):
+    def fetch_tree(self) -> Tuple[object, Optional[str]]:
         return self._fetch_tree()
 
     @abstractmethod
-    def _fetch_tabular(self) -> (object, str):
+    def _fetch_tabular(self) -> Tuple[object, Optional[str]]:
         """
             fetch data and return as tabular representation
         :return:
@@ -61,7 +62,7 @@ class DataSource(ABC):
         pass
 
     @abstractmethod
-    def _fetch_tree(self) -> (object, str):
+    def _fetch_tree(self) -> Tuple[object, Optional[str]]:
         """
             fetch data and return as tree representation
         :return:

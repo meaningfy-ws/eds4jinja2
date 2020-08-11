@@ -4,33 +4,48 @@ Date:  07/08/2020
 Author: Eugeniu Costetchi
 Email: costezki.eugen@gmail.com 
 """
-from abc import ABC
+from abc import ABC, abstractmethod
+from typing import Optional, Tuple
+
+from SPARQLWrapper import SPARQLWrapper, JSON, CSV
 
 from eds.adapters.base_data_source import DataSource, Representation
 
 
-class SPARQLEndpointDataSource(DataSource, ABC):
+class SPARQLEndpointDataSource(DataSource):
     """
-        Abstract class for fetching data from SPARQL endpoint. Graph name is optional.
+        fetching data from SPARQL endpoint. Graph name is optional.
     """
 
-    def _query(self):
+    def __init__(self, endpoint_url):
+        self.endpoint_url = endpoint_url
+        self.endpoint = SPARQLWrapper(self.endpoint_url)
+
+    def query(self, sparql_query: str) -> 'SPARQLEndpointDataSource':
         """
-            query a dataset and return the response or throw an error
+            set the query text and return the reference to self for chaining
         :return:
         """
-        raise NotImplementedError
+        self.endpoint.setQuery(sparql_query)
+        return self
 
+    def describe(self, uri: str, graph_uri: Optional[str] = None) -> 'SPARQLEndpointDataSource':
+        """
+            set the query text and return the reference to self for chaining
+        :return:
+        """
+        if graph_uri:
+            self.endpoint.setQuery(f"DESCRIBE <{uri}> FROM <{graph_uri}>")
+        else:
+            self.endpoint.setQuery(f"DESCRIBE <{uri}>")
+        return self
 
-class SPARQLSelectDataSource(SPARQLEndpointDataSource):
-    """
-        Fetching data via SPARQL select statement from an endpoint. Graph name is optional.
-    """
-    raise NotImplementedError
+    def _fetch_tree(self) -> Tuple[object, Optional[str]]:
+        self.endpoint.setReturnFormat(JSON)
+        query = self.endpoint.query()
+        return query.convert()
 
-
-class SPARQLDescribeDataSource(SPARQLEndpointDataSource):
-    """
-        Fetching data via SPARQL describe statement for a given URI resource from an endpoint. Graph name is optional.
-    """
-    raise NotImplementedError
+    def _fetch_tabular(self) -> Tuple[object, Optional[str]]:
+        self.endpoint.setReturnFormat(CSV)
+        query = self.endpoint.query()
+        return query.convert()

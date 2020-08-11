@@ -7,17 +7,11 @@ Email: costezki.eugen@gmail.com
 this module implements the report generation functionality.
 """
 
-from abc import ABC, abstractmethod
 
-
-class ReportBuilder(ABC):
+class ReportBuilder:
     """
-        generic report builder
+        generic report builder that takes templates and configuration as input and produces an output report
     """
 
-    @abstractmethod
     def make_document(self):
-        pass
-
-
-# class HTMLReportBuilder(ReportBuilder):
+        raise NotImplementedError
