@@ -48,10 +48,24 @@ class DataSource(ABC):
             raise UnknownRepresentation(f"The representation {str(_repr)} is not supported")
 
     def fetch_tabular(self) -> Tuple[object, Optional[str]]:
-        return self._fetch_tabular()
+        if not self._can_be_tabular():
+            raise UnsupportedRepresentation("Only TREE representation is supported")
+        else:
+            return self._fetch_tabular()
 
     def fetch_tree(self) -> Tuple[object, Optional[str]]:
-        return self._fetch_tree()
+        if not self._can_be_tree():
+            raise UnsupportedRepresentation("Only TABULAR representation is supported")
+        else:
+            return self._fetch_tree()
+
+    @abstractmethod
+    def _can_be_tabular(self) -> bool:
+        pass
+
+    @abstractmethod
+    def _can_be_tree(self) -> bool:
+        pass
 
     @abstractmethod
     def _fetch_tabular(self) -> Tuple[object, Optional[str]]:

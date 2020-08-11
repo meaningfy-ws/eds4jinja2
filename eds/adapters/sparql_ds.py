@@ -49,3 +49,9 @@ class SPARQLEndpointDataSource(DataSource):
         self.endpoint.setReturnFormat(CSV)
         query = self.endpoint.query()
         return query.convert()
+
+    def _can_be_tree(self) -> bool:
+        return True
+
+    def _can_be_tabular(self) -> bool:
+        return True

@@ -178,6 +178,12 @@ class FakeFileDataSource(FileDataSource):
     def _fetch_tabular(self) -> Tuple[object, Optional[str]]:
         return pd.DataFrame(RESPONSE_SPARQL_CSV_CORPORATE_BODY), None
 
+    def _can_be_tree(self) -> bool:
+        return True
+
+    def _can_be_tabular(self) -> bool:
+        return True
+
 
 FAKE_DATA_SOURCE_BUILDERS = {
     FROM_ENDPOINT: lambda endpoint: FakeSPARQLEndpointDataSource(endpoint),
