@@ -155,6 +155,7 @@ content:  {{ content }}\n
 error: {{ error }}\n
 '''
 
+
 # TEMPLATE_FILE_FETCH_TABULAR = '''
 # -{% set content, error = from_tabular_file(path).fetch_tabular() %} \n
 # -{% set content, error = from_tabular_file(path).fetch_tree() %} \n
@@ -210,19 +211,22 @@ class FakeSPARQLEndpointDataSource(SPARQLEndpointDataSource):
     def with_uri(self, uri: str, graph_uri: Optional[str] = None):
         return self
 
-    def _fetch_tree(self) -> Tuple[object, Optional[str]]:
-        return RESPONSE_SPARQL_JSON_CORPORATE_BODY, None
+    def _fetch_tree(self):
+        return RESPONSE_SPARQL_JSON_CORPORATE_BODY
 
-    def _fetch_tabular(self) -> Tuple[object, Optional[str]]:
-        return pd.DataFrame(RESPONSE_SPARQL_CSV_CORPORATE_BODY), None
+    def _fetch_tabular(self):
+        return pd.DataFrame(RESPONSE_SPARQL_CSV_CORPORATE_BODY)
 
 
 class FakeFileDataSource(FileDataSource):
-    def _fetch_tree(self) -> Tuple[object, Optional[str]]:
-        return RESPONSE_SPARQL_JSON_CORPORATE_BODY, None
 
-    def _fetch_tabular(self) -> Tuple[object, Optional[str]]:
-        return pd.DataFrame(RESPONSE_SPARQL_CSV_CORPORATE_BODY), None
+
+
+    def _fetch_tree(self):
+        return RESPONSE_SPARQL_JSON_CORPORATE_BODY
+
+    def _fetch_tabular(self):
+        return pd.DataFrame(RESPONSE_SPARQL_CSV_CORPORATE_BODY)
 
     def _can_be_tree(self) -> bool:
         return True

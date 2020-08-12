@@ -22,7 +22,11 @@ class FileDataSource(DataSource):
     """
 
     def __init__(self, file_path):
-        self.file_path = pathlib.Path(file_path)
+        self.__file_path = file_path
+
+    @property
+    def file_path(self):
+        return pathlib.Path(self.__file_path)
 
     def _file_extension(self):
         return str(self.file_path.suffix).lower()
