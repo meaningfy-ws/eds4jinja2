@@ -10,7 +10,7 @@ from typing import Optional, Tuple
 from SPARQLWrapper import SPARQLWrapper, JSON, CSV
 
 from eds.adapters.base_data_source import DataSource
-from pandas import pd
+import pandas as pd
 
 
 class SPARQLEndpointDataSource(DataSource):
@@ -21,7 +21,7 @@ class SPARQLEndpointDataSource(DataSource):
     def __init__(self, endpoint_url):
         self.endpoint = SPARQLWrapper(endpoint_url)
 
-    def query(self, sparql_query: str) -> 'SPARQLEndpointDataSource':
+    def with_query(self, sparql_query: str) -> 'SPARQLEndpointDataSource':
         """
             set the query text and return the reference to self for chaining
         :return:
@@ -29,7 +29,7 @@ class SPARQLEndpointDataSource(DataSource):
         self.endpoint.setQuery(sparql_query)
         return self
 
-    def describe(self, uri: str, graph_uri: Optional[str] = None) -> 'SPARQLEndpointDataSource':
+    def with_uri(self, uri: str, graph_uri: Optional[str] = None) -> 'SPARQLEndpointDataSource':
         """
             set the query text and return the reference to self for chaining
         :return:
@@ -40,15 +40,15 @@ class SPARQLEndpointDataSource(DataSource):
             self.endpoint.setQuery(f"DESCRIBE <{uri}>")
         return self
 
-    def _fetch_tree(self) -> Tuple[object, Optional[str]]:
+    def _fetch_tree(self):
         self.endpoint.setReturnFormat(JSON)
         query = self.endpoint.query()
-        return query.convert(), None
+        return query.convert()
 
-    def _fetch_tabular(self) -> Tuple[object, Optional[str]]:
+    def _fetch_tabular(self):
         self.endpoint.setReturnFormat(CSV)
         query = self.endpoint.query()
-        return pd.read_csv(query.convert()), None
+        return pd.read_csv(query.convert())
 
     def _can_be_tree(self) -> bool:
         return True

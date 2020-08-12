@@ -132,13 +132,13 @@ content:  {{ content }} \n
 '''
 
 TEMPLATE_SPARQL_FETCH_TABULAR = '''
-{% set content, error = from_endpoint(endpoint).query(query_string).fetch_tabular() %} \n
+{% set content, error = from_endpoint(endpoint).with_query(query_string).fetch_tabular() %} \n
 content:  {{ content }} \n
 error: {{ error }} \n
 '''
 
 TEMPLATE_SPARQL_FETCH_TREE = '''
-{% set content, error = from_endpoint(endpoint).query(query_string).fetch_tree() %} \n
+{% set content, error = from_endpoint(endpoint).with_query(query_string).fetch_tree() %} \n
 content:  {{ content }}\n
 error: {{ error }}\n
 '''
@@ -154,6 +154,25 @@ TEMPLATE_FILE_FETCH_TABULAR = '''
 content:  {{ content }}\n
 error: {{ error }}\n
 '''
+
+# TEMPLATE_FILE_FETCH_TABULAR = '''
+# -{% set content, error = from_tabular_file(path).fetch_tabular() %} \n
+# -{% set content, error = from_tabular_file(path).fetch_tree() %} \n
+# ++{% set content, error = from_file(path).fetch_tree() %} \n
+# ++{% set content, error = from_file(path).fetch_tabular() %} \n
+# -{% set content, error = from_file(path).fetch(TABULAR) %} \n
+# -{% set content, error = from_select_endpoint(query_text, endpoint).fetch_tree() %} \n
+# -{% set content, error = from_describe_endpoint(uri, endpoint).fetch_tabular() %} \n
+# -{% set content, error = from_select_endpoint(query, endpoint).fetch() %} \n
+# -{% set content, error = from_endpoint(endpoint).query(query_text).fetch_tree() %} \n
+# -{% set content, error = from_endpoint(endpoint).describe(uri).fetch_tree() %} \n
+# ++{% set content, error = from_endpoint(endpoint).with_query(query_text).fetch_tree() %} \n
+# ++{% set content, error = from_endpoint(endpoint).with_uri(uri).fetch_tree() %} \n
+# +{% set content, error = from_endpoint_with_uri(endpoint,uri).fetch_tree() %} \n
+# +{% set content, error = from_endpoint_with_query(endpoint,query).fetch_tree() %} \n
+# content:  {{ content }}\n
+# error: {{ error }}\n
+# '''
 
 
 class DummyDataSource(DataSource):
@@ -185,10 +204,10 @@ class DummyDataSource(DataSource):
 
 class FakeSPARQLEndpointDataSource(SPARQLEndpointDataSource):
 
-    def query(self, sparql_query: str):
+    def with_query(self, sparql_query: str):
         return self
 
-    def describe(self, uri: str, graph_uri: Optional[str] = None):
+    def with_uri(self, uri: str, graph_uri: Optional[str] = None):
         return self
 
     def _fetch_tree(self) -> Tuple[object, Optional[str]]:

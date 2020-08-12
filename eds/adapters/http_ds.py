@@ -4,7 +4,7 @@ Date:  07/08/2020
 Author: Eugeniu Costetchi
 Email: costezki.eugen@gmail.com 
 """
-from eds.adapters.base_data_source import DataSource, Representation
+from eds.adapters.base_data_source import DataSource
 
 
 class HTTPDataSource(DataSource):

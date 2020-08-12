@@ -25,9 +25,3 @@ Feature: Data fetching from template
       | CSV       | tabular     | non empty        |                           |
       | CSV       | tree        | non empty        |                           |
       | JSON      | tabular     |                  | UnsupportedRepresentation |
-
-  Scenario: Fetch from dummy data source
-    Given a constant text value
-    When the vlue is requested via a dummy datasource
-    Then the fetched content should contain the initial value
-    And the returned error should be None
