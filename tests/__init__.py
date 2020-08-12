@@ -16,10 +16,10 @@ from eds.builders.jinja_builder import FROM_ENDPOINT, FROM_FILE
 SPO_LIMIT_10 = "select * where {?s ?p ?o} limit 10"
 WRONG_SPO_LIMIT_10 = "select * "
 QUERY_LONGER_THAN_2048_CHARACTERS = "select * {" * 205
-LOCAL_CORRECT = "http://localhost:3030/subl"
-REMOTE_CORRECT = "http://publications.europa.eu/webapi/rdf/sparql"
-INEXISTENT_SERVER = "http://inexistent/mocked/server"
-CRASHED_SERVER = "http://crashed/mocked/server"
+ENDPOINT_LOCAL_CORRECT = "http://localhost:3030/subl"
+ENDPOINT_REMOTE_CORRECT = "http://publications.europa.eu/webapi/rdf/sparql"
+ENDPOINT_INEXISTENT_SERVER = "http://inexistent/mocked/server"
+ENDPOINT_CRASHED_SERVER = "http://crashed/mocked/server"
 
 RESPONSE_SPARQL_CSV_CORPORATE_BODY = [["s", "p", "o"],
                                       [
@@ -155,6 +155,7 @@ content:  {{ content }}\n
 error: {{ error }}\n
 '''
 
+
 # TEMPLATE_FILE_FETCH_TABULAR = '''
 # -{% set content, error = from_tabular_file(path).fetch_tabular() %} \n
 # -{% set content, error = from_tabular_file(path).fetch_tree() %} \n
@@ -210,19 +211,22 @@ class FakeSPARQLEndpointDataSource(SPARQLEndpointDataSource):
     def with_uri(self, uri: str, graph_uri: Optional[str] = None):
         return self
 
-    def _fetch_tree(self) -> Tuple[object, Optional[str]]:
-        return RESPONSE_SPARQL_JSON_CORPORATE_BODY, None
+    def _fetch_tree(self):
+        return RESPONSE_SPARQL_JSON_CORPORATE_BODY
 
-    def _fetch_tabular(self) -> Tuple[object, Optional[str]]:
-        return pd.DataFrame(RESPONSE_SPARQL_CSV_CORPORATE_BODY), None
+    def _fetch_tabular(self):
+        return pd.DataFrame(RESPONSE_SPARQL_CSV_CORPORATE_BODY)
 
 
 class FakeFileDataSource(FileDataSource):
-    def _fetch_tree(self) -> Tuple[object, Optional[str]]:
-        return RESPONSE_SPARQL_JSON_CORPORATE_BODY, None
 
-    def _fetch_tabular(self) -> Tuple[object, Optional[str]]:
-        return pd.DataFrame(RESPONSE_SPARQL_CSV_CORPORATE_BODY), None
+
+
+    def _fetch_tree(self):
+        return RESPONSE_SPARQL_JSON_CORPORATE_BODY
+
+    def _fetch_tabular(self):
+        return pd.DataFrame(RESPONSE_SPARQL_CSV_CORPORATE_BODY)
 
     def _can_be_tree(self) -> bool:
         return True

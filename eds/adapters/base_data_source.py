@@ -6,7 +6,6 @@ Email: costezki.eugen@gmail.com
 
 A generic data source.
 """
-import enum
 from abc import ABC, abstractmethod
 from typing import Tuple, Optional
 

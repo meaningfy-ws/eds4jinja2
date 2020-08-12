@@ -4,8 +4,8 @@ Date:  07/08/2020
 Author: Eugeniu Costetchi
 Email: costezki.eugen@gmail.com 
 """
-from abc import ABC, abstractmethod
-from typing import Optional, Tuple
+
+from typing import Optional
 
 from SPARQLWrapper import SPARQLWrapper, JSON, CSV
 
