@@ -1,0 +1,11 @@
+s,p,o
+http://www.w3.org/1999/02/22-rdf-syntax-ns#type,http://www.w3.org/1999/02/22-rdf-syntax-ns#type,http://www.w3.org/1999/02/22-rdf-syntax-ns#Property
+http://www.w3.org/2001/XMLSchema#ENTITIES,http://www.w3.org/1999/02/22-rdf-syntax-ns#type,http://www.w3.org/2000/01/rdf-schema#Datatype
+http://www.w3.org/2001/XMLSchema#date,http://www.w3.org/1999/02/22-rdf-syntax-ns#type,http://www.w3.org/2000/01/rdf-schema#Datatype
+http://www.w3.org/2001/XMLSchema#date,http://www.w3.org/1999/02/22-rdf-syntax-ns#type,http://www.w3.org/2000/01/rdf-schema#Datatype
+http://www.w3.org/2001/XMLSchema#date,http://www.w3.org/1999/02/22-rdf-syntax-ns#type,http://www.w3.org/2000/01/rdf-schema#Datatype
+http://www.w3.org/2001/XMLSchema#date,http://www.w3.org/1999/02/22-rdf-syntax-ns#type,http://www.w3.org/2000/01/rdf-schema#Datatype
+http://www.w3.org/2001/XMLSchema#duration,http://www.w3.org/1999/02/22-rdf-syntax-ns#type,http://www.w3.org/2000/01/rdf-schema#Datatype
+http://www.w3.org/2001/XMLSchema#gYear,http://www.w3.org/1999/02/22-rdf-syntax-ns#type,http://www.w3.org/2000/01/rdf-schema#Datatype
+http://www.w3.org/2001/XMLSchema#gYear,http://www.w3.org/1999/02/22-rdf-syntax-ns#type,http://www.w3.org/2000/01/rdf-schema#Datatype
+http://www.openlinksw.com/virtrdf-data-formats#default-iid,http://www.w3.org/1999/02/22-rdf-syntax-ns#type,http://www.openlinksw.com/schemas/virtrdf#QuadMapFormat

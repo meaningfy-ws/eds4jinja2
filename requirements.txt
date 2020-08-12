@@ -4,3 +4,4 @@ sparqlwrapper
 pandas
 pyyaml
 toml
+xlrd

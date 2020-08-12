@@ -28,29 +28,36 @@ class FileDataSource(DataSource):
     def file_path(self):
         return pathlib.Path(self.__file_path)
 
+    @property
     def _file_extension(self):
         return str(self.file_path.suffix).lower()
 
     def _can_be_tree(self) -> bool:
-        return self._file_extension() in TREE_EXTENSIONS
+        return self._file_extension in TREE_EXTENSIONS or self._file_extension in TABULAR_EXTENSIONS
 
     def _can_be_tabular(self) -> bool:
-        return self._file_extension() in TABULAR_EXTENSIONS
+        return self._file_extension in TABULAR_EXTENSIONS
 
     def _fetch_tree(self):
-        if self._file_extension() in [".json", ".json-ld", ".jsonld"]:
+        if self._file_extension in [".json", ".json-ld", ".jsonld"]:
             return json.loads(self.file_path.read_bytes())
-        elif self._file_extension() in [".yaml", ".yml"]:
+        elif self._file_extension in [".yaml", ".yml"]:
             return yaml.load(self.file_path.read_bytes())
-        elif self._file_extension() in [".toml"]:
+        elif self._file_extension in [".toml"]:
             return toml.loads(self.file_path.read_bytes())
-        raise UnsupportedRepresentation(f"Unsupported tree file type: {self._file_extension()}")
+
+        if self._can_be_tabular():
+            tabular = self._fetch_tabular()
+            if isinstance(tabular, pd.DataFrame):
+                return json.loads(tabular.to_json())
+
+        raise UnsupportedRepresentation(f"Unsupported tree file type: {self._file_extension}")
 
     def _fetch_tabular(self):
-        if self._file_extension() in [".csv", ]:
+        if self._file_extension in [".csv", ]:
             return pd.read_csv(self.file_path)
-        elif self._file_extension() in [".xlsx", ".xls"]:
-            return pd.read_excel(self.file_path)
-        elif self._file_extension() in [".tsv", ]:
+        elif self._file_extension in [".xlsx", ".xls", ".odf", ".ods"]:
+            return pd.read_excel(self.file_path, sheet_name=0)
+        elif self._file_extension in [".tsv", ]:
             return pd.read_table(self.file_path)
-        raise UnsupportedRepresentation(f"Unsupported tabular file type: {self._file_extension()}")
+        raise UnsupportedRepresentation(f"Unsupported tabular file type: {self._file_extension}")
