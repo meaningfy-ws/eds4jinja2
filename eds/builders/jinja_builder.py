@@ -35,9 +35,9 @@ def inject_environment_globals(jinja_environment, context, update_existent=True)
         Inject the context into JINJA2 environment making it globally available from any template.
         Update in place a dictionary by adding non existent keys from another dictionary.
         If the dictionary keys exist then they are replaced depending whether the update_existent flag is set.
-    :param update_existent:
-    :param context:
-    :param jinja_environment:
+    :param update_existent: whether the overlapping values shall be overwritten
+    :param context: additional context to be injected
+    :param jinja_environment: JINJA environment to be updated
     :return:
     """
     if update_existent:

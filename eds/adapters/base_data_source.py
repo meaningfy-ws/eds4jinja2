@@ -33,19 +33,19 @@ class DataSource(ABC):
     generic data source
     """
 
-    def fetch(self, _repr: Representation) -> Tuple[object, Optional[str]]:
+    def fetch(self, representation: Representation) -> Tuple[object, Optional[str]]:
         """
             read the content from the data source in either tree or tabular structure
-        :type _repr: specifies a representation of the read data: as tabular or tree
+        :type representation: specifies a representation of the read data: as tabular or tree
         :return: a tuple where the first element is a result of a successful data reading and
                  the second is the error message in case of failure
         """
-        if _repr is Representation.TREE:
+        if representation is Representation.TREE:
             return self._fetch_tree()
-        elif _repr is Representation.TABULAR:
+        elif representation is Representation.TABULAR:
             return self._fetch_tabular()
         else:
-            raise UnknownRepresentation(f"The representation {str(_repr)} is not supported")
+            raise UnknownRepresentation(f"The representation {str(representation)} is not supported")
 
     def fetch_tabular(self) -> Tuple[object, Optional[str]]:
         if not self._can_be_tabular():

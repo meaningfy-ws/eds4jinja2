@@ -156,6 +156,33 @@ error: {{ error }}\n
 '''
 
 
+class DummyDataSource(DataSource):
+    """
+        dummy data source returning a constant structure
+    """
+
+    def __init__(self, value=None):
+        self.value = value
+
+    def _fetch_tree(self) -> Tuple[object, Optional[str]]:
+        return {"value": self.value}, None
+
+    def _fetch_tabular(self) -> Tuple[object, Optional[str]]:
+        if isinstance(self.value, (str, int)):
+            return pd.Dataframe({"values": [self.value]}), None
+        elif isinstance(self.value, (list, tuple, set)):
+            return pd.Dataframe({"values": list(self.value)}), None
+        elif isinstance(self.value, dict):
+            return pd.Dataframe(self.value), None
+        raise UnsupportedRepresentation(f"Unsupported type {type(self.value)}")
+
+    def _can_be_tree(self) -> bool:
+        return True
+
+    def _can_be_tabular(self) -> bool:
+        return True
+
+
 class FakeSPARQLEndpointDataSource(SPARQLEndpointDataSource):
 
     def query(self, sparql_query: str):

@@ -9,17 +9,17 @@ from typing import Optional, Tuple
 
 from SPARQLWrapper import SPARQLWrapper, JSON, CSV
 
-from eds.adapters.base_data_source import DataSource, Representation
+from eds.adapters.base_data_source import DataSource
+from pandas import pd
 
 
 class SPARQLEndpointDataSource(DataSource):
     """
-        fetching data from SPARQL endpoint. Graph name is optional.
+        fetching data from SPARQL endpoint.
     """
 
     def __init__(self, endpoint_url):
-        self.endpoint_url = endpoint_url
-        self.endpoint = SPARQLWrapper(self.endpoint_url)
+        self.endpoint = SPARQLWrapper(endpoint_url)
 
     def query(self, sparql_query: str) -> 'SPARQLEndpointDataSource':
         """
@@ -43,12 +43,12 @@ class SPARQLEndpointDataSource(DataSource):
     def _fetch_tree(self) -> Tuple[object, Optional[str]]:
         self.endpoint.setReturnFormat(JSON)
         query = self.endpoint.query()
-        return query.convert()
+        return query.convert(), None
 
     def _fetch_tabular(self) -> Tuple[object, Optional[str]]:
         self.endpoint.setReturnFormat(CSV)
         query = self.endpoint.query()
-        return query.convert()
+        return pd.read_csv(query.convert()), None
 
     def _can_be_tree(self) -> bool:
         return True
