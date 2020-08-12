@@ -1,3 +1,3 @@
 # eds4jinja2
-Embeded Datasource specification (EDS) for Jinja2 templates
+Dynamic Data Context (DDC) with Embeded Datasource Specification (EDS) for Jinja2 templates
 
