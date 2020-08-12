@@ -23,7 +23,7 @@ Feature: File fetcher
     Then Then the fetched content should contain <content_keys>
     And the returned error should be None
 
-    # comma separated values all of which shat shall be found
+    # comma separated values all of which shall shall be found
     Examples:
       | content_keys     |
       | bindings         |
@@ -37,7 +37,7 @@ Feature: File fetcher
     Then Then the fetched content should contain <content_values>
     And the returned error should be None
 
-    # comma separated values all of which shat shall be found
+    # comma separated values all of which shall shall be found
     Examples:
       | content_values                                                      |
       | http://publications.europa.eu/resource/authority/corporate-body/SPC |

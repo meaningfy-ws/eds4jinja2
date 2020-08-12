@@ -4,6 +4,7 @@ Created:  08/03/2019
 Author: Eugeniu Costetchi
 Email: costezki.eugen@gmail.com
 
+TODO: rewrite and reduce scope
 # Report generator module
 purpose: given a generated data context and a builders template (e.g. mustache, jinja2) generate the final report.
 input: (a) data context (b) builders template

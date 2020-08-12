@@ -37,7 +37,7 @@ class ReportBuilder:
         :param template_name:
         :return:
         """
-        if template_name:
+        if not template_name:
             return self.template_env.get_template(self.main_template_name)
         else:
             self.template_env.get_template(template_name)
