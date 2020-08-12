@@ -2,3 +2,6 @@ jinja2
 flask
 sparqlwrapper
 pandas
+pyyaml
+toml
+xlrd
