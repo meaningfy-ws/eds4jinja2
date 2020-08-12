@@ -5,13 +5,13 @@ Author: Eugeniu Costetchi
 Email: costezki.eugen@gmail.com 
 """
 import pathlib
-import tempfile
+
 
 import pytest
 
 from eds.adapters.file_ds import FileDataSource
 
-BASE_DIR = tempfile.TemporaryDirectory()
+
 FILE_PATH_RELATIVE = ""
 FILE_PATH_ABSOLUTE = ""
 
