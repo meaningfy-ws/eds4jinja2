@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.idea/
+
+# projest related
+cucumber_report.json
+junit_report.xml
+*.ldb
