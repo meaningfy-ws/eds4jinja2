@@ -4,13 +4,9 @@ Date:  11/08/2020
 Author: Eugeniu Costetchi
 Email: costezki.eugen@gmail.com 
 """
-import pathlib
-
-
 import pytest
-
+import pathlib
 from eds.adapters.file_ds import FileDataSource
-
 
 FILE_PATH_RELATIVE = ""
 FILE_PATH_ABSOLUTE = ""

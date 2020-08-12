@@ -20,6 +20,8 @@ class SPARQLEndpointDataSource(DataSource):
 
     def __init__(self, endpoint_url):
         self.endpoint = SPARQLWrapper(endpoint_url)
+        self.__can_be_tree = True
+        self.__can_be_tabular = True
 
     def with_query(self, sparql_query: str) -> 'SPARQLEndpointDataSource':
         """
@@ -34,6 +36,7 @@ class SPARQLEndpointDataSource(DataSource):
             set the query text and return the reference to self for chaining
         :return:
         """
+        self.__can_be_tabular = False
         if graph_uri:
             self.endpoint.setQuery(f"DESCRIBE <{uri}> FROM <{graph_uri}>")
         else:
@@ -51,7 +54,7 @@ class SPARQLEndpointDataSource(DataSource):
         return pd.read_csv(query.convert())
 
     def _can_be_tree(self) -> bool:
-        return True
+        return self.__can_be_tree
 
     def _can_be_tabular(self) -> bool:
-        return True
+        return self.__can_be_tabular

@@ -14,9 +14,11 @@ from eds.adapters.sparql_ds import SPARQLEndpointDataSource
 from eds.builders.jinja_builder import FROM_ENDPOINT, FROM_FILE
 
 SPO_LIMIT_10 = "select * where {?s ?p ?o} limit 10"
+DUMMY_DESCRIBE_URI = "http://publications.europa.eu/resource/authority/corporate-body/SPC"
 WRONG_SPO_LIMIT_10 = "select * "
-QUERY_LONGER_THAN_2048_CHARACTERS = "select * {" * 205
-ENDPOINT_LOCAL_CORRECT = "http://localhost:3030/subl"
+QUERY_LONGER_THAN_2048KB = f"select * {{?s ?p <http://{'abc' * 800805}>}} limit 10"
+
+ENDPOINT_LOCAL_CORRECT = "http://localhost:3030/subdiv/sparql"
 ENDPOINT_REMOTE_CORRECT = "http://publications.europa.eu/webapi/rdf/sparql"
 ENDPOINT_INEXISTENT_SERVER = "http://inexistent/mocked/server"
 ENDPOINT_CRASHED_SERVER = "http://crashed/mocked/server"
@@ -219,8 +221,6 @@ class FakeSPARQLEndpointDataSource(SPARQLEndpointDataSource):
 
 
 class FakeFileDataSource(FileDataSource):
-
-
 
     def _fetch_tree(self):
         return RESPONSE_SPARQL_JSON_CORPORATE_BODY
