@@ -37,8 +37,15 @@ extensions = ["myst_parser",
 
 apidoc_module_dir = "../eds4jinja2"
 apidoc_output_dir = "srcdocs"
-autodoc_default_flags = ["private-members"]
-autodoc_default_options = {"special-members": True}
+add_module_names = False
+autodoc_default_options = {
+    'members': True,
+    'member-order': 'bysource',
+    # 'special-members': True,
+    'undoc-members': True,
+    "private-members": True,
+    # 'exclude-members': '__weakref__'
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
