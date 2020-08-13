@@ -48,6 +48,8 @@ autodoc_default_options = {
     # 'exclude-members': '__weakref__'
 }
 
+master_doc = 'index'
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 

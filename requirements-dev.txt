@@ -8,15 +8,7 @@ pytest-bdd
 flake8
 
 # Documentation Dependencies
-# myst-parser
+myst-parser
 sphinx
 sphinxcontrib-apidoc
 
-# Prod libs
-jinja2
-flask
-sparqlwrapper
-pandas
-pyyaml
-toml
-xlrd
