@@ -1,11 +1,11 @@
 .. eds4jinja2 documentation master file
 
+
 Embedded Datasource Specification in Jinja2 templates (v. |release|)
-======================================
+============================================================================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+    :maxdepth: 2
 
 Specify the data sources in your JINJA templates directly.
 
@@ -46,30 +46,35 @@ For example, imagine that you need the content of a JSON file in a template.
 
 1. instantiate the template from an environment
 ::
-   from jinja2 import Environment, PackageLoader, select_autoescape
 
-   loader=PackageLoader('yourapplication', 'templates')
-   env = Environment(loader)
-   template = env.get_template('mytemplate.txt')
+    from jinja2 import Environment, PackageLoader, select_autoescape
+
+    loader=PackageLoader('yourapplication', 'templates')
+    env = Environment(loader)
+    template = env.get_template('mytemplate.txt')
 
 2. create a template file 'mytemplate.txt' that looks like this
 ::
+
     The file content:
     {{ data }}
 
 3. fetch the data content from file (the context building functionality)
 ::
-   content  = json.load("path/to/the/file.json")
+
+    content  = json.load("path/to/the/file.json")
 
 4. render the template with a carefully prepared context
 ::
-   rendered_text = template.render(data=content)
+
+    rendered_text = template.render(data=content)
 
 **With eds2jinja2 it is much simpler**
 
 
 1. instantiate the template from eds4jinaj2 environment
 ::
+
     from eds4jinja2.builders.jinja_builder import build_eds_environment
     from jinja2 import PackageLoader
 
@@ -78,12 +83,14 @@ For example, imagine that you need the content of a JSON file in a template.
 
 2. create a template file 'mytemplate.txt' that looks like this
 ::
+
     {% set content, error = from_file("path/to/the/file.json").fetch_tree() %}\n
     The file content: \n
     {{ content }} \n
 
 3. render the template with no context. The context is dynamically generated during the template rendering.
 ::
+
     rendered_text = template.render()
 
 **To query a SPARQL endpoint**
@@ -92,6 +99,7 @@ Repeat the steps from the example above to instantiate the environment and rende
 
 2. modify the template file 'mytemplate.txt' to looks like this
 ::
+
     {% set query_string = "select * where {?s ?p ?o} limit 10" %}
     {% set content, error = from_endpoint(endpoint).with_query(query_string).fetch_tree() %} \n
     content: {{ content }}\n
@@ -108,6 +116,8 @@ So, what are the benefits?
 
 Indices and tables
 ===================================
+
+..include:: srcdocs/modules.rst
 
 * :ref:`genindex`
 * :ref:`modindex`
