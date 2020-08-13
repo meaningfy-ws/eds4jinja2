@@ -8,7 +8,7 @@ this module implements the report generation functionality.
 """
 import jinja2
 
-from eds.builders.jinja_builder import build_eds_environment, inject_environment_globals
+from eds4jinja2.builders.jinja_builder import build_eds_environment, inject_environment_globals
 
 
 class ReportBuilder:

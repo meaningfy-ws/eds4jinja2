@@ -9,7 +9,7 @@ from urllib.error import URLError
 import pytest
 from SPARQLWrapper.SPARQLExceptions import QueryBadFormed, URITooLong
 
-from eds.adapters.sparql_ds import SPARQLEndpointDataSource
+from eds4jinja2.adapters.sparql_ds import SPARQLEndpointDataSource
 from tests import ENDPOINT_REMOTE_CORRECT, DUMMY_DESCRIBE_URI, SPO_LIMIT_10, WRONG_SPO_LIMIT_10, \
     QUERY_LONGER_THAN_2048KB, ENDPOINT_LOCAL_CORRECT, ENDPOINT_INEXISTENT_SERVER, DUMMY_DESCRIBE_URI_GRAPH
 

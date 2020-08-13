@@ -6,7 +6,7 @@ Email: costezki.eugen@gmail.com
 """
 import pytest
 import pathlib
-from eds.adapters.file_ds import FileDataSource
+from eds4jinja2.adapters.file_ds import FileDataSource
 
 FILE_PATH_RELATIVE = ""
 FILE_PATH_ABSOLUTE = ""

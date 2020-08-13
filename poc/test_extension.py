@@ -6,6 +6,7 @@ Email: costezki.eugen@gmail.com
 """
 import json
 
+import jinja2
 from jinja2 import Template, contextfunction, Environment
 from jinja2.ext import Extension
 from jinja2.runtime import Context
@@ -87,3 +88,16 @@ env.globals['f1'] = lambda x: f"Hello {x}!"
 
 tt = env.from_string(template)
 print(tt.render(x=values))
+
+
+
+
+from jinja2 import Environment, PackageLoader, select_autoescape
+env = Environment(
+    loader=PackageLoader('yourapplication', 'templates'),
+    autoescape=select_autoescape(['html', 'xml'])
+)
+template = env.get_template('mytemplate.html')
+
+
+content  = json.load("path/to/the/file.json")

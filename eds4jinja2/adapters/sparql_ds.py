@@ -9,7 +9,7 @@ from typing import Optional
 
 from SPARQLWrapper import SPARQLWrapper, JSON, CSV
 
-from eds.adapters.base_data_source import DataSource
+from eds4jinja2.adapters.base_data_source import DataSource
 import pandas as pd
 
 DEFAULT_ENCODING = 'utf-8'
@@ -17,7 +17,27 @@ DEFAULT_ENCODING = 'utf-8'
 
 class SPARQLEndpointDataSource(DataSource):
     """
-        fetching data from SPARQL endpoint.
+        Fetches data from SPARQL endpoint. Can be used either with a SPARQL query or a URI to be described.
+
+        To query a SPARQL endpoint and get the results as *dict* object
+
+        >>> ds = SPARQLEndpointDataSource(sparql_endpoint_url)
+        >>> dict_object = ds.with_query(sparql_query_text)._fetch_tree()
+
+        unpack the content and error for a fail safe safe fetching
+        >>> dict_object, error_string = ds.with_query(sparql_query_text).fetch_tree()
+
+        To describe an URI and get the results as a pandas DataFrame
+
+        >>> pd_dataframe = ds.with_uri(existent_uri)._fetch_tree()
+
+        unpack the content and error for a fail safe safe fetching
+
+        >>> pd_dataframe, error_string = ds.with_uri(existent_uri).fetch_tree()
+
+        In case you want to target URI description from a Named Graph
+
+        >>> pd_dataframe, error_string = ds.with_uri(existent_uri,named_graph).fetch_tree()
     """
 
     def __init__(self, endpoint_url):
@@ -27,7 +47,7 @@ class SPARQLEndpointDataSource(DataSource):
 
     def with_query(self, sparql_query: str) -> 'SPARQLEndpointDataSource':
         """
-            set the query text and return the reference to self for chaining
+            Set the query text and return the reference to self for chaining.
         :return:
         """
         self.endpoint.setQuery(sparql_query)
@@ -35,7 +55,7 @@ class SPARQLEndpointDataSource(DataSource):
 
     def with_uri(self, uri: str, graph_uri: Optional[str] = None) -> 'SPARQLEndpointDataSource':
         """
-            set the query text and return the reference to self for chaining
+            Set the query text and return the reference to self for chaining.
         :return:
         """
         if graph_uri:

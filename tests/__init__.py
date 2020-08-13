@@ -8,10 +8,10 @@ from typing import Tuple, Optional
 
 import pandas as pd
 
-from eds.adapters.base_data_source import UnsupportedRepresentation, DataSource
-from eds.adapters.file_ds import FileDataSource
-from eds.adapters.sparql_ds import SPARQLEndpointDataSource
-from eds.builders.jinja_builder import FROM_ENDPOINT, FROM_FILE
+from eds4jinja2.adapters.base_data_source import UnsupportedRepresentation, DataSource
+from eds4jinja2.adapters.file_ds import FileDataSource
+from eds4jinja2.adapters.sparql_ds import SPARQLEndpointDataSource
+from eds4jinja2.builders.jinja_builder import FROM_ENDPOINT, FROM_FILE
 
 SPO_LIMIT_10 = "select * where {?s ?p ?o} limit 10"
 DUMMY_DESCRIBE_URI = "http://publications.europa.eu/resource/authority/corporate-body/SPC"

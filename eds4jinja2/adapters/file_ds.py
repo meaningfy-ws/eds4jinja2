@@ -10,7 +10,7 @@ import yaml
 import toml
 import pandas as pd
 
-from eds.adapters.base_data_source import DataSource, UnsupportedRepresentation
+from eds4jinja2.adapters.base_data_source import DataSource, UnsupportedRepresentation
 
 TABULAR_EXTENSIONS = [".csv", ".tsv", ".xlsx", ".xls", ]
 TREE_EXTENSIONS = [".json", ".yaml", ".yml", ".toml", ".json-ld", ".jsonld"]
@@ -18,14 +18,31 @@ TREE_EXTENSIONS = [".json", ".yaml", ".yml", ".toml", ".json-ld", ".jsonld"]
 
 class FileDataSource(DataSource):
     """
+        Fetches data from a file. Automatically determines the file type.
 
+        * *Supported tabular file types:* ".csv", ".tsv", ".xlsx", ".xls"
+        * *Supported tree file types:* ".json", ".yaml", ".yml", ".toml", ".json-ld", ".jsonld"
+
+        To read a CVS
+
+        >>> ds = FileDataSource("path/to/the/file.csv")
+        >>> pd_data_frame, error = ds.fetch_tabular()
+
+        To read a JSON
+
+        >>> ds = FileDataSource("path/to/the/file.json")
+        >>> pd_data_frame, error = ds.fetch_tree()
     """
 
     def __init__(self, file_path):
         self.__file_path = file_path
 
     @property
-    def file_path(self):
+    def file_path(self) -> pathlib.Path:
+        """
+            The location of the DataSource file
+        :return:
+        """
         return pathlib.Path(self.__file_path)
 
     @property
@@ -50,7 +67,6 @@ class FileDataSource(DataSource):
             tabular = self._fetch_tabular()
             if isinstance(tabular, pd.DataFrame):
                 return json.loads(tabular.to_json())
-
         raise UnsupportedRepresentation(f"Unsupported tree file type: {self._file_extension}")
 
     def _fetch_tabular(self):

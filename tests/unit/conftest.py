@@ -7,7 +7,7 @@ Email: costezki.eugen@gmail.com
 
 import pytest
 
-from eds.builders.jinja_builder import build_eds_environment
+from eds4jinja2.builders.jinja_builder import build_eds_environment
 from tests import FAKE_DATA_SOURCE_BUILDERS
 
 
