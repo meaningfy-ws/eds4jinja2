@@ -11,7 +11,7 @@ from SPARQLWrapper.SPARQLExceptions import QueryBadFormed, URITooLong
 
 from eds.adapters.sparql_ds import SPARQLEndpointDataSource
 from tests import ENDPOINT_REMOTE_CORRECT, DUMMY_DESCRIBE_URI, SPO_LIMIT_10, WRONG_SPO_LIMIT_10, \
-    QUERY_LONGER_THAN_2048KB
+    QUERY_LONGER_THAN_2048KB, ENDPOINT_LOCAL_CORRECT, ENDPOINT_INEXISTENT_SERVER, DUMMY_DESCRIBE_URI_GRAPH
 
 
 def test_connect_to_remote_endpoint():
@@ -27,34 +27,44 @@ def test_connect_to_endpoint_fails():
         print(fds._fetch_tree())
 
     with pytest.raises(URLError):
-        fds = SPARQLEndpointDataSource("http://localhost:34543798")
+        fds = SPARQLEndpointDataSource(ENDPOINT_INEXISTENT_SERVER)
         print(fds._fetch_tree())
 
     with pytest.raises(QueryBadFormed):
-        fds = SPARQLEndpointDataSource("http://localhost:3030/subdiv/sparql")
+        fds = SPARQLEndpointDataSource(ENDPOINT_LOCAL_CORRECT)
         print(fds.with_query(WRONG_SPO_LIMIT_10)._fetch_tree())
 
     with pytest.raises(URITooLong):
-        fds = SPARQLEndpointDataSource("http://localhost:3030/subdiv/sparql")
+        fds = SPARQLEndpointDataSource(ENDPOINT_LOCAL_CORRECT)
         print(fds.with_query(QUERY_LONGER_THAN_2048KB)._fetch_tree())
 
 
-def test_query_endpoint():
-    fds = SPARQLEndpointDataSource("http://localhost:3030/subdiv/sparql")
+def test_query_endpoint_and_fetch_tree():
+    fds = SPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
     response_object, error = fds.with_query(SPO_LIMIT_10).fetch_tree()
     assert len(str(response_object)) > 2000
     assert "results" in str(response_object)
+    assert error is None
 
 
-def test_describe_uri():
-    pass
+def test_query_endpoint_and_fetch_tabular():
+    fds = SPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
+    response_object, error = fds.with_query(SPO_LIMIT_10).fetch_tabular()
+    assert len(str(response_object)) > 500
+    assert "http://" in str(response_object)
+    assert error is None
 
 
 def test_fetch_tabular():
-    fds = SPARQLEndpointDataSource("http://localhost:3030/subdiv/sparql")
-    response_object, error = fds.with_query(SPO_LIMIT_10).fetch_tabular()
-    assert len(str(response_object)) > 2000
+    fds = SPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
+    response_text = str(fds.with_query(SPO_LIMIT_10)._fetch_tabular())
+    assert "[10 rows x 3 columns]" in response_text
 
 
-def test_fetch_tree():
-    pass
+def test_describe_uri():
+    fds = SPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
+    response_text = str(fds.with_uri(DUMMY_DESCRIBE_URI, DUMMY_DESCRIBE_URI_GRAPH)._fetch_tabular())
+    assert "[112 rows x 3 columns]" in response_text
+
+    response_text = str(fds.with_uri(DUMMY_DESCRIBE_URI)._fetch_tabular())
+    assert "[14 rows x 3 columns]" in response_text

@@ -4,13 +4,15 @@ Date:  07/08/2020
 Author: Eugeniu Costetchi
 Email: costezki.eugen@gmail.com 
 """
-
+import io
 from typing import Optional
 
 from SPARQLWrapper import SPARQLWrapper, JSON, CSV
 
 from eds.adapters.base_data_source import DataSource
 import pandas as pd
+
+DEFAULT_ENCODING = 'utf-8'
 
 
 class SPARQLEndpointDataSource(DataSource):
@@ -36,7 +38,6 @@ class SPARQLEndpointDataSource(DataSource):
             set the query text and return the reference to self for chaining
         :return:
         """
-        self.__can_be_tabular = False
         if graph_uri:
             self.endpoint.setQuery(f"DESCRIBE <{uri}> FROM <{graph_uri}>")
         else:
@@ -50,8 +51,8 @@ class SPARQLEndpointDataSource(DataSource):
 
     def _fetch_tabular(self):
         self.endpoint.setReturnFormat(CSV)
-        query = self.endpoint.query()
-        return pd.read_csv(query.convert())
+        query_result = self.endpoint.queryAndConvert()
+        return pd.read_csv(io.StringIO(str(query_result, encoding=DEFAULT_ENCODING)))
 
     def _can_be_tree(self) -> bool:
         return self.__can_be_tree

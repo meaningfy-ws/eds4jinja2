@@ -15,12 +15,14 @@ from eds.builders.jinja_builder import FROM_ENDPOINT, FROM_FILE
 
 SPO_LIMIT_10 = "select * where {?s ?p ?o} limit 10"
 DUMMY_DESCRIBE_URI = "http://publications.europa.eu/resource/authority/corporate-body/SPC"
+DUMMY_DESCRIBE_URI_GRAPH = "http://publications.europa.eu/resource/authority/corporate-body"
+
 WRONG_SPO_LIMIT_10 = "select * "
 QUERY_LONGER_THAN_2048KB = f"select * {{?s ?p <http://{'abc' * 800805}>}} limit 10"
 
 ENDPOINT_LOCAL_CORRECT = "http://localhost:3030/subdiv/sparql"
 ENDPOINT_REMOTE_CORRECT = "http://publications.europa.eu/webapi/rdf/sparql"
-ENDPOINT_INEXISTENT_SERVER = "http://inexistent/mocked/server"
+ENDPOINT_INEXISTENT_SERVER = "http://inexistent/mocked/server:43534645"
 ENDPOINT_CRASHED_SERVER = "http://crashed/mocked/server"
 
 RESPONSE_SPARQL_CSV_CORPORATE_BODY = [["s", "p", "o"],
