@@ -40,11 +40,11 @@ apidoc_module_dir = "../eds4jinja2"
 apidoc_output_dir = "srcdocs"
 add_module_names = False
 autodoc_default_options = {
-    'members': True,
+    'members': None,
     'member-order': 'bysource',
     # 'special-members': True,
-    'undoc-members': True,
-    "private-members": True,
+    'undoc-members': None,
+    "private-members": None,
     # 'exclude-members': '__weakref__'
 }
 
