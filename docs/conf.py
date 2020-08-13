@@ -28,12 +28,13 @@ author = 'Eugeniu Costetchi'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["myst_parser",
-              "sphinxcontrib.apidoc",
-              "sphinx.ext.autodoc",
-              "sphinx.ext.intersphinx",
-              "sphinx.ext.viewcode",
-              ]
+extensions = [
+    # "myst_parser",
+    "sphinxcontrib.apidoc",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.viewcode",
+]
 
 apidoc_module_dir = "../eds4jinja2"
 apidoc_output_dir = "srcdocs"
