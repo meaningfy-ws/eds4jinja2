@@ -1,9 +1,11 @@
-"""
-sparql_ds.py
-Date:  07/08/2020
-Author: Eugeniu Costetchi
-Email: costezki.eugen@gmail.com 
-"""
+#!/usr/bin/python3
+
+# sparql_ds.py
+# Date:  07/08/2020
+# Author: Eugeniu Costetchi
+# Email: costezki.eugen@gmail.com
+
+
 import io
 from typing import Optional
 

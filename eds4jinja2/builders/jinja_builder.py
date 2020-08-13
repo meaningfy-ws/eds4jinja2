@@ -1,9 +1,10 @@
-""" 
-jinja_builder
-Created:  18/03/2019
-Author: Eugeniu Costetchi
-Email: costezki.eugen@gmail.com
-"""
+#!/usr/bin/python3
+#
+# jinja_builder
+# Created:  18/03/2019
+# Author: Eugeniu Costetchi
+# Email: costezki.eugen@gmail.com
+
 import jinja2
 
 from eds4jinja2.adapters.file_ds import FileDataSource

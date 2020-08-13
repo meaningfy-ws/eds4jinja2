@@ -1,9 +1,11 @@
-""" 
-__init__.py
-Created:  08/03/2019
-Author: Eugeniu Costetchi
-Email: costezki.eugen@gmail.com
+#!/usr/bin/python3
 
+# __init__.py
+# Created:  08/03/2019
+# Author: Eugeniu Costetchi
+# Email: costezki.eugen@gmail.com
+
+"""
 TODO: rewrite and reduce scope
 # Report generator module
 purpose: given a generated data context and a builders template (e.g. mustache, jinja2) generate the final report.

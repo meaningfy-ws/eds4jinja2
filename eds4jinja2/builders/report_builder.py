@@ -1,9 +1,11 @@
-""" 
-report_generator
-Created:  08/03/2019
-Author: Eugeniu Costetchi
-Email: costezki.eugen@gmail.com
+#!/usr/bin/python3
 
+# report_generator
+# Created:  08/03/2019
+# Author: Eugeniu Costetchi
+# Email: costezki.eugen@gmail.com
+
+"""
 this module implements the report generation functionality.
 """
 import jinja2

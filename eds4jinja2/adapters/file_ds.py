@@ -1,9 +1,10 @@
-"""
-file_ds.py
-Date:  07/08/2020
-Author: Eugeniu Costetchi
-Email: costezki.eugen@gmail.com 
-"""
+#!/usr/bin/python3
+
+# file_ds.py
+# Date:  07/08/2020
+# Author: Eugeniu Costetchi
+# Email: costezki.eugen@gmail.com
+
 import json
 import pathlib
 import yaml
