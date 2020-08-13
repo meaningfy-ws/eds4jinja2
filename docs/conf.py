@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 # The full version, including alpha/beta/rc tags
-release = '0.0.17'
+release = "0.0.17"
 
 project = 'eds4jinja2'
 copyright = '2020, Eugeniu Costetchi'

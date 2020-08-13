@@ -12,3 +12,8 @@ myst-parser
 sphinx
 sphinxcontrib-apidoc
 
+# pipy publishing
+twine
+setuptools
+wheel
+
