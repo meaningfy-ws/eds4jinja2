@@ -9,19 +9,18 @@ Embedded Datasource Specification in Jinja2 templates (v. |release|)
 
 Specify the data sources in your JINJA templates directly.
 
-::
+.. code-block:: Jinja
 
     {% set content, error = from_file(path).fetch_tree() %} \n
     content:  {{ content }}\n
     error: {{ error }}\n
 
-::
+.. code-block:: Jinja
 
     {% set content, error =
         from_endpoint(endpoint).with_query(query_string).fetch_tabular() %}
     content:  {{ content }} \n
     error: {{ error }} \n
-
 
 Currently supported data sources are:
 
@@ -45,7 +44,8 @@ For example, imagine that you need the content of a JSON file in a template.
 
 
 1. instantiate the template from an environment
-::
+
+.. code-block:: py3
 
     from jinja2 import Environment, PackageLoader, select_autoescape
 
@@ -54,18 +54,21 @@ For example, imagine that you need the content of a JSON file in a template.
     template = env.get_template('mytemplate.txt')
 
 2. create a template file 'mytemplate.txt' that looks like this
-::
+
+.. code-block:: jinja
 
     The file content:
     {{ data }}
 
 3. fetch the data content from file (the context building functionality)
-::
+
+.. code-block:: py3
 
     content  = json.load("path/to/the/file.json")
 
 4. render the template with a carefully prepared context
-::
+
+.. code-block:: py3
 
     rendered_text = template.render(data=content)
 
@@ -73,7 +76,8 @@ For example, imagine that you need the content of a JSON file in a template.
 
 
 1. instantiate the template from eds4jinaj2 environment
-::
+
+.. code-block:: py3
 
     from eds4jinja2.builders.jinja_builder import build_eds_environment
     from jinja2 import PackageLoader
@@ -82,14 +86,16 @@ For example, imagine that you need the content of a JSON file in a template.
     env = build_eds_environment(loader=loader)
 
 2. create a template file 'mytemplate.txt' that looks like this
-::
+
+.. code-block:: jinja
 
     {% set content, error = from_file("path/to/the/file.json").fetch_tree() %}\n
     The file content: \n
     {{ content }} \n
 
 3. render the template with no context. The context is dynamically generated during the template rendering.
-::
+
+.. code-block:: py3
 
     rendered_text = template.render()
 
@@ -98,7 +104,8 @@ For example, imagine that you need the content of a JSON file in a template.
 Repeat the steps from the example above to instantiate the environment and render the template. But adapt teh template as follows.
 
 2. modify the template file 'mytemplate.txt' to looks like this
-::
+
+.. code-block:: jinja
 
     {% set query_string = "select * where {?s ?p ?o} limit 10" %}
     {% set content, error = from_endpoint(endpoint).with_query(query_string).fetch_tree() %} \n
@@ -116,8 +123,6 @@ So, what are the benefits?
 
 Indices and tables
 ===================================
-
-..include:: srcdocs/modules.rst
 
 * :ref:`genindex`
 * :ref:`modindex`
