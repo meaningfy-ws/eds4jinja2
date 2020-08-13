@@ -8,6 +8,6 @@ pytest-bdd
 flake8
 
 # Documentation Dependencies
-myst-parser
-sphinx<3
+# myst-parser
+sphinx
 sphinxcontrib-apidoc
