@@ -2,6 +2,7 @@
 # Date: 12/08/2020
 # Author: Eugeniu Costetchi
 # Email: costezki.eugen@gmail.com
+import re
 
 from setuptools import setup, find_packages
 
@@ -18,11 +19,22 @@ extras = {
     'test': requirements_dev,
 }
 
-__version__ = "0.0.18"
+
+def find_version(filename):
+    _version_re = re.compile(r'__version__ = "(.*)"')
+    for line in open(filename):
+        version_match = _version_re.match(line)
+        if version_match:
+            return version_match.group(1)
+
+
+version = find_version('eds4jinja2/__init__.py')
+
+packages = find_packages(exclude=('examples*', 'test*'))
 
 setup(
     name="edt4jinja2",
-    version=__version__,
+    version=version,
     install_requires=requirements,
     tests_require=requirements_dev,
     extras_require=extras,

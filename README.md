@@ -17,4 +17,4 @@ content:  {{ content }} \n
 error: {{ error }} \n
 ```
 
-[Read the docs here](https://eds4jinja2.readthedocs.io/en/feature-mdr-111/)  
+[Read the docs here](https://eds4jinja2.readthedocs.io/en/latest/)  

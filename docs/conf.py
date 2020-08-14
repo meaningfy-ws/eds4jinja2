@@ -11,13 +11,31 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.abspath('..'))
 
+
 # -- Project information -----------------------------------------------------
-# The full version, including alpha/beta/rc tags
-release = "0.0.17"
+
+# Find version. We have to do this because we can't import it in Python 3 until
+# its been automatically converted in the setup process.
+def find_version(filename):
+    _version_re = re.compile(r'__version__ = "(.*)"')
+    for line in open(filename):
+        version_match = _version_re.match(line)
+        if version_match:
+            return version_match.group(1)
+
+
+# The full version, including alpha/beta/rc tags.
+release = find_version("../eds4jinja2/__init__.py")
+# The short X.Y version.
+version = re.sub("[0-9]+\\.[0-9]\\..*", "\1", release)
+
+# The encoding of source files.
+source_encoding = "utf-8"
 
 project = 'eds4jinja2'
 copyright = '2020, Eugeniu Costetchi'
@@ -56,7 +74,7 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', "draft"]
 
 # -- Options for HTML output -------------------------------------------------
 
