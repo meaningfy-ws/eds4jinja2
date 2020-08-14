@@ -1,13 +1,14 @@
-""" 
-jinja_builder
-Created:  18/03/2019
-Author: Eugeniu Costetchi
-Email: costezki.eugen@gmail.com
-"""
+#!/usr/bin/python3
+#
+# jinja_builder
+# Created:  18/03/2019
+# Author: Eugeniu Costetchi
+# Email: costezki.eugen@gmail.com
+
 import jinja2
 
-from eds.adapters.file_ds import FileDataSource
-from eds.adapters.sparql_ds import SPARQLEndpointDataSource
+from eds4jinja2.adapters.file_ds import FileDataSource
+from eds4jinja2.adapters.sparql_ds import SPARQLEndpointDataSource
 
 FROM_ENDPOINT = "from_endpoint"
 FROM_FILE = "from_file"

@@ -1,11 +1,12 @@
-"""
-base_data_source.py
-Date:  07/08/2020
-Author: Eugeniu Costetchi
-Email: costezki.eugen@gmail.com
+#!/usr/bin/python3
 
-A generic data source.
-"""
+# base_data_source.py
+# Date:  07/08/2020
+# Author: Eugeniu Costetchi
+# Email: costezki.eugen@gmail.com
+
+""" An abstract data source that is implemented by the specific ones. """
+
 from abc import ABC, abstractmethod
 from typing import Tuple, Optional
 
@@ -18,12 +19,25 @@ class UnsupportedRepresentation(Exception):
 
 class DataSource(ABC):
     """
-    generic data source
+        A generic data source that fetches data either in *tabular* or *tree* representation.
+
+        The fail safe run is foreseen by default, to provide entire context back into the Template.
+
+        >>> content, error = data_source.fetch_tabular()
+
+        Exception prone running shall be performed with the underscored functions
+
+        >>> content, error = data_source._fetch_tabular()
+
+        To fetch a tree
+
+        >>> content, error = data_source.fetch_tree()
     """
 
     def fetch_tabular(self) -> Tuple[Optional[object], Optional[str]]:
         """
-            read the content from the data source in tabular structure
+            Read the content from the data source in tabular structure.
+
         :return: a tuple where the first element is a result of a successful data reading and
                  the second is the error message in case of failure
         """
@@ -37,7 +51,8 @@ class DataSource(ABC):
 
     def fetch_tree(self) -> Tuple[Optional[object], Optional[str]]:
         """
-        read the content from the data source in tree structure
+            Read the content from the data source and return a tree structure.
+
         :return: a tuple where the first element is a result of a successful data reading and
                  the second is the error message in case of failure
         """

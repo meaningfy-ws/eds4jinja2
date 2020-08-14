@@ -1,14 +1,16 @@
-""" 
-report_generator
-Created:  08/03/2019
-Author: Eugeniu Costetchi
-Email: costezki.eugen@gmail.com
+#!/usr/bin/python3
 
+# report_generator
+# Created:  08/03/2019
+# Author: Eugeniu Costetchi
+# Email: costezki.eugen@gmail.com
+
+"""
 this module implements the report generation functionality.
 """
 import jinja2
 
-from eds.builders.jinja_builder import build_eds_environment, inject_environment_globals
+from eds4jinja2.builders.jinja_builder import build_eds_environment, inject_environment_globals
 
 
 class ReportBuilder:
