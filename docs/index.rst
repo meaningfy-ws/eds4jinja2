@@ -101,9 +101,9 @@ For example, imagine that you need the content of a JSON file in a template.
 
 **To query a SPARQL endpoint**
 
-Repeat the steps from the example above to instantiate the environment and render the template. But adapt teh template as follows.
+Repeat the steps from the example above to instantiate the environment and render the template. But adapt the template as follows.
 
-2. modify the template file 'mytemplate.txt' to looks like this
+2. modify the template file 'mytemplate.txt' to look like this
 
 .. code-block:: jinja
 
@@ -115,7 +115,7 @@ Repeat the steps from the example above to instantiate the environment and rende
 So, what are the benefits?
 ####################################################
 
-* your python code is agnostic of what data teh template displays
+* your python code is agnostic of what data the template displays
 * data fetching functionality is no longer part of the python context-building logic
 * the queries and the template to visualise the query result set are tightly coupled and easy to modify
 * this allows for building quickly custom visualisation templates (or modifying existent ones), before you even decide what the final query looks like

@@ -26,14 +26,14 @@ class SPARQLEndpointDataSource(DataSource):
         >>> ds = SPARQLEndpointDataSource(sparql_endpoint_url)
         >>> dict_object = ds.with_query(sparql_query_text)._fetch_tree()
 
-        unpack the content and error for a fail safe safe fetching
+        unpack the content and error for a fail safe fetching
         >>> dict_object, error_string = ds.with_query(sparql_query_text).fetch_tree()
 
         To describe an URI and get the results as a pandas DataFrame
 
         >>> pd_dataframe = ds.with_uri(existent_uri)._fetch_tree()
 
-        unpack the content and error for a fail safe safe fetching
+        unpack the content and error for a fail safe fetching
 
         >>> pd_dataframe, error_string = ds.with_uri(existent_uri).fetch_tree()
 

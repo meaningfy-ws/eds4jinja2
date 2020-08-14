@@ -24,19 +24,15 @@ def test_connect_to_remote_endpoint():
 def test_connect_to_endpoint_fails():
     with pytest.raises(ValueError):
         fds = SPARQLEndpointDataSource("")
-        print(fds._fetch_tree())
 
     with pytest.raises(URLError):
         fds = SPARQLEndpointDataSource(ENDPOINT_INEXISTENT_SERVER)
-        print(fds._fetch_tree())
 
     with pytest.raises(QueryBadFormed):
         fds = SPARQLEndpointDataSource(ENDPOINT_LOCAL_CORRECT)
-        print(fds.with_query(WRONG_SPO_LIMIT_10)._fetch_tree())
 
     with pytest.raises(URITooLong):
         fds = SPARQLEndpointDataSource(ENDPOINT_LOCAL_CORRECT)
-        print(fds.with_query(QUERY_LONGER_THAN_2048KB)._fetch_tree())
 
 
 def test_query_endpoint_and_fetch_tree():
