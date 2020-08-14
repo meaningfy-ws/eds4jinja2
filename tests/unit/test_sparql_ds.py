@@ -11,7 +11,7 @@ from SPARQLWrapper.SPARQLExceptions import QueryBadFormed, URITooLong
 
 from eds4jinja2.adapters.sparql_ds import SPARQLEndpointDataSource
 from tests import ENDPOINT_REMOTE_CORRECT, DUMMY_DESCRIBE_URI, SPO_LIMIT_10, WRONG_SPO_LIMIT_10, \
-    QUERY_LONGER_THAN_2048KB, ENDPOINT_LOCAL_CORRECT, ENDPOINT_INEXISTENT_SERVER, DUMMY_DESCRIBE_URI_GRAPH
+    QUERY_LONGER_THAN_2048KB, ENDPOINT_INEXISTENT_SERVER, DUMMY_DESCRIBE_URI_GRAPH
 
 
 def test_connect_to_remote_endpoint():
@@ -24,15 +24,20 @@ def test_connect_to_remote_endpoint():
 def test_connect_to_endpoint_fails():
     with pytest.raises(ValueError):
         fds = SPARQLEndpointDataSource("")
+        fds._fetch_tree()
 
     with pytest.raises(URLError):
         fds = SPARQLEndpointDataSource(ENDPOINT_INEXISTENT_SERVER)
+        fds._fetch_tree()
 
     with pytest.raises(QueryBadFormed):
-        fds = SPARQLEndpointDataSource(ENDPOINT_LOCAL_CORRECT)
+        fds = SPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
+        fds.with_query(WRONG_SPO_LIMIT_10)._fetch_tree()
+        fds._fetch_tree()
 
     with pytest.raises(URITooLong):
-        fds = SPARQLEndpointDataSource(ENDPOINT_LOCAL_CORRECT)
+        fds = SPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
+        fds.with_query(QUERY_LONGER_THAN_2048KB)._fetch_tree()
 
 
 def test_query_endpoint_and_fetch_tree():

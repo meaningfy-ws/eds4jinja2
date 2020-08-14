@@ -20,7 +20,6 @@ DUMMY_DESCRIBE_URI_GRAPH = "http://publications.europa.eu/resource/authority/cor
 WRONG_SPO_LIMIT_10 = "select * "
 QUERY_LONGER_THAN_2048KB = f"select * {{?s ?p <http://{'abc' * 800805}>}} limit 10"
 
-ENDPOINT_LOCAL_CORRECT = "http://localhost:3030/subdiv/sparql"
 ENDPOINT_REMOTE_CORRECT = "http://publications.europa.eu/webapi/rdf/sparql"
 ENDPOINT_INEXISTENT_SERVER = "http://inexistent/mocked/server:43534645"
 ENDPOINT_CRASHED_SERVER = "http://crashed/mocked/server"
