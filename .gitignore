@@ -129,6 +129,7 @@ dmypy.json
 .pyre/
 .idea/
 data-dev/
+build/
 
 # projest related
 cucumber_report.json

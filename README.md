@@ -17,4 +17,12 @@ content:  {{ content }} \n
 error: {{ error }} \n
 ```
 
+# Installation
+
+```shell script
+pip install eds4jinja2
+```
+
+# Documentation
+
 [Read the docs here](https://eds4jinja2.readthedocs.io/en/latest/)  
