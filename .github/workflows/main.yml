@@ -23,15 +23,21 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Check out
       uses: actions/checkout@v2
-    - name: Install dependecies
-      run: make install
+    - name: Set up Python
+      uses: actions/setup-python@master
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        make install    
     - name: Run tests
       run: make test
-    - name: Coveralls GitHub Action
-      uses: coverallsapp/github-action@v1.1.1
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
       with:
-        # secret token
-        github-token: ${{ secrets.COVERALLS_TOKEN }}
-        
-
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: coverage.xml
+        env_vars: OS,PYTHON
+        name: codecov-umbrella
+        fail_ci_if_error: true
     
