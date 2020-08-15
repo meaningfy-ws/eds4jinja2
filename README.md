@@ -1,13 +1,15 @@
 # eds4jinja2
 Embedded Datasource Specification in Jinja2 templates
 
-![test](https://github.com/meaningfy-ws/eds4jinja2/workflows/CI/badge.svg?branch=master)
-
-[![codecov](https://codecov.io/gh/meaningfy-ws/eds4jinja2/branch/master/graph/badge.svg)](https://codecov.io/gh/meaningfy-ws/eds4jinja2)
-
+![test](https://github.com/meaningfy-ws/eds4jinja2/workflows/test/badge.svg)
+![PyPI](https://img.shields.io/pypi/v/eds4jinja2?color=teal&label=version)
+![Codecov](https://img.shields.io/codecov/c/github/meaningfy-ws/eds4jinja2)
+![PyPI - License](https://img.shields.io/pypi/l/eds4jinja2?color=green)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/eds4jinja2)
+![PyPI - Status](https://img.shields.io/pypi/status/eds4jinja2)
+![PyPI - Wheel](https://img.shields.io/pypi/wheel/eds4jinja2)
 
 Specify the data sources in your JINJA templates directly.
-
 
 ```jinja2
 {% set content, error = from_file(path).fetch_tree() %} \n
