@@ -70,7 +70,7 @@ start-service: start-fuseki fuseki-create-test-dbs
 
 stop-service: stop-fuseki clean-data
 
-publish-pipy: test
+publish-pipy:
 	@ echo "$(BUILD_PRINT)Creating the source distribution"
 	@ python3 setup.py sdist bdist_wheel
 	@ echo "$(BUILD_PRINT)Checking the distribution"
