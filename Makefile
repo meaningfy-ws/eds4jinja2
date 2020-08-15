@@ -76,7 +76,7 @@ publish-pipy:
 	@ echo "$(BUILD_PRINT)Checking the distribution"
 	@ twine check dist/*
 	@ echo "$(BUILD_PRINT)Uploading the distribution"
-	@ twine upload dist/*
+	@ twine upload --skip-existing dist/*
 
 #-----------------------------------------------------------------------------
 # Default
