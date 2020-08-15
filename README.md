@@ -1,8 +1,7 @@
 # eds4jinja2
 Embedded Datasource Specification in Jinja2 templates
 
-![build](https://github.com/meaningfy-ws/eds4jinja2/workflows/main/badge.svg?branch=main)
-![build](https://github.com/meaningfy-ws/eds4jinja2/workflows/main/badge.svg?branch=features/workflow1)
+![test](https://github.com/meaningfy-ws/eds4jinja2/workflows/CI/badge.svg?branch=master)
 
 [![codecov](https://codecov.io/gh/meaningfy-ws/eds4jinja2/branch/master/graph/badge.svg)](https://codecov.io/gh/meaningfy-ws/eds4jinja2)
 
