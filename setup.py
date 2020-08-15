@@ -33,7 +33,7 @@ version = find_version('eds4jinja2/__init__.py')
 packages = find_packages(exclude=('examples*', 'test*'))
 
 setup(
-    name="edt4jinja2",
+    name="eds4jinja2",
     version=version,
     install_requires=requirements,
     tests_require=requirements_dev,
