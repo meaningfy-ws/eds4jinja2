@@ -40,4 +40,9 @@ jobs:
         env_vars: OS,PYTHON
         name: codecov-umbrella
         fail_ci_if_error: true
+    - name: Publish on PiPy
+      - env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PIPY_USER_TOKEN }}
+      run: make publish-pipy
     
