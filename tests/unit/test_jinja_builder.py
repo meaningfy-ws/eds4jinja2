@@ -8,10 +8,6 @@ Email: costezki.eugen@gmail.com
 import tests
 from eds4jinja2.builders.jinja_builder import build_eds_environment
 
-import logging
-
-logger = logging.getLogger(__name__)
-
 
 def test_dummy_template(eds_environment):
     template = eds_environment.from_string(tests.TEMPLATE_DUMMY)
@@ -57,10 +53,3 @@ def test_e2e_sparql_fetch_tree_successful():
     rendered_text = template.render(endpoint=tests.ENDPOINT_REMOTE_CORRECT, query_string=tests.SPO_LIMIT_10)
     assert len(rendered_text) > 1000
     assert "error: None" in rendered_text
-
-
-# if __name__ == '__main__':
-#     # DEBUG for demonstration purposes, but you could set the level from
-#     # cmdline args to whatever you like
-#     logging.basicConfig(level=logging.DEBUG, format='%(name)s %(levelname)s %(message)s')
-#     test_e2e_sparql_fetch_tree_successful()
