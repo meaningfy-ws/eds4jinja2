@@ -2,8 +2,8 @@
 Embedded Datasource Specification in Jinja2 templates
 
 ![test](https://github.com/meaningfy-ws/eds4jinja2/workflows/test/badge.svg)
-![Codecov](https://img.shields.io/codecov/c/github/meaningfy-ws/eds4jinja2)
-![Read the Docs](https://img.shields.io/readthedocs/eds4jinja2)
+[![codecov](https://codecov.io/gh/meaningfy-ws/eds4jinja2/branch/master/graph/badge.svg)](https://codecov.io/gh/meaningfy-ws/eds4jinja2)
+[![Documentation Status](https://readthedocs.org/projects/eds4jinja2/badge/?version=latest)](https://eds4jinja2.readthedocs.io/en/latest/?badge=latest)
 
 ![PyPI](https://img.shields.io/pypi/v/eds4jinja2?color=teal&label=version)
 ![PyPI - Status](https://img.shields.io/pypi/status/eds4jinja2)
