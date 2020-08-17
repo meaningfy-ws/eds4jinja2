@@ -78,3 +78,6 @@ class FileDataSource(DataSource):
         elif self._file_extension in [".tsv", ]:
             return pd.read_table(self.file_path)
         raise UnsupportedRepresentation(f"Unsupported tabular file type: {self._file_extension}")
+
+    def __str__(self):
+        return f"from <...{str(self.__file_path)[-25:]}>"

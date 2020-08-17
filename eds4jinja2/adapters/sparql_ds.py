@@ -81,3 +81,6 @@ class SPARQLEndpointDataSource(DataSource):
 
     def _can_be_tabular(self) -> bool:
         return self.__can_be_tabular
+
+    def __str__(self):
+        return f"from <...{str(self.endpoint.endpoint)[-30:]}> {str(self.endpoint.queryString)[:60]} ..."
