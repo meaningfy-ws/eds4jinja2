@@ -46,7 +46,8 @@ def invert_dict(mapping_dict: Dict, reduce_values: bool = True):
     return inv_map
 
 
-def replace_strings_in_tabular(data_frame: pd.DataFrame, target_columns: List[str] = [], value_mapping_dict: Dict = {},
+def replace_strings_in_tabular(data_frame: pd.DataFrame, target_columns: List[str] = None,
+                               value_mapping_dict: Dict = None,
                                mark_touched_rows: bool = False):
     """
         Replaces the values from the target columns in a data frame according to the value-mapping dictionary.
@@ -60,6 +61,11 @@ def replace_strings_in_tabular(data_frame: pd.DataFrame, target_columns: List[st
         :param target_columns: a list of column names otehrwise leave empty if substitution applies to all columns
         :param data_frame: the data frame
     """
+    if not target_columns:
+        target_columns = []
+    if not value_mapping_dict:
+        value_mapping_dict = {}
+
     for col in target_columns:
         if col not in data_frame.columns.values.tolist():
             raise ValueError("The target column not found in the data frame")
