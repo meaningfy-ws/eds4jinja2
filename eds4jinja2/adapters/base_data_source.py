@@ -10,6 +10,10 @@
 from abc import ABC, abstractmethod
 from typing import Tuple, Optional
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class UnsupportedRepresentation(Exception):
     """
@@ -45,8 +49,11 @@ class DataSource(ABC):
             if not self._can_be_tabular():
                 raise UnsupportedRepresentation("Only TREE representation is supported")
             else:
-                return self._fetch_tabular(), None
+                result = self._fetch_tabular()
+                logger.info(f"With {type(self).__name__}, fetching as tabular - {str(self)}", extra={'class': self.__class__.__name__})
+                return result, None
         except Exception as e:
+            logger.exception(f"With {type(self).__name__}, failed tabular fetching - {str(self)}")
             return None, str(e)
 
     def fetch_tree(self) -> Tuple[Optional[object], Optional[str]]:
@@ -57,11 +64,15 @@ class DataSource(ABC):
                  the second is the error message in case of failure
         """
         try:
+
             if not self._can_be_tree():
                 raise UnsupportedRepresentation("Only TABULAR representation is supported")
             else:
-                return self._fetch_tree(), None
+                result = self._fetch_tree()
+                logger.info(f"With {type(self).__name__}, fetching as tree - {str(self)}")
+                return result, None
         except Exception as e:
+            logger.exception(f"With {type(self).__name__}, failed tree fetching - {str(self)}")
             return None, str(e)
 
     @abstractmethod
