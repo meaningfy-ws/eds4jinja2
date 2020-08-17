@@ -50,10 +50,10 @@ class DataSource(ABC):
                 raise UnsupportedRepresentation("Only TREE representation is supported")
             else:
                 result = self._fetch_tabular()
-                logger.info(f"With {type(self).__name__}, fetching as tabular - {str(self)}", extra={'class': self.__class__.__name__})
+                logger.info(f"With {type(self).__name__}, fetching as tabular {str(self)}")
                 return result, None
         except Exception as e:
-            logger.exception(f"With {type(self).__name__}, failed tabular fetching - {str(self)}")
+            logger.exception(f"With {type(self).__name__}, failed tabular fetching {str(self)}")
             return None, str(e)
 
     def fetch_tree(self) -> Tuple[Optional[object], Optional[str]]:
@@ -69,10 +69,10 @@ class DataSource(ABC):
                 raise UnsupportedRepresentation("Only TABULAR representation is supported")
             else:
                 result = self._fetch_tree()
-                logger.info(f"With {type(self).__name__}, fetching as tree - {str(self)}")
+                logger.info(f"With {type(self).__name__}, fetching as tree {str(self)}")
                 return result, None
         except Exception as e:
-            logger.exception(f"With {type(self).__name__}, failed tree fetching - {str(self)}")
+            logger.exception(f"With {type(self).__name__}, failed tree fetching {str(self)}")
             return None, str(e)
 
     @abstractmethod
