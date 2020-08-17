@@ -36,6 +36,14 @@ eds4jinja2.adapters.sparql\_ds module
    :undoc-members:
    :show-inheritance:
 
+eds4jinja2.adapters.tabular\_utils module
+-----------------------------------------
+
+.. automodule:: eds4jinja2.adapters.tabular_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------

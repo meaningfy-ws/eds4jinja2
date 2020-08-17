@@ -8,12 +8,27 @@
 __docformat__ = "restructuredtext en"
 
 # The format of the __version__ line is matched by a regex in setup.py and /docs/conf.py
-__version__ = "0.1.19"
-__date__ = "2020-08-14"
+__version__ = "0.1.20"
+__date__ = "2020-08-17"
 
 import logging
 
-# hard coding the log level
+from eds4jinja2.builders.jinja_builder import build_eds_environment, inject_environment_globals
+from eds4jinja2.adapters.file_ds import FileDataSource
+from eds4jinja2.adapters.sparql_ds import SPARQLEndpointDataSource
+from eds4jinja2.adapters.tabular_utils import invert_dict, add_relative_figures, replace_strings_in_tabular
+
+# Making usage of this library more convenient
+__all__ = ["build_eds_environment",
+           "inject_environment_globals",
+           "FileDataSource",
+           "SPARQLEndpointDataSource",
+           "invert_dict",
+           "add_relative_figures",
+           "replace_strings_in_tabular",
+           ]
+
+# hard coding the log level and format
 logger = logging.getLogger()
 handler = logging.StreamHandler()
 formatter = logging.Formatter(
