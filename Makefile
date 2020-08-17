@@ -20,7 +20,7 @@ lint:
 
 test:
 	@ echo "$(BUILD_PRINT)Running the tests"
-	@ pytest || true
+	@ pytest
 
 #-----------------------------------------------------------------------------
 # Gherkin feature and acceptance test generation commands
