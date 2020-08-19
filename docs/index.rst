@@ -7,7 +7,10 @@ Embedded Datasource Specification in Jinja2 templates (v. |release|)
 .. toctree::
     :maxdepth: 2
 
-Specify the data sources in your JINJA templates directly.
+An easy way to reports generation with Jinja2 templates. With Embedded Datasource Specifications inside Jinja2 templates, you can fetch the data you need on the spot.
+
+You can specify the file data source in your JINJA templates as follows. The *path* can be specified as absolute or
+relative to the running script.
 
 .. code-block:: Jinja
 
@@ -15,8 +18,11 @@ Specify the data sources in your JINJA templates directly.
     content:  {{ content }}\n
     error: {{ error }}\n
 
-.. code-block:: Jinja
+In case you need to fetch data from a SPARQL endpoint, define a sparql_endpoint (usually in the global configuration)
+and a custom sparql query_text. Use them in the template like this:
 
+.. code-block:: Jinja
+    {% set query_string = "select * where {?s ?p ?o} limit 10" %}
     {% set content, error =
         from_endpoint(endpoint).with_query(query_string).fetch_tabular() %}
     content:  {{ content }} \n
@@ -27,7 +33,7 @@ Currently supported data sources are:
 * from file - tabular (CSV, Excel, etc.) and tree-structured (JSON, YAML, etc.)
 * from SPARQL endpoint - through a select query or describe request
 
-Not yet implemented
+Not yet supported data sources are:
 
 * from a XML file
 * from a REST API
@@ -38,42 +44,14 @@ Not yet implemented
 
 But why?
 #####################################
-For example, imagine that you need the content of a JSON file in a template.
+Imagine, for example, that you need to build a report from multiple SPARQL endpoints
+and a configuration data provided in a local JSON file.
 
-**In this case, what you would normally do is**
 
+What you would normally do is retreive first all the data and then pass it to the rendered template.
 
-1. instantiate the template from an environment
-
-.. code-block:: py3
-
-    from jinja2 import Environment, PackageLoader, select_autoescape
-
-    loader=PackageLoader('yourapplication', 'templates')
-    env = Environment(loader)
-    template = env.get_template('mytemplate.txt')
-
-2. create a template file 'mytemplate.txt' that looks like this
-
-.. code-block:: jinja
-
-    The file content:
-    {{ data }}
-
-3. fetch the data content from file (the context building functionality)
-
-.. code-block:: py3
-
-    content  = json.load("path/to/the/file.json")
-
-4. render the template with a carefully prepared context
-
-.. code-block:: py3
-
-    rendered_text = template.render(data=content)
-
-**With eds2jinja2 it is much simpler**
-
+Alternatively, with **eds4jinja2** you can simply specify how the data shall be retreived and then
+just use it in the tempalte.
 
 1. instantiate the template from eds4jinaj2 environment
 
@@ -82,35 +60,29 @@ For example, imagine that you need the content of a JSON file in a template.
     from eds4jinja2.builders.jinja_builder import build_eds_environment
     from jinja2 import PackageLoader
 
-    loader=PackageLoader('yourapplication', 'templates')
+    loader=PackageLoader('your_application', 'templates')
     env = build_eds_environment(loader=loader)
+
 
 2. create a template file 'mytemplate.txt' that looks like this
 
 .. code-block:: jinja
 
-    {% set content, error = from_file("path/to/the/file.json").fetch_tree() %}\n
-    The file content: \n
-    {{ content }} \n
+    {% set config_content, error = from_file("path/to/the/config/file.json").fetch_tree() %}\n
+    The configuration content: \n
+    {{ config_content }} \n
 
-3. render the template with no context. The context is dynamically generated during the template rendering.
+    {% set query_string = "select * where {?s ?p ?o} limit 10" %}
+    {% set endpoint_content, error = from_endpoint(endpoint).with_query(query_string).fetch_tree() %} \n
+    content: {{ endpoint_content }}\n
+    error: {{ error }}\n
+
+3. render the template with no context. The context is dynamically generated during the template rendering. Bingo!
 
 .. code-block:: py3
 
     rendered_text = template.render()
 
-**To query a SPARQL endpoint**
-
-Repeat the steps from the example above to instantiate the environment and render the template. But adapt the template as follows.
-
-2. modify the template file 'mytemplate.txt' to look like this
-
-.. code-block:: jinja
-
-    {% set query_string = "select * where {?s ?p ?o} limit 10" %}
-    {% set content, error = from_endpoint(endpoint).with_query(query_string).fetch_tree() %} \n
-    content: {{ content }}\n
-    error: {{ error }}\n
 
 So, what are the benefits?
 ####################################################

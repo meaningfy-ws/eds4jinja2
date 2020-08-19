@@ -51,7 +51,7 @@ setup(
     # long_description_content_type="text/x-rst",
     url="https://github.com/meaningfy-ws/eds4jinja2",
     platforms='any',
-    keywords='template, jinja, rdf, sparql, linked-data, data-source, dynamic-context',
+    keywords='template, jinja, report, report generation, rdf, sparql, linked-data, data-source, dynamic-context',
     packages=find_packages(exclude=("tests",)),
     # exclude=["tests", "test_*"],
     classifiers=[

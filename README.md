@@ -1,5 +1,7 @@
 # eds4jinja2
-Embedded Datasource Specification in Jinja2 templates
+An easy way to reports generation with Jinja2 templates. 
+
+With Embedded Datasource Specifications inside Jinja2 templates, you can fetch the data you need on the spot. 
 
 ![test](https://github.com/meaningfy-ws/eds4jinja2/workflows/test/badge.svg)
 [![codecov](https://codecov.io/gh/meaningfy-ws/eds4jinja2/branch/master/graph/badge.svg)](https://codecov.io/gh/meaningfy-ws/eds4jinja2)
