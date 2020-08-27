@@ -7,21 +7,23 @@ Feature: Data fetching from template
   Data can be fetched by specifications in the template
 
   Scenario: Fetch from SPARQL endpoint
-    Given a SPARQL endpoint LOCAL_CORRECT
-    And a SPARQL query SPO_LIMIT_10
-    When the resultset is requested from_sparql_endpoint
+    Given a SPARQL endpoint http://publications.europa.eu/webapi/rdf/sparql
+    And a SPARQL query select * where {?s ?p ?o} limit 10
+    When the resultset is requested from sparql endpoint
     Then the fetched content should be non empty
+    And the content length is greater than 500
     And the returned error should be None
 
+
   Scenario Outline: Fetch from a local file
-    Given a path to local <file_type> file
+    Given a path to local <file> file
     When the resultset is requested as from_file <result_type>
-    Then the fetched content should be <content_fragment>
-    And the returned error should be of type <error_fragment>
+    Then the returned error should be of type <error_fragment>
+    And the fetched content should be <content_fragment>
 
     Examples:
-      | file_type | result_type | content_fragment | error_fragment            |
-      | JSON      | tree        | non empty        |                           |
-      | CSV       | tabular     | non empty        |                           |
-      | CSV       | tree        | non empty        |                           |
-      | JSON      | tabular     |                  | UnsupportedRepresentation |
+      | file                             | result_type | content_fragment | error_fragment                        |
+      | /tests/test_data/file.json       | tree        | non empty        | None                                  |
+      | /tests/test_data/file.csv        | tabular     | non empty        | None                                  |
+      | /tests/test_data/file.csv        | tree        | non empty        | None                                  |
+      | /tests/test_data/file.json       | tabular     |                  | Only TREE representation is supported |
