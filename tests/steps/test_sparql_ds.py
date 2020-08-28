@@ -83,4 +83,3 @@ def the_returned_error_should_be_none(scenarioContext):
 @then('the returned error should contain <error_fragment>')
 def the_returned_error_should_contain_error_fragment(scenarioContext, error_fragment):
     assert error_fragment in scenarioContext["renderedText"]
-

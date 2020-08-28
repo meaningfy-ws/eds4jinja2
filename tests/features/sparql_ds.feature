@@ -38,12 +38,12 @@ Feature: SPARQL query fetcher
 
   Scenario Outline: Content of SPARQL select request for a tabular structure
     Given a SPARQL endpoint http://publications.europa.eu/webapi/rdf/sparql
-    And a SPARQL query select * where {?s a ?o} limit 10
+    And a SPARQL query <query_text_reference>
     When the resultset is requested as tabular
     Then the fetched content text should contain values <content_values>
     And the returned error should be None
 
     # comma separated values all of which shat shall be found
     Examples:
-      | content_values                                                      |
-      | http://www.w3.org/1999/                                             |
+      |query_text_reference | content_values                                                      |
+      |select ?s ?o (<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> as ?i) where {?s a ?o} limit 10 | http://www.w3.org/1999/02/22-rdf-syntax-ns#type                     |
