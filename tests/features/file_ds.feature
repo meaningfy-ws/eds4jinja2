@@ -42,8 +42,5 @@ Feature: File fetcher
     # comma separated values all of which shall shall be found
     Examples:
       | content_values                                                      |
-      #| http://publications.europa.eu/resource/authority/corporate-body/SPC |
+      | http://www.w3.org/2001/XMLSchema#gYear                              |
       | http://www.w3.org/1999/02/22-rdf-syntax-ns#type                     |
-      #| 's'                                                                 |
-      #| 'p'                                                                 |
-      #| 'o'                                                                 |

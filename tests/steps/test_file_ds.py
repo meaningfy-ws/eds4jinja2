@@ -1,7 +1,6 @@
 # coding=utf-8
 """File fetcher feature tests."""
 import os
-import json
 from pytest_bdd import (
     given,
     scenario,
@@ -53,6 +52,7 @@ def the_resultset_is_requested(eds_environment, scenarioContext):
 def the_resultset_is_requested_as_as_tabular(eds_environment, scenarioContext):
     renderedText = file_fetch_tabular(eds_environment, scenarioContext["filePath"])
     scenarioContext["renderedText"] = renderedText
+    print("XXX - " + renderedText)
 
 
 @when('the resultset is requested as as tree')
