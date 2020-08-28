@@ -7,32 +7,34 @@ Feature: File fetcher
   The data can be fetched from a file source
 
   Scenario Outline: Errors of file request
-    Given a path to a <file_state>
+    Given a path to a <file>
     When the resultset is requested
-    Then Then the fetched content should be None
-    And the returned error should contain <error_fragment>
+    Then the returned error should contain <error_fragment>
+    And Then the fetched content should be None
     
     Examples:
-      | file_state           | error_fragment    |
-      | inexistent_file      | FileNotFoundError |
-      | wrongly_encoded_file | ValueError        |
+      | file                                                    | error_fragment                           |
+      | /tests/test_data/69a7ecbefc6d438e8d82ba123fadacad       | Only TABULAR representation is supported |
+      | /tests/test_data/file.binary                            | Only TABULAR representation is supported |
 
   Scenario Outline: Content of file requested as tree structure
-    Given a path to an JSON file containing a SPARQL resultset
+    Given a path to an JSON file containing a SPARQL resultset /tests/test_data/file.json
     When the resultset is requested as as tree
     Then Then the fetched content should contain <content_keys>
     And the returned error should be None
 
-    # comma separated values all of which shall shall be found
+    # comma separated values all of which shall be found
     Examples:
-      | content_keys     |
-      | bindings         |
-      | type, uri, value |
-      | s, p, o          |
+      | content_keys       |
+      | 'bindings'         |
+      | 'type'             |
+      | 'uri'              |
+      | 'value'            |
+      | 's', 'p', 'o'      |
 
 
   Scenario Outline: Content of file requested as tabular structure
-    Given a path to an CSV file containing a SPARQL resultset
+    Given a path to an CSV file containing a SPARQL resultset /tests/test_data/file.csv
     When the resultset is requested as as tabular
     Then Then the fetched content should contain <content_values>
     And the returned error should be None
@@ -40,6 +42,5 @@ Feature: File fetcher
     # comma separated values all of which shall shall be found
     Examples:
       | content_values                                                      |
-      | http://publications.europa.eu/resource/authority/corporate-body/SPC |
+      | http://www.w3.org/2001/XMLSchema#gYear                              |
       | http://www.w3.org/1999/02/22-rdf-syntax-ns#type                     |
-      | s, p , o                                                            |
