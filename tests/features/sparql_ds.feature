@@ -46,4 +46,4 @@ Feature: SPARQL query fetcher
     # comma separated values all of which shat shall be found
     Examples:
       | content_values                                                      |
-      | http://www.w3.org/1999/02/22-rdf-syntax-ns#type                     |
+      | http://www.w3.org/1999/                                             |

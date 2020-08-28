@@ -74,6 +74,7 @@ def the_fetched_content_text_should_contain_values_content_values(scenarioContex
     assert content_values in scenarioContext["renderedText"]
 
 
+
 @then('the returned error should be None')
 def the_returned_error_should_be_none(scenarioContext):
     assert "error: None" in scenarioContext["renderedText"]
