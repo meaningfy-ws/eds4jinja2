@@ -42,7 +42,7 @@ class ReportBuilder:
     def addAfterRenderingListener(self, listener):
         self.__afterRenderingListeners.append(listener)
 
-    def get_template(self, template_name=None):
+    def __get_template(self, template_name=None) -> jinja2.Template:
         """
             Standard JINA2 get_template() functionality.
         :param template_name:
@@ -53,17 +53,22 @@ class ReportBuilder:
         else:
             self.template_env.get_template(template_name)
 
-    def from_string(self, template_string):
-        """
-            Standard JINA2 from_string() functionality.
-        :param template_string:
-        :return:
-        """
-        self.template_env.from_string(template_string, globals=self.template_env.globals)
+    # def __from_string(self, template_string) -> jinja2.Template:
+    #     """
+    #         Standard JINA2 from_string() functionality.
+    #     :param template_string:
+    #     :return:
+    #     """
+    #     self.template_env.from_string(template_string, globals=self.template_env.globals)
 
-    def make_document(self, *args, **kwargs):
+    def make_document(self) :
         for listener in self.__beforeRenderingListeners:
-            listener(*args, **kwargs)
-        #rendering code goes here
+            listener()
+        template = self.__get_template(self.main_template_name)
+
+        template.stream().dump("~/output.html")
+        #copy resources
+
         for listener in self.__afterRenderingListeners:
-            listener(*args, **kwargs)
+            listener()
+
