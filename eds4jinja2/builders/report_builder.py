@@ -31,7 +31,16 @@ class ReportBuilder:
 
         template_loader = jinja2.FileSystemLoader(searchpath=str(template_folder))
         self.template_env = build_eds_environment(loader=template_loader)
-        inject_environment_globals(self.template_env, {'configuration', self.configuration_context})
+        inject_environment_globals(self.template_env, {'configuration', self.configuration_context}, False if configuration_context is None else True)
+        self.__beforeRenderingListeners = []
+        self.__afterRenderingListeners = []
+
+
+    def addBeforeRenderingListener(self, listener):
+        self.__beforeRenderingListeners.append(listener)
+
+    def addAfterRenderingListener(self, listener):
+        self.__afterRenderingListeners.append(listener)
 
     def get_template(self, template_name=None):
         """
@@ -52,5 +61,9 @@ class ReportBuilder:
         """
         self.template_env.from_string(template_string, globals=self.template_env.globals)
 
-    def make_document(self):
-        raise NotImplementedError
+    def make_document(self, *args, **kwargs):
+        for listener in self.__beforeRenderingListeners:
+            listener(*args, **kwargs)
+        #rendering code goes here
+        for listener in self.__afterRenderingListeners:
+            listener(*args, **kwargs)
