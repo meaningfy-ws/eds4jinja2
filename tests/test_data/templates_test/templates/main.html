@@ -4,11 +4,6 @@
 
 {% block content %}
     {# Read the and invert the namespace/prefix definitions for substitution #}
-    {% set prefixes, error = from_file('prefixes.json').fetch_tree() %}
-    {% set inverted_prefixes = invert_dict(prefixes) %}
 
     {% include "sections/class_instantiation.html" with context %}
-<!--    {% include "sections/selected_class_profiles.html" with context %}-->
-<!--    {% include "sections/namespace_fingerprint.html" with context %}-->
-<!--    {% include "sections/namespace_inventory.html" with context %}-->
 {% endblock %}
