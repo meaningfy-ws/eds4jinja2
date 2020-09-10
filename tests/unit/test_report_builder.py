@@ -18,11 +18,11 @@ def sample_data_path() -> str:
     return pathlib.Path(__file__).parent.parent / "test_data/templates_test"
 
 
-@pytest.fixture(autouse=True)
-def setup_teardown(sample_data_path):
-    yield
-    path = pathlib.Path(sample_data_path) / "output"
-    shutil.rmtree(path)
+# @pytest.fixture(autouse=True)
+# def setup_teardown(sample_data_path):
+#     yield
+#     path = pathlib.Path(sample_data_path) / "output"
+#     shutil.rmtree(path)
 
 
 before_fired = False
@@ -63,3 +63,6 @@ def test_report_builder_make_document(sample_data_path):
     with open(pathlib.Path(sample_data_path) / "output" / "main.html", 'r') as htmlFile:
         parsed_html = BeautifulSoup(htmlFile.read())
         assert parsed_html.find("h1").text in "Cellar SPARQL endpoint fragment"
+
+    path = pathlib.Path(sample_data_path) / "output"
+    shutil.rmtree(path)
