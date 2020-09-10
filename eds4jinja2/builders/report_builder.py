@@ -10,10 +10,7 @@ this module implements the report generation functionality.
 """
 import json
 import pathlib
-
 import jinja2
-
-from eds4jinja2 import FileDataSource, SPARQLEndpointDataSource
 from eds4jinja2.builders.jinja_builder import build_eds_environment, inject_environment_globals
 
 
