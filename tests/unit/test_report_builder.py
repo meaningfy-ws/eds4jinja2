@@ -18,13 +18,6 @@ def sample_data_path() -> str:
     return pathlib.Path(__file__).parent.parent / "test_data/templates_test"
 
 
-# @pytest.fixture(autouse=True)
-# def setup_teardown(sample_data_path):
-#     yield
-#     path = pathlib.Path(sample_data_path) / "output"
-#     shutil.rmtree(path)
-
-
 before_fired = False
 after_fired = False
 
