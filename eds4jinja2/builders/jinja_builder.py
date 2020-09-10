@@ -41,7 +41,7 @@ def build_eds_environment(external_data_source_builders={**DATA_SOURCE_BUILDERS,
     return template_env
 
 
-def inject_environment_globals(jinja_environment, context, update_existent=True):
+def inject_environment_globals(jinja_environment: jinja2.Environment, context: dict, update_existent=True):
     """
         Inject the context into JINJA2 environment making it globally available from any template.
         Update in place a dictionary by adding non existent keys from another dictionary.

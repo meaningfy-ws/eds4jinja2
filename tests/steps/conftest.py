@@ -2,6 +2,7 @@
 # Date:  07/08/2020
 # Author: Eugeniu Costetchi
 # Email: costezki.eugen@gmail.com
+import pathlib
 
 import pytest
 
@@ -9,7 +10,7 @@ import tests
 from eds4jinja2 import build_eds_environment
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
 def scenarioContext():
     return {}
 
@@ -18,6 +19,10 @@ def scenarioContext():
 def eds_environment():
     return build_eds_environment()
 
+
+@pytest.fixture(scope="function")
+def sample_data_path() -> str:
+    return pathlib.Path(__file__).parent.parent / "test_data"
 
 def sparql_fetch_tree(eds_environment, endpoint, sparqlQuery):
     template = eds_environment.from_string(tests.TEMPLATE_SPARQL_FETCH_TREE)
