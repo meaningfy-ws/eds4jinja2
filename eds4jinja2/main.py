@@ -1,3 +1,4 @@
+import pathlib
 from distutils.dir_util import copy_tree
 
 from eds4jinja2.builders.report_builder import ReportBuilder
@@ -5,7 +6,8 @@ import click
 
 
 def copy_static_content(from_path, to_path):
-    copy_tree(from_path,to_path)
+    if pathlib.Path(from_path).is_dir():
+        copy_tree(from_path,to_path)
 
 
 @click.command()

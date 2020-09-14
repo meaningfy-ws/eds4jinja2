@@ -2,7 +2,7 @@
     "template": "main.html",
     "conf":
     {
-        "default_endpoint" : "http://publications.europa.eu/webapi/rdf/sparql",
+        "default_endpoint" : "http://localhost:3030/subdiv/sparql",
         "title": "Dataset Fingerprint Report (Diff)",
         "type": "report",
         "author": "Meaningfy",

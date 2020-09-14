@@ -43,8 +43,10 @@ class ReportBuilder:
 
         self.__STATIC_FOLDER__ = pathlib.Path(target_path) / self.__STATIC_FOLDER__
 
-        template_loader = jinja2.FileSystemLoader(searchpath=str(pathlib.Path(target_path) / self.__TEMPLATE_FOLDER__))
+        template_path = str(pathlib.Path(target_path) / self.__TEMPLATE_FOLDER__)
+        template_loader = jinja2.FileSystemLoader(searchpath=template_path)
         self.template_env = build_eds_environment(loader=template_loader)
+        self.configuration_context["conf"]["template_path"] = template_path
         inject_environment_globals(self.template_env, {'conf': self.configuration_context["conf"]},
                                    False if configuration_context is None else True)
         self.__before_rendering_listeners = []
