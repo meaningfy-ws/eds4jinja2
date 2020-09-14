@@ -40,6 +40,8 @@ class ReportBuilder:
 
         if output_path is not None:
             self.__DEFAULT_OUTPUT_FOLDER__ = pathlib.Path(output_path) / self.__DEFAULT_OUTPUT_FOLDER__
+        else:
+            self.__DEFAULT_OUTPUT_FOLDER__ = pathlib.Path(target_path) / self.__DEFAULT_OUTPUT_FOLDER__
 
         self.__STATIC_FOLDER__ = pathlib.Path(target_path) / self.__STATIC_FOLDER__
 
