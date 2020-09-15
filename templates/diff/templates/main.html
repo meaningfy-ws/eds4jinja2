@@ -7,12 +7,18 @@
     {% set prefixes, error = from_file(conf.template_path+'/prefixes.json').fetch_tree() %}
     {% set inverted_prefixes = invert_dict(prefixes) %}
 
-    {% include "sections/added_concepts.html" with context %}
-    {% include "sections/deleted_concepts.html" with context %}
-    {% include "sections/added_collection_pref_label.html" with context %}
-    {% include "sections/deleted_collection_pref_label.html" with context %}
-    {% include "sections/added_concept_pref_label.html" with context %}
-    {% include "sections/deleted_concept_pref_label.html" with context %}
-    {% include "sections/added_concept_scheme_pref_label.html" with context %}
-    {% include "sections/deleted_concept_scheme_pref_label.html" with context %}
+    {% include "sections/added_instance_concepts.html" with context %}
+    {% include "sections/added_property_collection_pref_label.html" with context %}
+    {% include "sections/added_property_concept_alt_label.html" with context %}
+    {% include "sections/added_property_concept_hidden_label.html" with context %}
+    {% include "sections/added_property_concept_pref_label.html" with context%}
+    {% include "sections/added_property_concept_scheme_pref_label.html" with context%}
+    <hr>
+    {% include "sections/deleted_instance_concepts.html" with context %}
+    {% include "sections/deleted_property_collection_pref_label.html" with context %}
+    {% include "sections/deleted_property_concept_alt_label.html" with context %}
+    {% include "sections/deleted_property_concept_hidden_label.html" with context %}
+    {% include "sections/deleted_property_concept_pref_label.html" with context %}
+    {% include "sections/deleted_property_concept_scheme_pref_label.html" with context%}
+
 {% endblock %}

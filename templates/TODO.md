@@ -6,7 +6,7 @@ The set of questions to answer in the diff template are:
 3. Added/deleted/modified labels (pref,alt,hidden)
 4. Added/deleted/modified notations (the actual notation, identifiers, (to be added later))
 5. Added/deleted/modified notes (definition, scope, editorial, (to be added later))
-6. Other changed properties
+6. Other changed properties (successors, predecessors, start date, end date)
 
 For the aforementioned 3,4 and 5 we must take into account that "simple/direct" and the reified version of these properties. We will start with the simple version at first and build on that. 
 
