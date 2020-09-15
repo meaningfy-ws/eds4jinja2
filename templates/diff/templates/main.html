@@ -13,6 +13,9 @@
     {% include "sections/added_property_concept_hidden_label.html" with context %}
     {% include "sections/added_property_concept_pref_label.html" with context%}
     {% include "sections/added_property_concept_scheme_pref_label.html" with context%}
+    {% include "sections/added_property_concept_dc_identifier.html" with context %}
+    {% include "sections/added_property_concept_dct_identifier.html" with context%}
+    {% include "sections/added_property_concept_notation.html" with context%}
     <hr>
     {% include "sections/deleted_instance_concepts.html" with context %}
     {% include "sections/deleted_property_collection_pref_label.html" with context %}
@@ -20,5 +23,9 @@
     {% include "sections/deleted_property_concept_hidden_label.html" with context %}
     {% include "sections/deleted_property_concept_pref_label.html" with context %}
     {% include "sections/deleted_property_concept_scheme_pref_label.html" with context%}
+
+    {% include "sections/deleted_property_concept_dc_identifier.html" with context %}
+    {% include "sections/deleted_property_concept_dct_identifier.html" with context %}
+    {% include "sections/deleted_property_concept_notation.html" with context%}
 
 {% endblock %}
