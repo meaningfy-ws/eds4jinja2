@@ -30,15 +30,18 @@
 </head>
 
 <body>
+<!--
 <nav class="ui fixed menu inverted navbar">
     <a href="" class="brand item">RDF Diff proof of concept</a>
-</nav> <!-- end nav -->
+</nav>
+-->
+<br>
 <div id="toc"></div>
 <main class="ui page grid">
     <div class="row"></div>
     <div class="row">
         <div class="starter column">
-            <h1 class="ui center aligned header .skip-toc">RDF Diff proof of concept</h1>
+            <h1 class="ui center aligned header" id="skip-toc">RDF Diff proof of concept</h1>
             {% block content %}
                 < empty >
             {% endblock %}
@@ -63,7 +66,7 @@
             selectors: "h1",
             theme: "jqueryui",
             hashGenerator: "pretty",
-            ignoreSelector: ".skip-toc",
+            ignoreSelector: "#skip-toc",
             highlightOnScroll: "true",
             highlightDefault: "true"
         });
