@@ -22,6 +22,8 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
             rel="stylesheet"
             type="text/css">
+
+    <link href="https://code.jquery.com/ui/1.11.4/themes/redmond/jquery-ui.css" rel="stylesheet" type="text/css">
     <!-- build:css styles/main.css -->
     {#    <link rel="stylesheet" href="main.css">#}
     <!-- endbuild -->
@@ -29,14 +31,14 @@
 
 <body>
 <nav class="ui fixed menu inverted navbar">
-    <a href="" class="brand item">RDF Fingerprinter proof of concept</a>
+    <a href="" class="brand item">RDF Diff proof of concept</a>
 </nav> <!-- end nav -->
 <div id="toc"></div>
 <main class="ui page grid">
     <div class="row"></div>
     <div class="row">
         <div class="starter column">
-            <h1 class="ui center aligned header">CHANGE ME TO SOMETHING RELEVANT !!</h1>
+            <h1 class="ui center aligned header .skip-toc">RDF Diff proof of concept</h1>
             {% block content %}
                 < empty >
             {% endblock %}
@@ -51,22 +53,21 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
 <!-- endbower -->
 <!-- endbuild -->
-<!-- load from online -->
-<!-- <script src="static/js/jquery-3.4.1.min.js"></script> -->
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tocify/1.9.0/javascripts/jquery.tocify.min.js"></script>
 
-        <script>
-            $(function () {
-                //Calls the tocify method on your HTML div.
-                $("#toc").tocify({
-                    selectors: "h1",
-                    theme: "bootstrap",
-                    hashGenerator: "pretty",
-                    ignoreSelector: ".skip-toc"
-                });
-            });
-        </script>
+<script>
+    $(function () {
+        $("#toc").tocify({
+            selectors: "h1",
+            theme: "jqueryui",
+            hashGenerator: "pretty",
+            ignoreSelector: ".skip-toc",
+            highlightOnScroll: "true",
+            highlightDefault: "true"
+        });
+    });
+</script>
 </body>
 </html>
