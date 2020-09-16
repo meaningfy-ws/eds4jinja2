@@ -8,42 +8,68 @@
     {% set inverted_prefixes = invert_dict(prefixes) %}
 
     {% include "sections/added_instance_concepts.html" with context %}
-    {% include "sections/added_property_collection_pref_label.html" with context %}
-    {% include "sections/added_property_concept_alt_label.html" with context %}
-    {% include "sections/added_property_concept_hidden_label.html" with context %}
-    {% include "sections/added_property_concept_pref_label.html" with context%}
-    {% include "sections/added_property_concept_scheme_pref_label.html" with context%}
-    {% include "sections/added_property_concept_dc_identifier.html" with context %}
-    {% include "sections/added_property_concept_dct_identifier.html" with context%}
-    {% include "sections/added_property_concept_notation.html" with context%}
-    {% include "sections/added_property_concept_skos_in_scheme.html" with context%}
-    {% include "sections/added_property_concept_owl_versioninfo.html" with context%}
-    {% include "sections/added_property_concept_skos_note.html" with context%}
-    {% include "sections/added_property_concept_skos_changeNote.html" with context%}
-    {% include "sections/added_property_concept_skos_definition.html" with context%}
-    {% include "sections/added_property_concept_editorialNote.html" with context%}
-    {% include "sections/deleted_property_concept_example.html" with context%}
-    {% include "sections/added_property_concept_history_note.html" with context%}
-    {% include "sections/added_property_concept_scope_note.html" with context%}
-    {% include "sections/added_property_concept_owl_deprecated.html" with context%}
-    <hr>
     {% include "sections/deleted_instance_concepts.html" with context %}
+    <hr>
+    {% include "sections/added_property_collection_pref_label.html" with context %}
     {% include "sections/deleted_property_collection_pref_label.html" with context %}
+    <hr>
+    {% include "sections/added_property_concept_alt_label.html" with context %}
     {% include "sections/deleted_property_concept_alt_label.html" with context %}
+    <hr>
+    {% include "sections/added_property_concept_hidden_label.html" with context %}
     {% include "sections/deleted_property_concept_hidden_label.html" with context %}
+    <hr>
+    {% include "sections/added_property_concept_pref_label.html" with context%}
     {% include "sections/deleted_property_concept_pref_label.html" with context %}
+    <hr>
+    {% include "sections/added_property_concept_scheme_pref_label.html" with context%}
     {% include "sections/deleted_property_concept_scheme_pref_label.html" with context%}
+    <hr>
+    {% include "sections/added_property_concept_dc_identifier.html" with context %}
     {% include "sections/deleted_property_concept_dc_identifier.html" with context %}
+    <hr>
+    {% include "sections/added_property_concept_dct_identifier.html" with context%}
     {% include "sections/deleted_property_concept_dct_identifier.html" with context %}
+    <hr>
+    {% include "sections/added_property_concept_notation.html" with context%}
     {% include "sections/deleted_property_concept_notation.html" with context%}
+    <hr>
+    {% include "sections/added_property_concept_skos_in_scheme.html" with context%}
     {% include "sections/deleted_property_concept_skos_in_scheme.html" with context%}
+    <hr>
+    {% include "sections/added_property_concept_owl_versioninfo.html" with context%}
+    {% include "sections/deleted_property_concept_owl_versioninfo.html" with context%}
+    <hr>
+    {% include "sections/added_property_concept_skos_note.html" with context%}
     {% include "sections/deleted_property_concept_skos_note.html" with context%}
+    <hr>
+    {% include "sections/added_property_concept_skos_changeNote.html" with context%}
     {% include "sections/deleted_property_concept_skos_changeNote.html" with context%}
+    <hr>
+    {% include "sections/added_property_concept_skos_definition.html" with context%}
     {% include "sections/deleted_property_concept_skos_definition.html" with context%}
+    <hr>
+    {% include "sections/added_property_concept_editorialNote.html" with context%}
     {% include "sections/deleted_property_concept_editorialNote.html" with context%}
+    <hr>
     {% include "sections/deleted_property_concept_example.html" with context%}
+    {% include "sections/deleted_property_concept_example.html" with context%}
+    <hr>
+    {% include "sections/added_property_concept_history_note.html" with context%}
     {% include "sections/deleted_property_concept_history_note.html" with context%}
+    <hr>
+    {% include "sections/added_property_concept_scope_note.html" with context%}
     {% include "sections/deleted_property_concept_scope_note.html" with context%}
+    <hr>
+    {% include "sections/added_property_concept_owl_deprecated.html" with context%}
     {% include "sections/deleted_property_concept_owl_deprecated.html" with context%}
-
+    <hr>
+    {% include "sections/added_reified_concept_alt_label_literal_form.html" with context%}
+    {% include "sections/deleted_reified_concept_alt_label_literal_form.html" with context%}
+    <hr>
+    {% include "sections/added_reified_concept_notation_value.html" with context%}
+    {% include "sections/deleted_reified_concept_notation_value.html" with context%}
+    <hr>
+    {% include "sections/added_reified_concept_pref_label_literal_form.html" with context%}
+    {% include "sections/deleted_reified_concept_pref_label_literal_form.html" with context%}
 {% endblock %}

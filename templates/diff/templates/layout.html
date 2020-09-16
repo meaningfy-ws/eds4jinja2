@@ -16,18 +16,22 @@
     <!-- endbuild -->
     <link href='//fonts.googleapis.com/css?family=Open+Sans:400,700,300&subset=latin,vietnamese' rel='stylesheet'
           type='text/css'>
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tocify/1.9.0/stylesheets/jquery.tocify.min.css"
+          rel="stylesheet"
+          type="text/css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+            rel="stylesheet"
+            type="text/css">
     <!-- build:css styles/main.css -->
     {#    <link rel="stylesheet" href="main.css">#}
     <!-- endbuild -->
-
 </head>
 
 <body>
 <nav class="ui fixed menu inverted navbar">
     <a href="" class="brand item">RDF Fingerprinter proof of concept</a>
 </nav> <!-- end nav -->
-
+<div id="toc"></div>
 <main class="ui page grid">
     <div class="row"></div>
     <div class="row">
@@ -47,5 +51,22 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
 <!-- endbower -->
 <!-- endbuild -->
+<!-- load from online -->
+<!-- <script src="static/js/jquery-3.4.1.min.js"></script> -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tocify/1.9.0/javascripts/jquery.tocify.min.js"></script>
+
+        <script>
+            $(function () {
+                //Calls the tocify method on your HTML div.
+                $("#toc").tocify({
+                    selectors: "h1",
+                    theme: "bootstrap",
+                    hashGenerator: "pretty",
+                    ignoreSelector: ".skip-toc"
+                });
+            });
+        </script>
 </body>
 </html>
