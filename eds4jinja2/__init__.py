@@ -8,8 +8,8 @@
 __docformat__ = "restructuredtext en"
 
 # The format of the __version__ line is matched by a regex in setup.py and /docs/conf.py
-__version__ = "0.1.20"
-__date__ = "2020-08-17"
+__version__ = "0.1.21"
+__date__ = "2020-09-16"
 
 import logging
 
