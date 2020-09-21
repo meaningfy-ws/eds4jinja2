@@ -106,6 +106,7 @@ The command line interface has three arguments:
 Target directory layout:
 ########################################################################################################
 By convention, the target directory **must** contain:
+
 #. a configuration file in JSON format which serves two purposes:
 
     * it specifies the main template for eds2jinja to start with (this template may refer to other additional templates)
@@ -117,17 +118,20 @@ By convention, the target directory **must** contain:
 
 Example:
 
+.. example-code::
+
 .. code-block:: json
-{
-    "template": "main.html",
-    "conf":
+
     {
-        "default_endpoint" : "http://example.com/path/sparqlendpoint",
-        "title": "Pretty printed relevant information",
-        "type": "report",
-        "author": "Your name here"
+        "template": "main.html",
+        "conf":
+        {
+            "default_endpoint" : "http://example.com/path/sparqlendpoint",
+            "title": "Pretty printed relevant information",
+            "type": "report",
+            "author": "Your name here"
+        }
     }
-}
 
 
 
