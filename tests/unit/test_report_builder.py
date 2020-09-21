@@ -45,7 +45,7 @@ def test_report_builder_config_file_exists(sample_data_path):
 def test_report_builder_make_document(sample_data_path):
     global before_fired
     global after_fired
-    report_builder = ReportBuilder(target_path=sample_data_path, output_path=sample_data_path)
+    report_builder = ReportBuilder(target_path=sample_data_path, output_path=pathlib.Path(sample_data_path) / "output")
     report_builder.add_before_rendering_listener(before_listener)
     report_builder.add_after_rendering_listener(after_listener)
     report_builder.make_document()
