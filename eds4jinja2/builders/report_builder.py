@@ -21,7 +21,7 @@ class ReportBuilder:
     __STATIC_FOLDER__ = "static"
     __TEMPLATE_FOLDER__ = "templates"
     __DEFAULT_CONFIG_FILE__ = "config.json"
-    __DEFAULT_OUTPUT_FOLDER__ = "output"
+    __OUTPUT_FOLDER__ = "output"
 
     def __init__(self, target_path, config_file=__DEFAULT_CONFIG_FILE__, output_path=None):
         """
@@ -39,12 +39,19 @@ class ReportBuilder:
         self.configuration_context = configuration_context
 
         if output_path is not None:
-            self.__DEFAULT_OUTPUT_FOLDER__ = pathlib.Path(output_path) / self.__DEFAULT_OUTPUT_FOLDER__
+            self.__OUTPUT_FOLDER__ = pathlib.Path(output_path)
+        else:
+            # in case you don't specify an output, the rendered content will be placed
+            # in the target folder, in an default directory named "output"
+            # this is to prevent creating files wherever you happen to run the CLI
+            self.__OUTPUT_FOLDER__ = pathlib.Path(target_path) / "output"
 
         self.__STATIC_FOLDER__ = pathlib.Path(target_path) / self.__STATIC_FOLDER__
 
-        template_loader = jinja2.FileSystemLoader(searchpath=str(pathlib.Path(target_path) / self.__TEMPLATE_FOLDER__))
+        template_path = str(pathlib.Path(target_path) / self.__TEMPLATE_FOLDER__)
+        template_loader = jinja2.FileSystemLoader(searchpath=template_path)
         self.template_env = build_eds_environment(loader=template_loader)
+        self.configuration_context["conf"]["template_path"] = template_path
         inject_environment_globals(self.template_env, {'conf': self.configuration_context["conf"]},
                                    False if configuration_context is None else True)
         self.__before_rendering_listeners = []
@@ -80,8 +87,8 @@ class ReportBuilder:
 
         template = self.__get_template(self.template)
 
-        pathlib.Path(self.__DEFAULT_OUTPUT_FOLDER__).mkdir(parents=True, exist_ok=True)
-        template.stream().dump(str(pathlib.Path(self.__DEFAULT_OUTPUT_FOLDER__) / self.template))
+        pathlib.Path(self.__OUTPUT_FOLDER__).mkdir(parents=True, exist_ok=True)
+        template.stream().dump(str(pathlib.Path(self.__OUTPUT_FOLDER__) / self.template))
 
         for listener in self.__after_rendering_listeners:
-            listener(str(self.__STATIC_FOLDER__), str(pathlib.Path(self.__DEFAULT_OUTPUT_FOLDER__)))
+            listener(str(self.__STATIC_FOLDER__), str(pathlib.Path(self.__OUTPUT_FOLDER__)))

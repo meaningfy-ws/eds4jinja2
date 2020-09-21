@@ -12,7 +12,7 @@ from pytest_bdd import (
     when,
 )
 
-from eds4jinja2.main import build_report
+from eds4jinja2.entrypoints.cli.main import build_report
 
 runner = CliRunner()
 
@@ -29,7 +29,7 @@ def a_path_to_a_directory(scenarioContext, directory, sample_data_path):
 
 @when('the CLI is invoked')
 def the_cli_is_invoked(scenarioContext):
-    runner.invoke(build_report, ["--target", scenarioContext["input_path"], "--output", scenarioContext["input_path"]])
+    runner.invoke(build_report, ["--target", scenarioContext["input_path"], "--output", pathlib.Path( scenarioContext["input_path"]) / "output"])
 
 
 @then('<output> path contains the <file>')

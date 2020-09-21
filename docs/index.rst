@@ -48,12 +48,12 @@ Imagine, for example, that you need to build a report from multiple SPARQL endpo
 and a configuration data provided in a local JSON file.
 
 
-What you would normally do is retreive first all the data and then pass it to the rendered template.
+What you would normally do is retrieve first all the data and then pass it to the rendered template.
 
-Alternatively, with **eds4jinja2** you can simply specify how the data shall be retreived and then
-just use it in the tempalte.
+Alternatively, with **eds4jinja2** you can simply specify how the data shall be retrieved and then
+just use it in the template.
 
-1. instantiate the template from eds4jinaj2 environment
+1. instantiate the template from eds4jinja2 environment
 
 .. code-block:: py3
 
@@ -91,6 +91,49 @@ So, what are the benefits?
 * data fetching functionality is no longer part of the python context-building logic
 * the queries and the template to visualise the query result set are tightly coupled and easy to modify
 * this allows for building quickly custom visualisation templates (or modifying existent ones), before you even decide what the final query looks like
+
+
+CLI Usage
+####################################################
+
+The command line interface has three arguments:
+########################################################################################################
+
+* **--target** (mandatory): the directory where eds4jinja2 will load the content from, for rendering a template; this directory has a mandatory layout (see below)
+* **--output** (optional): the directory where eds4jinja2 will place the rendered output; if this parameter is not specified, it will be placed in an "output" subdirectory that will be created where the "--target" parameter points to
+* **--config** (optional): the name of the configuration file from where eds4jinja2 will load the configuration that's passed to Jinja2; default "config.json"
+
+Target directory layout:
+########################################################################################################
+By convention, the target directory **must** contain:
+
+#. a configuration file in JSON format which serves two purposes:
+
+    * it specifies the main template for eds2jinja to start with (this template may refer to other additional templates)
+    * it specifies a list of variables needed to render the aforementioned template(s); the list may contain anything you need in your templates
+
+#. a directory named "templates" where all of your templates reside
+#. if your template(s) need additional static resources (such as CSS/JS/etc files) a directory named "static" where all of these resources must reside; the contents of this directory will be copied to the output folder and its tree structure preserved
+
+
+Example:
+
+.. example-code::
+
+.. code-block:: json
+
+    {
+        "template": "main.html",
+        "conf":
+        {
+            "default_endpoint" : "http://example.com/path/sparqlendpoint",
+            "title": "Pretty printed relevant information",
+            "type": "report",
+            "author": "Your name here"
+        }
+    }
+
+
 
 
 Indices and tables
