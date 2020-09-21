@@ -12,7 +12,7 @@ from pytest_bdd import (
     when,
 )
 
-from eds4jinja2.main import build_report
+from eds4jinja2.entrypoints.cli.main import build_report
 
 runner = CliRunner()
 

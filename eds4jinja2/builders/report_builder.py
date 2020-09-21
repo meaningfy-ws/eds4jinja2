@@ -21,7 +21,7 @@ class ReportBuilder:
     __STATIC_FOLDER__ = "static"
     __TEMPLATE_FOLDER__ = "templates"
     __DEFAULT_CONFIG_FILE__ = "config.json"
-    __DEFAULT_OUTPUT_FOLDER__ = "output"
+    __OUTPUT_FOLDER__ = "output"
 
     def __init__(self, target_path, config_file=__DEFAULT_CONFIG_FILE__, output_path=None):
         """
@@ -39,9 +39,9 @@ class ReportBuilder:
         self.configuration_context = configuration_context
 
         if output_path is not None:
-            self.__DEFAULT_OUTPUT_FOLDER__ = pathlib.Path(output_path) / self.__DEFAULT_OUTPUT_FOLDER__
+            self.__OUTPUT_FOLDER__ = pathlib.Path(output_path)
         else:
-            self.__DEFAULT_OUTPUT_FOLDER__ = pathlib.Path(target_path) / self.__DEFAULT_OUTPUT_FOLDER__
+            self.__OUTPUT_FOLDER__ = pathlib.Path(target_path) / "output"
 
         self.__STATIC_FOLDER__ = pathlib.Path(target_path) / self.__STATIC_FOLDER__
 
@@ -84,8 +84,8 @@ class ReportBuilder:
 
         template = self.__get_template(self.template)
 
-        pathlib.Path(self.__DEFAULT_OUTPUT_FOLDER__).mkdir(parents=True, exist_ok=True)
-        template.stream().dump(str(pathlib.Path(self.__DEFAULT_OUTPUT_FOLDER__) / self.template))
+        pathlib.Path(self.__OUTPUT_FOLDER__).mkdir(parents=True, exist_ok=True)
+        template.stream().dump(str(pathlib.Path(self.__OUTPUT_FOLDER__) / self.template))
 
         for listener in self.__after_rendering_listeners:
-            listener(str(self.__STATIC_FOLDER__), str(pathlib.Path(self.__DEFAULT_OUTPUT_FOLDER__)))
+            listener(str(self.__STATIC_FOLDER__), str(pathlib.Path(self.__OUTPUT_FOLDER__)))
