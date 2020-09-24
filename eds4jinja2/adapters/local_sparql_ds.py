@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# sparql_ds.py
+# remote_sparql_ds.py
 # Date:  07/08/2020
 # Author: Eugeniu Costetchi
 # Email: costezki.eugen@gmail.com
@@ -9,6 +9,7 @@
 import io
 from typing import Optional
 
+import rdflib
 from SPARQLWrapper import SPARQLWrapper, JSON, CSV
 
 from eds4jinja2.adapters.base_data_source import DataSource
@@ -17,13 +18,13 @@ import pandas as pd
 DEFAULT_ENCODING = 'utf-8'
 
 
-class SPARQLEndpointDataSource(DataSource):
+class LocalSPARQLDataSource(DataSource):
     """
-        Fetches data from SPARQL endpoint. Can be used either with a SPARQL query or a URI to be described.
+        Fetches data from SPARQL local datasource. Can be used either with a SPARQL query or a URI to be described.
 
         To query a SPARQL endpoint and get the results as *dict* object
 
-        >>> ds = SPARQLEndpointDataSource(sparql_endpoint_url)
+        >>> ds = LocalSPARQLDataSource(sparql_endpoint_url)
         >>> dict_object = ds.with_query(sparql_query_text)._fetch_tree()
 
         unpack the content and error for a fail safe fetching
@@ -42,39 +43,44 @@ class SPARQLEndpointDataSource(DataSource):
         >>> pd_dataframe, error_string = ds.with_uri(existent_uri,named_graph).fetch_tree()
     """
 
-    def __init__(self, endpoint_url):
-        self.endpoint = SPARQLWrapper(endpoint_url)
+    def __init__(self, filename):
         self.__can_be_tree = True
         self.__can_be_tabular = True
+        self.__graph__ = rdflib.Graph()
+        self.__query__ = ""
+        self.__filename__ = ""
 
-    def with_query(self, sparql_query: str) -> 'SPARQLEndpointDataSource':
+    def with_query(self, sparql_query: str) -> 'LocalSPARQLDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
         """
-        self.endpoint.setQuery(sparql_query)
+        self.__query__ = sparql_query
         return self
 
-    def with_uri(self, uri: str, graph_uri: Optional[str] = None) -> 'SPARQLEndpointDataSource':
+    def with_file(self, file: str) -> 'LocalSPARQLDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
         """
-        if graph_uri:
-            self.endpoint.setQuery(f"DESCRIBE <{uri}> FROM <{graph_uri}>")
-        else:
-            self.endpoint.setQuery(f"DESCRIBE <{uri}>")
+        self.__filename__ = file
         return self
 
     def _fetch_tree(self):
-        self.endpoint.setReturnFormat(JSON)
-        query = self.endpoint.query()
-        return query.convert()
+        self.__graph__.parse(self.__filename__)
+        result = self.__graph__.query(self.__query__)
+
+        # self.endpoint.setReturnFormat(JSON)
+        # query = self.endpoint.query()
+        # return query.convert()
 
     def _fetch_tabular(self):
-        self.endpoint.setReturnFormat(CSV)
-        query_result = self.endpoint.queryAndConvert()
-        return pd.read_csv(io.StringIO(str(query_result, encoding=DEFAULT_ENCODING)))
+        self.__graph__.parse(self.__filename__)
+        result = self.__graph__.query(self.__query__)
+
+        # self.endpoint.setReturnFormat(CSV)
+        # query_result = self.endpoint.queryAndConvert()
+        # return pd.read_csv(io.StringIO(str(query_result, encoding=DEFAULT_ENCODING)))
 
     def _can_be_tree(self) -> bool:
         return self.__can_be_tree

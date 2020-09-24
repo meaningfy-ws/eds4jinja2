@@ -10,7 +10,7 @@ import pandas as pd
 
 from eds4jinja2.adapters.base_data_source import UnsupportedRepresentation, DataSource
 from eds4jinja2.adapters.file_ds import FileDataSource
-from eds4jinja2.adapters.sparql_ds import SPARQLEndpointDataSource
+from eds4jinja2.adapters.remote_sparql_ds import RemoteSPARQLEndpointDataSource
 
 
 SPO_LIMIT_10 = "select * where {?s ?p ?o} limit 10"
@@ -310,7 +310,7 @@ class DummyDataSource(DataSource):
         return True
 
 
-class FakeSPARQLEndpointDataSource(SPARQLEndpointDataSource):
+class FakeRemoteSPARQLEndpointDataSource(RemoteSPARQLEndpointDataSource):
 
     def with_query(self, sparql_query: str):
         return self
@@ -341,6 +341,6 @@ class FakeFileDataSource(FileDataSource):
 
 
 FAKE_DATA_SOURCE_BUILDERS = {
-    "from_endpoint": lambda endpoint: FakeSPARQLEndpointDataSource(endpoint),
+    "from_endpoint": lambda endpoint: FakeRemoteSPARQLEndpointDataSource(endpoint),
     "from_file": lambda file_path: FakeFileDataSource(file_path),
 }

@@ -13,16 +13,18 @@ __date__ = "2020-08-17"
 
 import logging
 
+from eds4jinja2.adapters.local_sparql_ds import LocalSPARQLDataSource
 from eds4jinja2.builders.jinja_builder import build_eds_environment, inject_environment_globals
 from eds4jinja2.adapters.file_ds import FileDataSource
-from eds4jinja2.adapters.sparql_ds import SPARQLEndpointDataSource
+from eds4jinja2.adapters.remote_sparql_ds import RemoteSPARQLEndpointDataSource
 from eds4jinja2.adapters.tabular_utils import invert_dict, add_relative_figures, replace_strings_in_tabular
 
 # Making usage of this library more convenient
 __all__ = ["build_eds_environment",
            "inject_environment_globals",
            "FileDataSource",
-           "SPARQLEndpointDataSource",
+           "RemoteSPARQLEndpointDataSource",
+           "LocalSPARQLDataSource",
            "invert_dict",
            "add_relative_figures",
            "replace_strings_in_tabular",
