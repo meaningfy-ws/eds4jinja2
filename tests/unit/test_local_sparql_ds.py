@@ -6,14 +6,14 @@ Email: mclaurentiu79@gmail.com
 """
 import pathlib
 import pytest
-from eds4jinja2 import LocalSPARQLDataSource
+from eds4jinja2 import RDFFileDataSource
 
 
 from eds4jinja2.adapters.base_data_source import UnsupportedRepresentation
 
 
 def test_load_local_sparql_fetch_tabular():
-    local_rdf_ds = LocalSPARQLDataSource(
+    local_rdf_ds = RDFFileDataSource(
         str(pathlib.Path("../test_data/shacl.example.shapes.ttl")))
 
     local_rdf_ds.with_query("""SELECT *
@@ -26,7 +26,7 @@ def test_load_local_sparql_fetch_tabular():
 
 def test_load_local_sparql_fetch_tree():
     with pytest.raises(UnsupportedRepresentation):
-        local_rdf_ds = LocalSPARQLDataSource(
+        local_rdf_ds = RDFFileDataSource(
             str(pathlib.Path("../test_data/shacl.example.shapes.ttl")))
         local_rdf_ds.with_query("""SELECT *
                 WHERE {
@@ -37,7 +37,7 @@ def test_load_local_sparql_fetch_tree():
 
 
 def test_load_local_sparql_fetch_tabular_inexistent_file():
-    local_rdf_ds = LocalSPARQLDataSource(
+    local_rdf_ds = RDFFileDataSource(
         str(pathlib.Path("inexistent.ttl")))
 
     local_rdf_ds.with_query("""SELECT *

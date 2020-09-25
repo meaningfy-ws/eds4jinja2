@@ -7,7 +7,7 @@
 
 import jinja2
 
-from eds4jinja2.adapters.local_sparql_ds import LocalSPARQLDataSource
+from eds4jinja2.adapters.local_sparql_ds import RDFFileDataSource
 from eds4jinja2.adapters.tabular_utils import invert_dict, replace_strings_in_tabular, add_relative_figures
 from eds4jinja2.adapters.file_ds import FileDataSource
 from eds4jinja2.adapters.remote_sparql_ds import RemoteSPARQLEndpointDataSource
@@ -15,7 +15,7 @@ from eds4jinja2.adapters.remote_sparql_ds import RemoteSPARQLEndpointDataSource
 DATA_SOURCE_BUILDERS = {
     "from_endpoint": lambda endpoint: RemoteSPARQLEndpointDataSource(endpoint),
     "from_file": lambda file_path: FileDataSource(file_path),
-    "from_rdf_file": lambda from_rdf_file: LocalSPARQLDataSource(from_rdf_file)
+    "from_rdf_file": lambda from_rdf_file: RDFFileDataSource(from_rdf_file)
 }
 
 TABULAR_HELPERS = {

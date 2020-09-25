@@ -14,9 +14,9 @@ from eds4jinja2.adapters.base_data_source import DataSource, UnsupportedRepresen
 DEFAULT_ENCODING = 'utf-8'
 
 
-class LocalSPARQLDataSource(DataSource):
+class RDFFileDataSource(DataSource):
     """
-        Fetches data from SPARQL local datasource. Can be used with a SPARQL query.
+        Accesses a local RDF file and provides the possibility to fetch data from it by SPARQL queries.
     """
 
     def __init__(self, filename):
@@ -29,7 +29,7 @@ class LocalSPARQLDataSource(DataSource):
     def __reduce_bound_triple_to_string_format(self, dict_of_bound_variables: dict):
         return {str(k): str(v) for k, v in dict_of_bound_variables.items()}
 
-    def with_query(self, sparql_query: str) -> 'LocalSPARQLDataSource':
+    def with_query(self, sparql_query: str) -> 'RDFFileDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
@@ -37,7 +37,7 @@ class LocalSPARQLDataSource(DataSource):
         self.__query__ = sparql_query
         return self
 
-    def with_file(self, file: str) -> 'LocalSPARQLDataSource':
+    def with_file(self, file: str) -> 'RDFFileDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
