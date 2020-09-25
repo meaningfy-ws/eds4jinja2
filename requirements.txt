@@ -12,3 +12,4 @@ pytest-bdd~=3.4.0
 setuptools~=49.6.0
 Click~=7.0
 beautifulsoup4~=4.9.1
+rdflib~=5.0.0
