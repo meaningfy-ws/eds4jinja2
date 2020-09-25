@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# sparql_ds.py
+# remote_sparql_ds.py
 # Date:  07/08/2020
 # Author: Eugeniu Costetchi
 # Email: costezki.eugen@gmail.com
@@ -17,13 +17,13 @@ import pandas as pd
 DEFAULT_ENCODING = 'utf-8'
 
 
-class SPARQLEndpointDataSource(DataSource):
+class RemoteSPARQLEndpointDataSource(DataSource):
     """
         Fetches data from SPARQL endpoint. Can be used either with a SPARQL query or a URI to be described.
 
         To query a SPARQL endpoint and get the results as *dict* object
 
-        >>> ds = SPARQLEndpointDataSource(sparql_endpoint_url)
+        >>> ds = RemoteSPARQLEndpointDataSource(sparql_endpoint_url)
         >>> dict_object = ds.with_query(sparql_query_text)._fetch_tree()
 
         unpack the content and error for a fail safe fetching
@@ -47,7 +47,7 @@ class SPARQLEndpointDataSource(DataSource):
         self.__can_be_tree = True
         self.__can_be_tabular = True
 
-    def with_query(self, sparql_query: str) -> 'SPARQLEndpointDataSource':
+    def with_query(self, sparql_query: str) -> 'RemoteSPARQLEndpointDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
@@ -55,7 +55,7 @@ class SPARQLEndpointDataSource(DataSource):
         self.endpoint.setQuery(sparql_query)
         return self
 
-    def with_uri(self, uri: str, graph_uri: Optional[str] = None) -> 'SPARQLEndpointDataSource':
+    def with_uri(self, uri: str, graph_uri: Optional[str] = None) -> 'RemoteSPARQLEndpointDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:

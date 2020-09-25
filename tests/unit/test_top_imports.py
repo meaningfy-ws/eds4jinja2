@@ -10,6 +10,7 @@
 
 def test_can_import_file_ds():
     from eds4jinja2 import FileDataSource
-    from eds4jinja2 import SPARQLEndpointDataSource
+    from eds4jinja2 import RemoteSPARQLEndpointDataSource
     from eds4jinja2 import build_eds_environment
+    from eds4jinja2 import RDFFileDataSource
     f = FileDataSource(file_path="random")
