@@ -15,7 +15,7 @@ from eds4jinja2.adapters.remote_sparql_ds import RemoteSPARQLEndpointDataSource
 DATA_SOURCE_BUILDERS = {
     "from_endpoint": lambda endpoint: RemoteSPARQLEndpointDataSource(endpoint),
     "from_file": lambda file_path: FileDataSource(file_path),
-    "from_local_sparql": lambda local_sparql_file: LocalSPARQLDataSource(local_sparql_file)
+    "from_rdf_file": lambda from_rdf_file: LocalSPARQLDataSource(from_rdf_file)
 }
 
 TABULAR_HELPERS = {

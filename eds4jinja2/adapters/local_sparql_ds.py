@@ -2,18 +2,14 @@
 
 # remote_sparql_ds.py
 # Date:  07/08/2020
-# Author: Eugeniu Costetchi
+# Author: Laurentiu Mandru
 # Email: costezki.eugen@gmail.com
 
 
-import io
-from typing import Optional
-
-import rdflib
-from SPARQLWrapper import SPARQLWrapper, JSON, CSV
-
-from eds4jinja2.adapters.base_data_source import DataSource
 import pandas as pd
+import rdflib
+
+from eds4jinja2.adapters.base_data_source import DataSource, UnsupportedRepresentation
 
 DEFAULT_ENCODING = 'utf-8'
 
@@ -44,11 +40,14 @@ class LocalSPARQLDataSource(DataSource):
     """
 
     def __init__(self, filename):
-        self.__can_be_tree = True
+        self.__can_be_tree = False
         self.__can_be_tabular = True
         self.__graph__ = rdflib.Graph()
         self.__query__ = ""
-        self.__filename__ = ""
+        self.__filename__ = filename
+
+    def __reduce_bound_triple_to_string_format(self, dict_of_bound_variables: dict):
+        return {str(k): str(v) for k, v in dict_of_bound_variables.items()}
 
     def with_query(self, sparql_query: str) -> 'LocalSPARQLDataSource':
         """
@@ -66,21 +65,16 @@ class LocalSPARQLDataSource(DataSource):
         self.__filename__ = file
         return self
 
-    def _fetch_tree(self):
-        self.__graph__.parse(self.__filename__)
-        result = self.__graph__.query(self.__query__)
-
-        # self.endpoint.setReturnFormat(JSON)
-        # query = self.endpoint.query()
-        # return query.convert()
-
     def _fetch_tabular(self):
-        self.__graph__.parse(self.__filename__)
+        self.__graph__.parse(self.__filename__, format="turtle")
         result = self.__graph__.query(self.__query__)
 
-        # self.endpoint.setReturnFormat(CSV)
-        # query_result = self.endpoint.queryAndConvert()
-        # return pd.read_csv(io.StringIO(str(query_result, encoding=DEFAULT_ENCODING)))
+        reduced_result_binding = [self.__reduce_bound_triple_to_string_format(t) for t in result.bindings]
+
+        return pd.DataFrame(reduced_result_binding)
+
+    def _fetch_tree(self):
+        raise UnsupportedRepresentation("Only TABULAR representation is supported")
 
     def _can_be_tree(self) -> bool:
         return self.__can_be_tree
@@ -89,4 +83,4 @@ class LocalSPARQLDataSource(DataSource):
         return self.__can_be_tabular
 
     def __str__(self):
-        return f"from <...{str(self.endpoint.endpoint)[-30:]}> {str(self.endpoint.queryString)[:60]} ..."
+        return f"from <...{str(self.__filename__)[-30:]}> {str(self.__query__)[:60]} ..."

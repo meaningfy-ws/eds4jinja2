@@ -44,7 +44,7 @@ class RemoteSPARQLEndpointDataSource(DataSource):
 
     def __init__(self, endpoint_url):
         self.endpoint = SPARQLWrapper(endpoint_url)
-        self.__can_be_tree = True
+        self.__can_be_tree = False
         self.__can_be_tabular = True
 
     def with_query(self, sparql_query: str) -> 'RemoteSPARQLEndpointDataSource':
