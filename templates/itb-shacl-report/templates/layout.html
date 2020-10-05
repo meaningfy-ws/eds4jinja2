@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
 
-    <title> {% conf.title %} </title>
+    <title> {{ conf.title }} </title>
 
     <meta name="description" content="">
     <meta name=viewport content="width=device-width, initial-scale=1">
@@ -22,8 +22,8 @@
           rel="stylesheet"
           type="text/css">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-            rel="stylesheet"
-            type="text/css">
+          rel="stylesheet"
+          type="text/css">
 
     <link href="https://code.jquery.com/ui/1.11.4/themes/redmond/jquery-ui.css" rel="stylesheet" type="text/css">
     <!-- build:css styles/main.css -->
@@ -41,9 +41,9 @@
 <div id="toc"></div>
 <main class="ui page grid">
     <div class="row"></div>
-    <div class="row">
+    <div class="centered row">
         <div class="starter column">
-            <h1 class="ui center aligned header" id="skip-toc">{% conf.title %}</h1>
+            <h1 class="ui center aligned header" id="skip-toc">{{ conf.title }}</h1>
             {% block content %}
                 < empty >
             {% endblock %}
@@ -61,6 +61,8 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tocify/1.9.0/javascripts/jquery.tocify.min.js"></script>
+
+{#<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js"></script>#}
 
 <script>
     $(function () {

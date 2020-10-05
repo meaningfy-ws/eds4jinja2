@@ -3,7 +3,7 @@
     "conf":
     {
         "default_endpoint" : "http://localhost:3030/eurovoc-fragment/sparql",
-        "title": "SHACL SHAPE",
+        "title": "SHACL shape validation report",
         "type": "report",
         "author": "Meaningfy",
         "ns_file": "data/prefix.csv"

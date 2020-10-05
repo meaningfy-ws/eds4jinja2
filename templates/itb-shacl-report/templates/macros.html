@@ -27,7 +27,7 @@
 
 {% macro pandas_table(df, caption, column_labels={}) -%}
     {% if (df is defined) and (df is not none) %}
-        <table class="ui celled table">
+        <table class="ui sortable celled table padded selectable collapsing">
             <thead class="center aligned collapsing">
             {% for column in df.columns %}
                 {% if column in column_labels %}
