@@ -39,7 +39,7 @@ WHERE
  ORDER BY ?focusNode ?resultSeverity
 " %}
 {#    {% set content, error = from_rdf_file('/home/lps/work/workspace-charm/eds4jinja2/tests/test_data/validation-reports/simple/results/_mnt_data_shacl.example.data.ttl.shaclTestCaseResult.ttl').with_query(select_query).fetch_tabular() %}#}
-    {% set content, error = from_rdf_file('/home/lps/work/workspace-charm/eds4jinja2/tests/test_data/validation-reports/treaties-ap/report-itb-treaties-skos-ap.ttl').with_query(select_query).fetch_tabular() %}
+    {% set content, error = from_rdf_file(conf.report_data_file).with_query(select_query).fetch_tabular() %}
 
     {% call mc.render_fetch_results(content, error) %}
         {% set substituted_content = replace_strings_in_tabular(content,

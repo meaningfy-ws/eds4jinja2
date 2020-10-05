@@ -6,6 +6,7 @@
         "title": "SHACL shape validation report",
         "type": "report",
         "author": "Meaningfy",
-        "ns_file": "data/prefix.csv"
+        "ns_file": "data/prefix.csv",
+        "report_data_file": "/home/lps/work/workspace-charm/eds4jinja2/tests/test_data/validation-reports/treaties-ap/report-itb-treaties-skos-ap.ttl"
     }
 }
