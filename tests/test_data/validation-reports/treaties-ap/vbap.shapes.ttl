@@ -1,0 +1,279 @@
+# baseURI: http://publications.europa.eu/ontology/vbap
+# imports: http://datashapes.org/dash
+# imports: http://publications.europa.eu/ontology/euvoc
+# imports: http://purl.org/dc/terms/
+# imports: http://www.w3.org/2004/02/skos/core
+# imports: http://www.w3.org/2008/05/skos-xl
+
+@prefix : <http://publications.europa.eu/ontology/vbap#> .
+@prefix dash: <http://datashapes.org/dash#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix euvoc: <http://publications.europa.eu/ontology/euvoc#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix skos-xl: <http://www.w3.org/2008/05/skos-xl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://publications.europa.eu/ontology/vbap>
+  rdf:type owl:Ontology ;
+  rdfs:label "SKOS source in VocBench3 Application Profile" ;
+  owl:imports <http://datashapes.org/dash> ;
+  owl:imports <http://publications.europa.eu/ontology/euvoc> ;
+  owl:imports <http://purl.org/dc/terms/> ;
+  owl:imports <http://www.w3.org/2004/02/skos/core> ;
+  owl:imports <http://www.w3.org/2008/05/skos-xl> ;
+  sh:declare [
+      rdf:type sh:PrefixDeclaration ;
+      sh:namespace "http://publications.europa.eu/ontology/euvoc#"^^xsd:anyURI ;
+      sh:prefix "euvoc" ;
+    ] ;
+  sh:declare [
+      rdf:type sh:PrefixDeclaration ;
+      sh:namespace "http://purl.org/dc/elements/1.1/"^^xsd:anyURI ;
+      sh:prefix "dc" ;
+    ] ;
+  sh:declare [
+      rdf:type sh:PrefixDeclaration ;
+      sh:namespace "http://purl.org/dc/terms/"^^xsd:anyURI ;
+      sh:prefix "dct" ;
+    ] ;
+  sh:declare [
+      rdf:type sh:PrefixDeclaration ;
+      sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI ;
+      sh:prefix "xsd" ;
+    ] ;
+  sh:declare [
+      rdf:type sh:PrefixDeclaration ;
+      sh:namespace "http://www.w3.org/2002/07/owl#"^^xsd:anyURI ;
+      sh:prefix "owl" ;
+    ] ;
+  sh:declare [
+      rdf:type sh:PrefixDeclaration ;
+      sh:namespace "http://www.w3.org/2004/02/skos/core#"^^xsd:anyURI ;
+      sh:prefix "skos" ;
+    ] ;
+  sh:declare [
+      rdf:type sh:PrefixDeclaration ;
+      sh:namespace "http://www.w3.org/2008/05/skos-xl#"^^xsd:anyURI ;
+      sh:prefix "skos-xl" ;
+    ] ;
+.
+:DatedThing
+  rdf:type rdfs:Class ;
+  rdf:type sh:NodeShape ;
+  rdfs:comment "Dated thing" ;
+  rdfs:label "Dated thing" ;
+  rdfs:subClassOf rdfs:Resource ;
+  owl:versionInfo "1" ;
+  sh:property :DatedThing-created ;
+  sh:property :DatedThing-modified ;
+  sh:property :DatedThing-versionInfo ;
+.
+:DatedThing-created
+  rdf:type sh:PropertyShape ;
+  sh:path <http://purl.org/dc/terms/created> ;
+  sh:datatype xsd:date ;
+  sh:maxCount 1 ;
+  sh:name "created" ;
+.
+:DatedThing-modified
+  rdf:type sh:PropertyShape ;
+  sh:path <http://purl.org/dc/terms/modified> ;
+  sh:datatype xsd:date ;
+  sh:maxCount 1 ;
+  sh:name "modified" ;
+.
+:DatedThing-versionInfo
+  rdf:type sh:PropertyShape ;
+  sh:path owl:versionInfo ;
+  sh:maxCount 1 ;
+  sh:name "version info" ;
+  sh:nodeKind sh:Literal ;
+.
+:LabeledThing
+  rdf:type rdfs:Class ;
+  rdf:type sh:NodeShape ;
+  rdfs:comment "Labeled thing" ;
+  rdfs:label "Labeled thing" ;
+  rdfs:subClassOf :DatedThing ;
+  owl:versionInfo "1" ;
+  sh:property :LabeledThing-altLabel ;
+  sh:property :LabeledThing-hiddenLabel ;
+  sh:property :LabeledThing-prefLabel ;
+.
+:LabeledThing-altLabel
+  rdf:type sh:PropertyShape ;
+  sh:path skos-xl:altLabel ;
+  sh:class skos-xl:Label ;
+  sh:name "hidden label" ;
+  sh:node skos-xl:Label ;
+  sh:nodeKind sh:IRI ;
+.
+:LabeledThing-hiddenLabel
+  rdf:type sh:PropertyShape ;
+  sh:path skos-xl:hiddenLabel ;
+  sh:class skos-xl:Label ;
+  sh:name "hidden label" ;
+  sh:node skos-xl:Label ;
+  sh:nodeKind sh:IRI ;
+.
+:LabeledThing-prefLabel
+  rdf:type sh:PropertyShape ;
+  sh:path skos-xl:prefLabel ;
+  sh:class skos-xl:Label ;
+  sh:minCount 1 ;
+  sh:name "pref label" ;
+  sh:node skos-xl:Label ;
+  sh:nodeKind sh:IRI ;
+.
+:SPARQLConstraint_StatusedThing_nested1
+  rdf:type sh:SPARQLConstraint ;
+  sh:message "if the thing has a deprecation statement then, it should have an end date." ;
+  sh:prefixes <http://publications.europa.eu/ontology/vbap> ;
+  sh:select """SELECT $this
+WHERE {
+    $this owl:deprecated ?stat .
+    FILTER (str(?stat) = \"true\")
+    FILTER NOT EXISTS {
+    $this euvoc:endDate ?date .
+  } 
+}""" ;
+  sh:severity sh:Warning ;
+.
+:StatusedThing
+  rdf:type rdfs:Class ;
+  rdf:type sh:NodeShape ;
+  rdfs:comment """Statused thing. 
+1. the thing can have up to one deprecation statement
+2. if the thing has a deprecation statement then, it should have an end date.""" ;
+  rdfs:label "Statused thing" ;
+  rdfs:subClassOf rdfs:Resource ;
+  owl:versionInfo "1" ;
+  sh:property :StatusedThing-deprecated ;
+  sh:sparql :SPARQLConstraint_StatusedThing_nested1 ;
+.
+:StatusedThing-deprecated
+  rdf:type sh:PropertyShape ;
+  sh:path owl:deprecated ;
+  sh:datatype xsd:boolean ;
+  sh:maxCount 1 ;
+.
+skos:Collection
+  rdf:type sh:NodeShape ;
+  rdfs:subClassOf :LabeledThing ;
+.
+skos:Concept
+  rdf:type sh:NodeShape ;
+  rdfs:subClassOf :LabeledThing ;
+  rdfs:subClassOf :StatusedThing ;
+  sh:property skos:Concept-changeNote ;
+  sh:property skos:Concept-definition ;
+  sh:property skos:Concept-example ;
+  sh:property skos:Concept-historyNote ;
+  sh:property skos:Concept-notation ;
+  sh:property skos:Concept-note ;
+  sh:property skos:Concept-scopeNote ;
+.
+skos:Concept-changeNote
+  rdf:type sh:PropertyShape ;
+  sh:path skos:changeNote ;
+  sh:name "note" ;
+  sh:node :ReifiedNote ;
+  sh:nodeKind sh:IRI ;
+.
+skos:Concept-definition
+  rdf:type sh:PropertyShape ;
+  sh:path skos:definition ;
+  sh:name "note" ;
+  sh:node :ReifiedNote ;
+  sh:nodeKind sh:IRI ;
+.
+skos:Concept-example
+  rdf:type sh:PropertyShape ;
+  sh:path skos:example ;
+  sh:name "note" ;
+  sh:node :ReifiedNote ;
+  sh:nodeKind sh:IRI ;
+.
+skos:Concept-historyNote
+  rdf:type sh:PropertyShape ;
+  sh:path skos:historyNote ;
+  sh:name "note" ;
+  sh:node :ReifiedNote ;
+  sh:nodeKind sh:IRI ;
+.
+skos:Concept-notation
+  rdf:type sh:PropertyShape ;
+  sh:path skos:notation ;
+  sh:name "notation" ;
+  sh:nodeKind sh:IRI ;
+.
+skos:Concept-note
+  rdf:type sh:PropertyShape ;
+  sh:path skos:note ;
+  sh:name "note" ;
+  sh:node :ReifiedNote ;
+  sh:nodeKind sh:IRI ;
+.
+skos:Concept-scopeNote
+  rdf:type sh:PropertyShape ;
+  sh:path skos:scopeNote ;
+  sh:name "note" ;
+  sh:node :ReifiedNote ;
+  sh:nodeKind sh:IRI ;
+.
+skos:ConceptScheme
+  rdf:type sh:NodeShape ;
+  rdfs:subClassOf :LabeledThing ;
+  sh:property skos:ConceptScheme-domain ;
+  sh:property skos:ConceptScheme-identifier ;
+  sh:property skos:ConceptScheme-isPartOf ;
+.
+skos:ConceptScheme-domain
+  rdf:type sh:PropertyShape ;
+  sh:path euvoc:domain ;
+  sh:maxCount 1 ;
+  sh:name "domain" ;
+  sh:nodeKind sh:IRI ;
+.
+skos:ConceptScheme-identifier
+  rdf:type sh:PropertyShape ;
+  sh:path <http://purl.org/dc/terms/identifier> ;
+  sh:maxCount 1 ;
+  sh:name "identifier" ;
+  sh:nodeKind sh:Literal ;
+.
+skos:ConceptScheme-isPartOf
+  rdf:type sh:PropertyShape ;
+  sh:path <http://purl.org/dc/terms/isPartOf> ;
+  sh:name "is part of" ;
+  sh:nodeKind sh:IRI ;
+.
+skos:OrderedCollection
+  rdf:type sh:NodeShape ;
+.
+skos-xl:Label
+  rdf:type sh:NodeShape ;
+  rdfs:subClassOf :DatedThing ;
+  rdfs:subClassOf :StatusedThing ;
+  sh:property skos-xl:Label-literalForm ;
+  sh:property skos-xl:Label-type ;
+.
+skos-xl:Label-literalForm
+  rdf:type sh:PropertyShape ;
+  sh:path skos-xl:literalForm ;
+  sh:maxCount 1 ;
+  sh:minCount 1 ;
+  sh:name "literal form" ;
+  sh:nodeKind sh:Literal ;
+.
+skos-xl:Label-type
+  rdf:type sh:PropertyShape ;
+  sh:path <http://purl.org/dc/terms/type> ;
+  sh:maxCount 1 ;
+  sh:name "type" ;
+  sh:nodeKind sh:IRI ;
+.

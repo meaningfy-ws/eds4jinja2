@@ -210,8 +210,7 @@ WHERE {
   sh:description "Labels also need to contain textual information to be useful, thus we find all SKOS labels with length 0 (after removing whitespaces)." ;
   sh:message "Label with an empty value detected" ;
   sh:prefixes <http://publications.europa.eu/ontology/skosShapes> ;
-  sh:select """prefix skos: <http://www.w3.org/2004/02/skos/core#>
-prefix skosxl: <http://www.w3.org/2008/05/skos-xl#>
+  sh:select """
 SELECT ?this ?path (?lab as ?value) (lang(?lab) as ?lang)
 WHERE {
   ?this a skos:Concept .
@@ -304,8 +303,7 @@ WHERE {
   rdfs:label "disjointness of skos-xl labels" ;
   sh:message "the labels ( {$path} and {$value} ) are note dijoint for language \"{$lang}\"" ;
   sh:prefixes <http://publications.europa.eu/ontology/skosShapes> ;
-  sh:select """prefix skos: <http://www.w3.org/2004/02/skos/core#>
-prefix skosxl: <http://www.w3.org/2008/05/skos-xl#>
+  sh:select """
 SELECT ?this (?predicate as ?path) ?value ?lang {
   {
     SELECT ?this (skosxl:prefLabel as ?predicate) (skosxl:hiddenLabel as ?value) (lang(?pl) as ?lang)
@@ -342,8 +340,7 @@ SELECT ?this (?predicate as ?path) ?value ?lang {
   rdfs:label "skos-xl pref label in the same language " ;
   sh:message "multiple skos-xl preferred label for language \"{$lang}\"" ;
   sh:prefixes <http://publications.europa.eu/ontology/skosShapes> ;
-  sh:select """prefix skos: <http://www.w3.org/2004/02/skos/core#>
-prefix skosxl: <http://www.w3.org/2008/05/skos-xl#>
+  sh:select """
 SELECT $this ?lang (skosxl:prefLabel as ?path) (?l1f as ?value)
 WHERE {
     $this skosxl:prefLabel ?l1 .
@@ -387,6 +384,7 @@ skos:Collection
 .
 skos:Concept
   rdf:type sh:NodeShape ;
+  sh:targetClass skos:Concept;
   sh:property skos:Concept-altLabel ;
   sh:property skos:Concept-altLabel_1 ;
   sh:property skos:Concept-broader ;
@@ -414,7 +412,6 @@ skos:Concept
   sh:sparql :SPARQLConstraint_Concept_nested5 ;
   sh:sparql :SPARQLConstraint_Concept_nested6 ;
   sh:sparql :SPARQLConstraint_Concept_nested7 ;
-  sh:sparql :SPARQLConstraint_Concept_nested8 ;
   sh:sparql :SPARQLConstraint_Concept_nested9 ;
 .
 skos:Concept-altLabel
@@ -562,8 +559,7 @@ skos:ConceptScheme
       rdfs:label "Orphan Label" ;
       sh:message "The skos-xl label is not attached to any skos:Concept " ;
       sh:prefixes <http://publications.europa.eu/ontology/skosShapes> ;
-      sh:select """prefix skos: <http://www.w3.org/2004/02/skos/core#>
-prefix skosxl: <http://www.w3.org/2008/05/skos-xl#>
+      sh:select """
 SELECT $this
 WHERE {
       $this a skosxl:Label .
