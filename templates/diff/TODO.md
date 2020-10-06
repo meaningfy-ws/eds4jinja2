@@ -1,3 +1,11 @@
+# Current implementation status
+
+* Current template provides account in terms of *additions* and *deletions*, in teh future this can evolve to account for/detect *replacements, modifications and  movements*.
+* Further adjustments are needed to synchronise with VB3-SKOS-AP or SKOS-AP (to be discussed what templates are needed).   
+* Execution time ~ 5 minutes on Corporate Bodies table (queries for version and status seem to be slow)
+
+# Initial requirements
+
 We can aggregate based on concepts, on change type, on changed properties.
 
 The set of questions to answer in the diff template are:
@@ -10,7 +18,7 @@ The set of questions to answer in the diff template are:
 
 For the aforementioned 3,4 and 5 we must take into account that "simple/direct" and the reified version of these properties. We will start with the simple version at first and build on that. 
 
-Further reading:
+# Further reading:
 
 https://www.w3.org/TR/skos-reference/
 
