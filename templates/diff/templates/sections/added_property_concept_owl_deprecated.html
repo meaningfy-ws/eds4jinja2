@@ -1,8 +1,8 @@
 {% import "macros.html" as mc %}
 
-<h2 class="ui header">Added property concept owl deprecated</h2>
+<h2 class="ui header">Added concept deprecation flag</h2>
 <section class="ui basic segment">
-    <p>The table below lists the property concept <strong>owl deprecated</strong>
+    <p>The table below lists the added concept deprecation flags <strong>owl:deprecated</strong>
     </p>
     {% set select_query =
     "prefix owl: <http://www.w3.org/2002/07/owl#> 
@@ -79,7 +79,7 @@ ORDER BY ?instance ?value" %}
     {% call mc.render_fetch_results(content, error) %}
     {# TODO: need a function that adds a relative count column, so that we can see the percentage of classes #}
     {# {{ content["percentage"] = content["instances"]  / content["instances"].sum() }}#}
-    {{ mc.pandas_table(content, "Overview") }}
+    {{ mc.pandas_table(content, "Added deprecation flags") }}
     {% endcall %}
 
 

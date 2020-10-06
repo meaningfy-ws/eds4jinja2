@@ -1,8 +1,8 @@
 {% import "macros.html" as mc %}
 
-<h2 class="ui header">Deleted property concept alt label</h2>
+<h2 class="ui header">Deleted concept hidden label</h2>
 <section class="ui basic segment">
-    <p>The table below lists <strong>deleted property "alt label"</strong>
+    <p>The table below lists the deleted concept <strong>skos:hiddenLabel</strong> values
     </p>
     {% set select_query =
     "prefix owl: <http://www.w3.org/2002/07/owl#>
@@ -37,7 +37,7 @@ WHERE {
         undef
         undef
         skos:Concept
-        skos:altLabel
+        skos:hiddenLabel
         'en'
       )
     }
