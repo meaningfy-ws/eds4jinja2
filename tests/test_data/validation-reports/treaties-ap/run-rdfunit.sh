@@ -5,7 +5,7 @@ CONTAINER_DATA_FOLDER=/mnt/data
 #DATA_FILE=$CONTAINER_DATA_FOLDER/treaties-2019-01-28-nal-src-ap.rdf
 DATA_FILE=$CONTAINER_DATA_FOLDER/treaties-2019-01-28-nal-src-ap.ttl
 #DATA_FILE=$CONTAINER_DATA_FOLDER/report-itb-treaties-skos-ap.ttl
-SHAPE_FILE=$CONTAINER_DATA_FOLDER/skosShapes.shapes.ttl,$CONTAINER_DATA_FOLDER/vbap.shapes.ttl,$CONTAINER_DATA_FOLDER/skos-owl1-dl.rdf
+SHAPE_FILE=$CONTAINER_DATA_FOLDER/skos-owl1-dl.rdf,$CONTAINER_DATA_FOLDER/skosShapes.shapes.ttl
 ENDPOINT=http://localhost:3030/cb
 
 # run file validation

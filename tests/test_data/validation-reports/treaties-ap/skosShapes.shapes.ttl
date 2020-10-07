@@ -377,6 +377,7 @@ WHERE {
 .
 skos:Collection
   rdf:type sh:NodeShape ;
+  rdf:type owl:Class ;
   owl:versionInfo "1.2.0" ;
   sh:sparql :SPARQLConstraint_Collection_nested1 ;
   sh:sparql :SPARQLConstraint_Collection_nested2 ;
@@ -384,7 +385,7 @@ skos:Collection
 .
 skos:Concept
   rdf:type sh:NodeShape ;
-  sh:targetClass skos:Concept;
+  rdf:type owl:Class ;
   sh:property skos:Concept-altLabel ;
   sh:property skos:Concept-altLabel_1 ;
   sh:property skos:Concept-broader ;
@@ -551,6 +552,7 @@ skos:Concept-versionInfo
 .
 skos:ConceptScheme
   rdf:type sh:NodeShape ;
+  rdf:type owl:Class ;
 .
 
 
@@ -572,6 +574,7 @@ WHERE {
 
 skosxl:Label
   rdf:type sh:NodeShape ;
+  rdf:type owl:Class ;
   sh:property skosxl:Label-literalForm ;
   sh:property skosxl:Label-literalForm_1 ;
   sh:property skosxl:Label-versionInfo ;
