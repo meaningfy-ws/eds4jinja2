@@ -1,0 +1,13 @@
+{
+    "template": "main.html",
+    "conf":
+    {
+        "default_endpoint" : "http://localhost:3030/eurovoc-fragment/sparql",
+        "title": "SHACL shape validation report",
+        "type": "report",
+        "author": "Meaningfy",
+        "ns_file": "data/prefix.csv",
+        "report_data_file": "/home/lps/work/workspace-charm/eds4jinja2/tests/test_data/validation-reports/treaties-ap/report-rdfunit-treaties-skos-ap.ttl",
+        "report_data_file2": "/home/lps/work/workspace-charm/eds4jinja2/tests/test_data/validation-reports/treaties-ap/report-itb-treaties-skos-ap.ttl"
+    }
+}

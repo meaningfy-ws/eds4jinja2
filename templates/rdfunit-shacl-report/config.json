@@ -1,0 +1,11 @@
+{
+    "template": "main.html",
+    "conf":
+    {
+        "title": "SHACL shape validation report",
+        "type": "report",
+        "author": "Meaningfy",
+        "ns_file": "data/prefix.csv",
+        "report_data_file": "../../tests/test_data/validation-reports/treaties-ap/report-rdfunit-treaties-skos-ap.ttl"
+    }
+}
