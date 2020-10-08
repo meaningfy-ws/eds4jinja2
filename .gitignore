@@ -135,8 +135,8 @@ build/
 cucumber_report.json
 junit_report.xml
 *.ldb
-/templates/diff/o/
-/templates/itb-shacl-report/o/
+/rdf_report_templates/diff/o/
+/rdf_report_templates/itb-shacl-report/o/
 /tests/test_data/validation-reports/simple/results/
 /tests/test_data/validation-reports/simple/tests/
 /tests/test_data/validation-reports/treaties-ap/results/
