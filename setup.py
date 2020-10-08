@@ -38,7 +38,11 @@ setup(
     install_requires=requirements,
     tests_require=requirements_dev,
     extras_require=extras,
+    packages=find_packages(exclude=("test*",)),
     include_package_data=True,
+    # data_files={
+    #     'eds4jinja2_templates': ['templates/**/*'],
+    # },
     # package_data={'': ['*.txt'], },
     author="Eugeniu Costetchi",
     author_email="costezki.eugen@gmail.com",
@@ -52,7 +56,6 @@ setup(
     url="https://github.com/meaningfy-ws/eds4jinja2",
     platforms='any',
     keywords='template, jinja, report, report generation, rdf, sparql, linked-data, data-source, dynamic-context',
-    packages=find_packages(exclude=("tests",)),
     # exclude=["tests", "test_*"],
     classifiers=[
         "Development Status :: 3 - Alpha",
