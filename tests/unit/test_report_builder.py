@@ -10,6 +10,7 @@ import shutil
 
 import pytest
 from eds4jinja2.builders.report_builder import ReportBuilder
+from eds4jinja2.builders import deep_update
 from bs4 import BeautifulSoup
 
 
@@ -59,3 +60,30 @@ def test_report_builder_make_document(sample_data_path):
 
     path = pathlib.Path(sample_data_path) / "output"
     shutil.rmtree(path)
+
+
+def test_deep_update():
+    source = {'hello1': 1}
+    overrides = {'hello2': 2}
+    deep_update(source, overrides)
+    assert source == {'hello1': 1, 'hello2': 2}
+
+    source = {'hello': 'to_override'}
+    overrides = {'hello': 'over'}
+    deep_update(source, overrides)
+    assert source == {'hello': 'over'}
+
+    source = {'hello': {'value': 'to_override', 'no_change': 1}}
+    overrides = {'hello': {'value': 'over'}}
+    deep_update(source, overrides)
+    assert source == {'hello': {'value': 'over', 'no_change': 1}}
+
+    source = {'hello': {'value': 'to_override', 'no_change': 1}}
+    overrides = {'hello': {'value': {}}}
+    deep_update(source, overrides)
+    assert source == {'hello': {'value': {}, 'no_change': 1}}
+
+    source = {'hello': {'value': {}, 'no_change': 1}}
+    overrides = {'hello': {'value': 2}}
+    deep_update(source, overrides)
+    assert source == {'hello': {'value': 2, 'no_change': 1}}

@@ -29,7 +29,11 @@ def a_path_to_a_directory(scenarioContext, directory, sample_data_path):
 
 @when('the CLI is invoked')
 def the_cli_is_invoked(scenarioContext):
-    runner.invoke(build_report, ["--target", scenarioContext["input_path"], "--output", pathlib.Path( scenarioContext["input_path"]) / "output"])
+    result = runner.invoke(build_report, ["--target", scenarioContext["input_path"], "--output",
+                                          pathlib.Path(scenarioContext["input_path"]) / "output"])
+    assert result.exit_code == 0
+    assert not result.exception
+    assert (pathlib.Path(scenarioContext["input_path"]) / "output" / "main.html").exists()
 
 
 @then('<output> path contains the <file>')
@@ -47,4 +51,3 @@ def then_file_contains_the_content(scenarioContext, content):
 
     path = pathlib.Path(scenarioContext["outputPath"])
     shutil.rmtree(path)
-

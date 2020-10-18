@@ -5,14 +5,20 @@
 # Author: Eugeniu Costetchi
 # Email: costezki.eugen@gmail.com
 
-"""
-TODO: rewrite and reduce scope
-# Report generator module
-purpose: given a generated data context and a builders template (e.g. mustache, jinja2) generate the final report.
-input: (a) data context (b) builders template
-output: final report (HTML, PDF, package, static website, etc. )
-variations of report generators:
-- HTML + JINJA2 - generates the final report gtom JINJA2 templates and generated/existent data
-- PyLatex - generates the final report based on hadcoded builders structure
-- XML/XSL-FO + JINJA2 - generates an XML builders ready for XSL-FO
-"""
+import collections
+
+
+def deep_update(source, overrides):
+    """
+    Update a nested dictionary or similar mapping.
+    Modify ``source`` in place.
+
+    Used from https://stackoverflow.com/questions/3232943/update-value-of-a-nested-dictionary-of-varying-depth
+    """
+    for key, value in overrides.items():
+        if isinstance(value, collections.Mapping) and value:
+            returned = deep_update(source.get(key, {}), value)
+            source[key] = returned
+        else:
+            source[key] = overrides[key]
+    return source

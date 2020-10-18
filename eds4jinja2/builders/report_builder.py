@@ -11,6 +11,8 @@ this module implements the report generation functionality.
 import json
 import pathlib
 import jinja2
+
+from eds4jinja2.builders import deep_update
 from eds4jinja2.builders.jinja_builder import build_eds_environment, inject_environment_globals
 
 
@@ -23,10 +25,13 @@ class ReportBuilder:
     __DEFAULT_CONFIG_FILE__ = "config.json"
     __OUTPUT_FOLDER__ = "output"
 
-    def __init__(self, target_path, config_file=__DEFAULT_CONFIG_FILE__, output_path=None):
+    def __init__(self, target_path, config_file=__DEFAULT_CONFIG_FILE__,
+                 output_path=None, additional_config: dict = {}, ):
         """
             Instantiates builders form a template providing an optional configuration context.
 
+        :type additional_config: additional config parameters that are added to the default
+                                ones be overwritten (deep update) in the project config.json
         :param target_path: the folder where the required resources are found
         :param config_file: the configuration file (default 'config.json')
         :param output_path: the output folder where the result of the rendering will be created
@@ -35,6 +40,7 @@ class ReportBuilder:
         with open(pathlib.Path(target_path) / config_file, encoding='utf-8') as configFile:
             configuration_context = json.loads(configFile.read())
 
+        deep_update(configuration_context, additional_config)
         self.template = configuration_context["template"]
         self.configuration_context = configuration_context
 
