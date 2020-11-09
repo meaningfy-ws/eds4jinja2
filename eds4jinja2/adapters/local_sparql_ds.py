@@ -40,7 +40,7 @@ class RDFFileDataSource(DataSource):
         self.__query__ = sparql_query
         return self
 
-    def with_query_from_file(self, sparql_query_file_path: Path) -> 'RDFFileDataSource':
+    def with_query_from_file(self, sparql_query_file_path: str) -> 'RDFFileDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
@@ -48,7 +48,7 @@ class RDFFileDataSource(DataSource):
         if self.__query__ != "":
             raise Exception("The query was already set.")
 
-        with open(sparql_query_file_path.resolve(), 'r') as file:
+        with open(Path(sparql_query_file_path).resolve(), 'r') as file:
             self.__query__ = file.read()
 
         return self

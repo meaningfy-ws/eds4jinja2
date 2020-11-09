@@ -56,13 +56,13 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         self.endpoint.setQuery(sparql_query)
         return self
 
-    def with_query_from_file(self, sparql_query_file_path: Path) -> 'RemoteSPARQLEndpointDataSource':
+    def with_query_from_file(self, sparql_query_file_path: str) -> 'RemoteSPARQLEndpointDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
         """
 
-        with open(sparql_query_file_path.resolve(), 'r') as file:
+        with open(Path(sparql_query_file_path).resolve(), 'r') as file:
             query_from_file = file.read()
 
         self.endpoint.setQuery(query_from_file)
