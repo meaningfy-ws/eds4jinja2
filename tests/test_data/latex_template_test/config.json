@@ -1,12 +1,6 @@
 {
-    "template": "main.html",
+    "template": "main.tex",
     "conf":
     {
-        "default_endpoint" : "http://publications.europa.eu/webapi/rdf/sparql",
-        "title": "Dataset Fingerprint Report (Diff)",
-        "type": "report",
-        "author": "Eugeniu Costetchi",
-        "ns_file": "data/prefix.csv",
-        "blabla": "somevalue"
     }
 }
