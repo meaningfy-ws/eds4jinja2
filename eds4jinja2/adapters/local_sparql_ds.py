@@ -4,7 +4,7 @@
 # Date:  07/08/2020
 # Author: Eugeniu Costetchi
 # Email: costezki.eugen@gmail.com
-
+from pathlib import Path
 
 import pandas as pd
 import rdflib
@@ -34,7 +34,23 @@ class RDFFileDataSource(DataSource):
             Set the query text and return the reference to self for chaining.
         :return:
         """
+        if self.__query__ != "":
+            raise Exception("The query was already set.")
+
         self.__query__ = sparql_query
+        return self
+
+    def with_query_from_file(self, sparql_query_file_path: Path) -> 'RDFFileDataSource':
+        """
+            Set the query text and return the reference to self for chaining.
+        :return:
+        """
+        if self.__query__ != "":
+            raise Exception("The query was already set.")
+
+        with open(sparql_query_file_path.resolve(), 'r') as file:
+            self.__query__ = file.read()
+
         return self
 
     def with_file(self, file: str) -> 'RDFFileDataSource':

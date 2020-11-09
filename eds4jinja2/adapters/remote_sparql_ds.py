@@ -7,6 +7,7 @@
 
 
 import io
+from pathlib import Path
 from typing import Optional
 
 from SPARQLWrapper import SPARQLWrapper, JSON, CSV
@@ -53,6 +54,18 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         :return:
         """
         self.endpoint.setQuery(sparql_query)
+        return self
+
+    def with_query_from_file(self, sparql_query_file_path: Path) -> 'RemoteSPARQLEndpointDataSource':
+        """
+            Set the query text and return the reference to self for chaining.
+        :return:
+        """
+
+        with open(sparql_query_file_path.resolve(), 'r') as file:
+            query_from_file = file.read()
+
+        self.endpoint.setQuery(query_from_file)
         return self
 
     def with_uri(self, uri: str, graph_uri: Optional[str] = None) -> 'RemoteSPARQLEndpointDataSource':
