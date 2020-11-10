@@ -4,6 +4,8 @@ Date:  11/08/2020
 Author: Eugeniu Costetchi
 Email: costezki.eugen@gmail.com 
 """
+import os
+import pathlib
 from urllib.error import URLError
 
 import pytest
@@ -43,6 +45,15 @@ def test_connect_to_endpoint_fails():
 def test_query_endpoint_and_fetch_tree():
     fds = RemoteSPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
     response_object, error = fds.with_query(SPO_LIMIT_10).fetch_tree()
+    assert len(str(response_object)) > 2000
+    assert "results" in str(response_object)
+    assert error is None
+
+
+def test_query_endpoint_and_fetch_tree_with_query_from_file():
+    fds = RemoteSPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
+
+    response_object, error = fds.with_query_from_file(pathlib.Path("./tests/test_data/queries/spo_limit_10.txt")).fetch_tree()
     assert len(str(response_object)) > 2000
     assert "results" in str(response_object)
     assert error is None
