@@ -140,3 +140,22 @@ junit_report.xml
 /tests/test_data/validation-reports/simple/results/
 /tests/test_data/validation-reports/simple/tests/
 /tests/test_data/validation-reports/treaties-ap/results/
+
+
+# Auxiliary files resulted by latex processing
+*.aux
+*.dvi
+*.lof
+*.lot
+*.bit
+*.idx
+*.glo
+*.bbl
+*.bcf
+*.ilg
+*.toc
+*.ind
+*.out
+*.blg
+*.fdb_latexmk
+*.fls

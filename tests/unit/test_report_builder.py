@@ -28,7 +28,7 @@ def before_listener():
     before_fired = True
 
 
-def after_listener(static_folder, output_folder) -> bool:
+def after_listener(static_folder, output_folder, context) -> bool:
     global after_fired
     after_fired = True
 

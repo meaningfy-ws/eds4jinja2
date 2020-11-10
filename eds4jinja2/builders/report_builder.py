@@ -97,4 +97,4 @@ class ReportBuilder:
         template.stream().dump(str(pathlib.Path(self.__OUTPUT_FOLDER__) / self.template))
 
         for listener in self.__after_rendering_listeners:
-            listener(str(self.__STATIC_FOLDER__), str(pathlib.Path(self.__OUTPUT_FOLDER__)))
+            listener(str(self.__STATIC_FOLDER__), str(pathlib.Path(self.__OUTPUT_FOLDER__)), self.configuration_context)
