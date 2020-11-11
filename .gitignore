@@ -159,3 +159,4 @@ junit_report.xml
 *.blg
 *.fdb_latexmk
 *.fls
+*.synctex.gz

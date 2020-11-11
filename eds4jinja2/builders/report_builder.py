@@ -24,6 +24,7 @@ class ReportBuilder:
     __TEMPLATE_FOLDER__ = "templates"
     __DEFAULT_CONFIG_FILE__ = "config.json"
     __OUTPUT_FOLDER__ = "output"
+    configuration_context = None
 
     def __init__(self, target_path, config_file=__DEFAULT_CONFIG_FILE__,
                  output_path=None, additional_config: dict = {}, ):
