@@ -20,12 +20,9 @@ class ReportBuilder:
     """
         generic report builder that takes templates and configuration as input and produces an output report
     """
-    __STATIC_FOLDER__ = "static"
-    __TEMPLATE_FOLDER__ = "templates"
-    __DEFAULT_CONFIG_FILE__ = "config.json"
-    __OUTPUT_FOLDER__ = "output"
+    configuration_context: dict = {}
 
-    def __init__(self, target_path, config_file=__DEFAULT_CONFIG_FILE__,
+    def __init__(self, target_path, config_file="config.json",
                  output_path=None, additional_config: dict = {}, ):
         """
             Instantiates builders form a template providing an optional configuration context.
@@ -38,28 +35,31 @@ class ReportBuilder:
         """
 
         with open(pathlib.Path(target_path) / config_file, encoding='utf-8') as configFile:
-            configuration_context = json.loads(configFile.read())
+            self.configuration_context = json.loads(configFile.read())
 
-        deep_update(configuration_context, additional_config)
-        self.template = configuration_context["template"]
-        self.configuration_context = configuration_context
-
+        template_path = str(pathlib.Path(target_path) / "templates")
+        static_folder = pathlib.Path(target_path) / "static"
         if output_path is not None:
-            self.__OUTPUT_FOLDER__ = pathlib.Path(output_path)
+            output_folder = pathlib.Path(output_path)
         else:
             # in case you don't specify an output, the rendered content will be placed
             # in the target folder, in an default directory named "output"
             # this is to prevent creating files wherever you happen to run the CLI
-            self.__OUTPUT_FOLDER__ = pathlib.Path(target_path) / "output"
+            output_folder = pathlib.Path(target_path) / "output"
 
-        self.__STATIC_FOLDER__ = pathlib.Path(target_path) / self.__STATIC_FOLDER__
+        self.configuration_context["template_path"] = template_path
+        self.configuration_context["static_folder"] = str(static_folder)
+        self.configuration_context["output_folder"] = str(output_folder)
 
-        template_path = str(pathlib.Path(target_path) / self.__TEMPLATE_FOLDER__)
+        deep_update(self.configuration_context, additional_config)
+        self.template = self.configuration_context["template"]
+        self.configuration_context = self.configuration_context
+
         template_loader = jinja2.FileSystemLoader(searchpath=template_path)
         self.template_env = build_eds_environment(loader=template_loader)
         self.configuration_context["conf"]["template_path"] = template_path
         inject_environment_globals(self.template_env, {'conf': self.configuration_context["conf"]},
-                                   False if configuration_context is None else True)
+                                   False if self.configuration_context is None else True)
         self.__before_rendering_listeners = []
         self.__after_rendering_listeners = []
 
@@ -89,12 +89,12 @@ class ReportBuilder:
 
     def make_document(self):
         for listener in self.__before_rendering_listeners:
-            listener()
+            listener(self.configuration_context)
 
         template = self.__get_template(self.template)
 
-        pathlib.Path(self.__OUTPUT_FOLDER__).mkdir(parents=True, exist_ok=True)
-        template.stream().dump(str(pathlib.Path(self.__OUTPUT_FOLDER__) / self.template))
+        pathlib.Path(self.configuration_context["output_folder"]).mkdir(parents=True, exist_ok=True)
+        template.stream().dump(str(pathlib.Path(self.configuration_context["output_folder"]) / self.template))
 
         for listener in self.__after_rendering_listeners:
-            listener(str(self.__STATIC_FOLDER__), str(pathlib.Path(self.__OUTPUT_FOLDER__)))
+            listener(self.configuration_context)
