@@ -47,9 +47,9 @@ class ReportBuilder:
             # this is to prevent creating files wherever you happen to run the CLI
             output_folder = pathlib.Path(target_path) / "output"
 
-        self.configuration_context["TEMPLATE_PATH"] = template_path
-        self.configuration_context["STATIC_FOLDER"] = str(static_folder)
-        self.configuration_context["OUTPUT_FOLDER"] = str(output_folder)
+        self.configuration_context["template_path"] = template_path
+        self.configuration_context["static_folder"] = str(static_folder)
+        self.configuration_context["output_folder"] = str(output_folder)
 
         deep_update(self.configuration_context, additional_config)
         self.template = self.configuration_context["template"]
@@ -93,8 +93,8 @@ class ReportBuilder:
 
         template = self.__get_template(self.template)
 
-        pathlib.Path(self.configuration_context["OUTPUT_FOLDER"]).mkdir(parents=True, exist_ok=True)
-        template.stream().dump(str(pathlib.Path(self.configuration_context["OUTPUT_FOLDER"]) / self.template))
+        pathlib.Path(self.configuration_context["output_folder"]).mkdir(parents=True, exist_ok=True)
+        template.stream().dump(str(pathlib.Path(self.configuration_context["output_folder"]) / self.template))
 
         for listener in self.__after_rendering_listeners:
             listener(self.configuration_context)

@@ -29,11 +29,11 @@ def make_pdf_from_latex(configuration_context: dict = {}) -> None:
     to construct the output PDF file name
 
     """
-    input_file_name = pathlib.Path(configuration_context["OUTPUT_FOLDER"]) / configuration_context["template"]
+    input_file_name = pathlib.Path(configuration_context["output_folder"]) / configuration_context["template"]
     output_pdf_file = input_file_name.with_suffix(".pdf")
     process = Popen(
         ["pdflatex", "-file-line-error", "-interaction=nonstopmode", "-synctex=1",
-         "-output-format=pdf", "-output-directory=" + configuration_context["OUTPUT_FOLDER"], input_file_name],
+         "-output-format=pdf", "-output-directory=" + configuration_context["output_folder"], input_file_name],
         stdout=PIPE)
     output, _ = process.communicate()
 
@@ -45,7 +45,7 @@ def make_pdf_from_latex(configuration_context: dict = {}) -> None:
     __logger.info('Subprocess finished successfully.')
     __logger.info(output.decode())
 
-    file_list = glob.glob(configuration_context["OUTPUT_FOLDER"] + "/*.*")
+    file_list = glob.glob(configuration_context["output_folder"] + "/*.*")
     for file in file_list:
         try:
             if file != str(output_pdf_file):
@@ -59,7 +59,7 @@ def copy_static_content(configuration_context: dict) -> None:
     :param configuration_context: the configuration context for the currently executing processing pipeline
     :rtype: None
     """
-    if pathlib.Path(configuration_context["STATIC_FOLDER"]).is_dir():
-        copy_tree(configuration_context["STATIC_FOLDER"], configuration_context["OUTPUT_FOLDER"])
+    if pathlib.Path(configuration_context["static_folder"]).is_dir():
+        copy_tree(configuration_context["static_folder"], configuration_context["output_folder"])
     else:
-        __logger.warning(configuration_context["STATIC_FOLDER"] + " is not a directory !")
+        __logger.warning(configuration_context["static_folder"] + " is not a directory !")
