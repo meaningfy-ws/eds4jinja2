@@ -23,19 +23,17 @@ from subprocess import Popen, PIPE
 __logger = logging.getLogger(__name__)
 
 
-def make_pdf_from_latex(static_folder, output_folder, configuration_context) -> None:
+def make_pdf_from_latex(configuration_context: dict = {}) -> None:
     """
-    :rtype: None
-    :param static_folder: this is the static resources folder, in case you need to copy something from there to the output folder
-    :param output_folder: this is the output folder where the output of the template renderer will be placed
-    :param configuration_context: the configuration context of the renderer; in this method it is used to construct the output PDF file name
+    :rtype: None :param configuration_context: the configuration context of the renderer; in this method it is used
+    to construct the output PDF file name
 
     """
-    input_file_name = pathlib.Path(output_folder) / configuration_context["template"]
+    input_file_name = pathlib.Path(configuration_context["OUTPUT_FOLDER"]) / configuration_context["template"]
     output_pdf_file = input_file_name.with_suffix(".pdf")
     process = Popen(
         ["pdflatex", "-file-line-error", "-interaction=nonstopmode", "-synctex=1",
-         "-output-format=pdf", "-output-directory=" + output_folder, input_file_name],
+         "-output-format=pdf", "-output-directory=" + configuration_context["OUTPUT_FOLDER"], input_file_name],
         stdout=PIPE)
     output, _ = process.communicate()
 
@@ -47,7 +45,7 @@ def make_pdf_from_latex(static_folder, output_folder, configuration_context) -> 
     __logger.info('Subprocess finished successfully.')
     __logger.info(output.decode())
 
-    file_list = glob.glob(output_folder + "/*.*")
+    file_list = glob.glob(configuration_context["OUTPUT_FOLDER"] + "/*.*")
     for file in file_list:
         try:
             if file != str(output_pdf_file):
@@ -56,13 +54,12 @@ def make_pdf_from_latex(static_folder, output_folder, configuration_context) -> 
             __logger.exception("Error while deleting file : " + file)
 
 
-def copy_static_content(from_path, to_path, configuration_context) -> None:
+def copy_static_content(configuration_context: dict) -> None:
     """
+    :param configuration_context: the configuration context for the currently executing processing pipeline
     :rtype: None
-    :param from_path: the static resources folder (may contain all sorts of files, such as .css, .js, etc.)
-    :param to_path: the rendered output folder (typically, here you will find, for example, the output HTML)
     """
-    if pathlib.Path(from_path).is_dir():
-        copy_tree(from_path, to_path)
+    if pathlib.Path(configuration_context["STATIC_FOLDER"]).is_dir():
+        copy_tree(configuration_context["STATIC_FOLDER"], configuration_context["OUTPUT_FOLDER"])
     else:
-        __logger.warning(from_path + " is not a directory !")
+        __logger.warning(configuration_context["STATIC_FOLDER"] + " is not a directory !")

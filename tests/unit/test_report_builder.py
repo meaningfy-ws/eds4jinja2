@@ -35,7 +35,7 @@ def test_report_builder_make_document(sample_data_path):
     after_listener = Mock()
 
     report_builder = ReportBuilder(target_path=sample_data_path, output_path=pathlib.Path(sample_data_path) / "output")
-    
+
     report_builder.add_before_rendering_listener(before_listener)
     report_builder.add_after_rendering_listener(after_listener)
 
