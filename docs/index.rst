@@ -96,12 +96,20 @@ So, what are the benefits?
 CLI Usage
 ####################################################
 
+The command to run the report generation is `mkreport`
+
 The command line interface has three arguments:
 ########################################################################################################
 
 * **--target** (mandatory): the directory where eds4jinja2 will load the content from, for rendering a template; this directory has a mandatory layout (see below)
 * **--output** (optional): the directory where eds4jinja2 will place the rendered output; if this parameter is not specified, it will be placed in an "output" subdirectory that will be created where the "--target" parameter points to
 * **--config** (optional): the name of the configuration file from where eds4jinja2 will load the configuration that's passed to Jinja2; default "config.json"
+
+Example:
+
+.. code-block:: bash
+mkreport --target=template --output=report_location --config=report_config.json
+
 
 Target directory layout:
 ########################################################################################################
