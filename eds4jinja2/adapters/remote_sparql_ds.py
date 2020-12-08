@@ -48,15 +48,19 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         self.__can_be_tree = True
         self.__can_be_tabular = True
 
-    def with_query(self, sparql_query: str) -> 'RemoteSPARQLEndpointDataSource':
+    def with_query(self, sparql_query: str, **kwargs) -> 'RemoteSPARQLEndpointDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
         """
+        if kwargs:
+            for key, value in kwargs.items():
+                sparql_query = sparql_query.replace("~" + key + "~", value)
+
         self.endpoint.setQuery(sparql_query)
         return self
 
-    def with_query_from_file(self, sparql_query_file_path: str) -> 'RemoteSPARQLEndpointDataSource':
+    def with_query_from_file(self, sparql_query_file_path: str, **kwargs) -> 'RemoteSPARQLEndpointDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
@@ -64,6 +68,10 @@ class RemoteSPARQLEndpointDataSource(DataSource):
 
         with open(Path(sparql_query_file_path).resolve(), 'r') as file:
             query_from_file = file.read()
+
+        if kwargs:
+            for key, value in kwargs.items():
+                query_from_file = query_from_file.replace("~" + key + "~", value)
 
         self.endpoint.setQuery(query_from_file)
         return self
