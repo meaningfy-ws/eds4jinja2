@@ -34,6 +34,8 @@ class RDFFileDataSource(DataSource):
             Set the query text and return the reference to self for chaining.
         :return:
         """
+        print("SPARQL-> " + sparql_query)
+        print("KWARGS-> " + str(kwargs))
         if self.__query__ != "":
             raise Exception("The query was already set.")
 
@@ -42,6 +44,7 @@ class RDFFileDataSource(DataSource):
                 sparql_query = sparql_query.replace("~" + key + "~", value)
 
         self.__query__ = sparql_query
+        print("SELF.QUERY -> " + self.__query__)
         return self
 
     def with_query_from_file(self, sparql_query_file_path: str, **kwargs) -> 'RDFFileDataSource':
@@ -49,6 +52,8 @@ class RDFFileDataSource(DataSource):
             Set the query text and return the reference to self for chaining.
         :return:
         """
+        print("SPARQL-> " + sparql_query_file_path)
+        print("KWARGS-> " + str(kwargs))
         if self.__query__ != "":
             raise Exception("The query was already set.")
 
@@ -59,6 +64,7 @@ class RDFFileDataSource(DataSource):
             for key, value in kwargs.items():
                 self.__query__ = self.__query__.replace("~" + key + "~", value)
 
+        print("SELF.QUERY -> " + self.__query__)
         return self
 
     def with_file(self, file: str) -> 'RDFFileDataSource':
