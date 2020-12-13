@@ -48,7 +48,7 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         self.__can_be_tree = True
         self.__can_be_tabular = True
 
-    def with_query(self, sparql_query: str, **kwargs) -> 'RemoteSPARQLEndpointDataSource':
+    def with_query(self, sparql_query: str, kwargs: dict) -> 'RemoteSPARQLEndpointDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
@@ -61,7 +61,7 @@ class RemoteSPARQLEndpointDataSource(DataSource):
 
         return self
 
-    def with_query_from_file(self, sparql_query_file_path: str, **kwargs) -> 'RemoteSPARQLEndpointDataSource':
+    def with_query_from_file(self, sparql_query_file_path: str, kwargs: dict) -> 'RemoteSPARQLEndpointDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
