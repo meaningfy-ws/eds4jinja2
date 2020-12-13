@@ -43,6 +43,7 @@ class RDFFileDataSource(DataSource):
         if substitution_variables:
             for key, value in substitution_variables.items():
                 sparql_query = sparql_query.replace("~" + key + "~", value)
+                print("KEY= " + key, "VALUE= " + value)
 
         self.__query__ = sparql_query
         print(self.__query__)
@@ -62,6 +63,7 @@ class RDFFileDataSource(DataSource):
         if substitution_variables:
             for key, value in substitution_variables.items():
                 self.__query__ = self.__query__.replace("~" + key + "~", value)
+                print("KEY= " + key, "VALUE= " + value)
         print(self.__query__)
         return self
 

@@ -56,6 +56,7 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         if substitution_variables:
             for key, value in substitution_variables.items():
                 sparql_query = sparql_query.replace("~" + key + "~", value)
+                print("KEY= " + key, "VALUE= " + value)
 
         self.endpoint.setQuery(sparql_query)
         print(sparql_query)
@@ -73,7 +74,8 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         if substitution_variables:
             for key, value in substitution_variables.items():
                 query_from_file = query_from_file.replace("~" + key + "~", value)
-
+                print("KEY= " + key, "VALUE= " + value)
+                
         self.endpoint.setQuery(query_from_file)
         print(query_from_file)
         return self
