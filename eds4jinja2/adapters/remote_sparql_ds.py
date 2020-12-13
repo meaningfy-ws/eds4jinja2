@@ -53,14 +53,12 @@ class RemoteSPARQLEndpointDataSource(DataSource):
             Set the query text and return the reference to self for chaining.
         :return:
         """
-        print("SPARQL-> " + sparql_query)
-        print("KWARGS-> " + str(kwargs))
         if kwargs:
             for key, value in kwargs.items():
                 sparql_query = sparql_query.replace("~" + key + "~", value)
 
         self.endpoint.setQuery(sparql_query)
-        print("POST-PROCESSED SPARQL -> " + sparql_query)
+
         return self
 
     def with_query_from_file(self, sparql_query_file_path: str, **kwargs) -> 'RemoteSPARQLEndpointDataSource':
@@ -72,14 +70,12 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         with open(Path(sparql_query_file_path).resolve(), 'r') as file:
             query_from_file = file.read()
 
-        print("SPARQL-> " + query_from_file)
-        print("KWARGS-> " + str(kwargs))
         if kwargs:
             for key, value in kwargs.items():
                 query_from_file = query_from_file.replace("~" + key + "~", value)
 
         self.endpoint.setQuery(query_from_file)
-        print("POST-PROCESSED SPARQL -> " + query_from_file)
+
         return self
 
     def with_uri(self, uri: str, graph_uri: Optional[str] = None) -> 'RemoteSPARQLEndpointDataSource':
