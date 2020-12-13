@@ -11,6 +11,7 @@ import pandas as pd
 import rdflib
 
 from eds4jinja2.adapters.base_data_source import DataSource, UnsupportedRepresentation
+from eds4jinja2.adapters.substitution_template import SubstitutionTemplate
 
 DEFAULT_ENCODING = 'utf-8'
 
@@ -37,13 +38,14 @@ class RDFFileDataSource(DataSource):
         """
         if self.__query__ != "":
             raise Exception("The query was already set.")
-        template_query = Template(sparql_query)
-        final_query = template_query.safe_substitute()
+
 
         if substitution_variables:
-            for key, value in substitution_variables.items():
-                sparql_query = sparql_query.replace("~" + key + "~", value)
-                print("KEY= " + key, "VALUE= " + value)
+            template = SubstitutionTemplate(sparql_query)
+            self.__query__ = template.safe_substitute(substitution_variables)
+            # for key, value in substitution_variables.items():
+            #     sparql_query = sparql_query.replace("~" + key + "~", value)
+            #     print("KEY= " + key, "VALUE= " + value)
 
         self.__query__ = sparql_query
         print(self.__query__)
@@ -61,9 +63,11 @@ class RDFFileDataSource(DataSource):
             self.__query__ = file.read()
 
         if substitution_variables:
-            for key, value in substitution_variables.items():
-                self.__query__ = self.__query__.replace("~" + key + "~", value)
-                print("KEY= " + key, "VALUE= " + value)
+            template = SubstitutionTemplate(self.__query__)
+            self.__query__ = template.safe_substitute(substitution_variables)
+            # for key, value in substitution_variables.items():
+            #     self.__query__ = self.__query__.replace("~" + key + "~", value)
+            #     print("KEY= " + key, "VALUE= " + value)
         print(self.__query__)
         return self
 

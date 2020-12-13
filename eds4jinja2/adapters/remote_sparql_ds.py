@@ -15,6 +15,8 @@ from SPARQLWrapper import SPARQLWrapper, JSON, CSV
 from eds4jinja2.adapters.base_data_source import DataSource
 import pandas as pd
 
+from eds4jinja2.adapters.substitution_template import SubstitutionTemplate
+
 DEFAULT_ENCODING = 'utf-8'
 
 
@@ -54,9 +56,11 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         :return:
         """
         if substitution_variables:
-            for key, value in substitution_variables.items():
-                sparql_query = sparql_query.replace("~" + key + "~", value)
-                print("KEY= " + key, "VALUE= " + value)
+            template_query = SubstitutionTemplate(sparql_query)
+            sparql_query = template_query.safe_substitute(substitution_variables)
+            # for key, value in substitution_variables.items():
+            #     sparql_query = sparql_query.replace("~" + key + "~", value)
+            #     print("KEY= " + key, "VALUE= " + value)
 
         self.endpoint.setQuery(sparql_query)
         print(sparql_query)
@@ -72,10 +76,12 @@ class RemoteSPARQLEndpointDataSource(DataSource):
             query_from_file = file.read()
 
         if substitution_variables:
-            for key, value in substitution_variables.items():
-                query_from_file = query_from_file.replace("~" + key + "~", value)
-                print("KEY= " + key, "VALUE= " + value)
-                
+            template_query = SubstitutionTemplate(query_from_file)
+            query_from_file = template_query.safe_substitute(substitution_variables)
+            # for key, value in substitution_variables.items():
+            #     query_from_file = query_from_file.replace("~" + key + "~", value)
+            #     print("KEY= " + key, "VALUE= " + value)
+
         self.endpoint.setQuery(query_from_file)
         print(query_from_file)
         return self
