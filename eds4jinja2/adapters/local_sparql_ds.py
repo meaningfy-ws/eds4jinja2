@@ -5,6 +5,7 @@
 # Author: Eugeniu Costetchi
 # Email: costezki.eugen@gmail.com
 from pathlib import Path
+from string import Template
 
 import pandas as pd
 import rdflib
@@ -29,23 +30,25 @@ class RDFFileDataSource(DataSource):
     def __reduce_bound_triple_to_string_format(self, dict_of_bound_variables: dict):
         return {str(k): str(v) for k, v in dict_of_bound_variables.items()}
 
-    def with_query(self, sparql_query: str, kwargs: dict) -> 'RDFFileDataSource':
+    def with_query(self, sparql_query: str, substitution_variables: dict) -> 'RDFFileDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
         """
         if self.__query__ != "":
             raise Exception("The query was already set.")
+        template_query = Template(sparql_query)
+        final_query = template_query.safe_substitute()
 
-        if kwargs:
-            for key, value in kwargs.items():
+        if substitution_variables:
+            for key, value in substitution_variables.items():
                 sparql_query = sparql_query.replace("~" + key + "~", value)
 
         self.__query__ = sparql_query
-
+        print(self.__query__)
         return self
 
-    def with_query_from_file(self, sparql_query_file_path: str, kwargs: dict) -> 'RDFFileDataSource':
+    def with_query_from_file(self, sparql_query_file_path: str, substitution_variables: dict) -> 'RDFFileDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
@@ -56,10 +59,10 @@ class RDFFileDataSource(DataSource):
         with open(Path(sparql_query_file_path).resolve(), 'r') as file:
             self.__query__ = file.read()
 
-        if kwargs:
-            for key, value in kwargs.items():
+        if substitution_variables:
+            for key, value in substitution_variables.items():
                 self.__query__ = self.__query__.replace("~" + key + "~", value)
-
+        print(self.__query__)
         return self
 
     def with_file(self, file: str) -> 'RDFFileDataSource':
