@@ -50,7 +50,7 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         self.__can_be_tree = True
         self.__can_be_tabular = True
 
-    def with_query(self, sparql_query: str, substitution_variables: dict) -> 'RemoteSPARQLEndpointDataSource':
+    def with_query(self, sparql_query: str, substitution_variables: dict = None) -> 'RemoteSPARQLEndpointDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
@@ -58,15 +58,11 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         if substitution_variables:
             template_query = SubstitutionTemplate(sparql_query)
             sparql_query = template_query.safe_substitute(substitution_variables)
-            # for key, value in substitution_variables.items():
-            #     sparql_query = sparql_query.replace("~" + key + "~", value)
-            #     print("KEY= " + key, "VALUE= " + value)
 
         self.endpoint.setQuery(sparql_query)
-        print(sparql_query)
         return self
 
-    def with_query_from_file(self, sparql_query_file_path: str, substitution_variables: dict) -> 'RemoteSPARQLEndpointDataSource':
+    def with_query_from_file(self, sparql_query_file_path: str, substitution_variables: dict = None) -> 'RemoteSPARQLEndpointDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
@@ -78,12 +74,8 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         if substitution_variables:
             template_query = SubstitutionTemplate(query_from_file)
             query_from_file = template_query.safe_substitute(substitution_variables)
-            # for key, value in substitution_variables.items():
-            #     query_from_file = query_from_file.replace("~" + key + "~", value)
-            #     print("KEY= " + key, "VALUE= " + value)
 
         self.endpoint.setQuery(query_from_file)
-        print(query_from_file)
         return self
 
     def with_uri(self, uri: str, graph_uri: Optional[str] = None) -> 'RemoteSPARQLEndpointDataSource':

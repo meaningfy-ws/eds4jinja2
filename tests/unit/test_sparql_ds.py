@@ -53,7 +53,8 @@ def test_query_endpoint_and_fetch_tree():
 def test_query_endpoint_and_fetch_tree_with_query_from_file():
     fds = RemoteSPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
 
-    response_object, error = fds.with_query_from_file(pathlib.Path("./tests/test_data/queries/spo_limit_10.txt")).fetch_tree()
+    response_object, error = fds.with_query_from_file(
+        pathlib.Path("./tests/test_data/queries/spo_limit_10.txt")).fetch_tree()
     assert len(str(response_object)) > 2000
     assert "results" in str(response_object)
     assert error is None
@@ -64,6 +65,28 @@ def test_query_endpoint_and_fetch_tabular():
     response_object, error = fds.with_query(SPO_LIMIT_10).fetch_tabular()
     assert len(str(response_object)) > 500
     assert "http://" in str(response_object)
+    assert error is None
+
+
+def test_query_endpoint_with_substitution_and_fetch_tabular():
+    fds = RemoteSPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
+    response_object, error = fds.with_query('select * where {~a ~b ~c} limit 10',
+                                            {'a': '?s', 'b': '?p', 'c': '?o'}).fetch_tabular()
+    assert len(str(response_object)) > 500
+    assert "http://" in str(response_object)
+    assert error is None
+
+
+def test_query_endpoint_with_substitution_and_fetch_tree_with_query_from_file():
+    fds = RemoteSPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
+
+    response_object, error = fds.with_query_from_file(
+        pathlib.Path("./tests/test_data/queries/spo_limit_10.txt"),
+        {'substitution_placeholder': 'after_substitution'}).fetch_tree()
+    assert 'after_substitution' in fds.endpoint.queryString
+    assert '~substitution_placeholder' not in fds.endpoint.queryString
+    assert len(str(response_object)) > 2000
+    assert "results" in str(response_object)
     assert error is None
 
 
