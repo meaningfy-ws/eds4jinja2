@@ -68,6 +68,19 @@ def test_query_endpoint_and_fetch_tabular():
     assert error is None
 
 
+def test_query_and_prefixes():
+    fds = RemoteSPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
+    fds.with_query(SPO_LIMIT_10, None, "PREFIX TEST")
+    assert fds.endpoint.queryString.startswith("PREFIX TEST")
+
+
+def test_query_from_file_and_prefixes():
+    fds = RemoteSPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
+    fds.with_query_from_file(
+        pathlib.Path("./tests/test_data/queries/spo_limit_10.txt"), None, "PREFIX TEST")
+    assert fds.endpoint.queryString.startswith("PREFIX TEST")
+
+
 def test_query_endpoint_and_fetch_tabular_without_query():
     fds = RemoteSPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
     result, error_string = fds.with_query("").fetch_tabular()
