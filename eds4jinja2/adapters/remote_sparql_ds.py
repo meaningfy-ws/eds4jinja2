@@ -50,7 +50,7 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         self.__can_be_tree = True
         self.__can_be_tabular = True
 
-    def with_query(self, sparql_query: str, substitution_variables: dict = None) -> 'RemoteSPARQLEndpointDataSource':
+    def with_query(self, sparql_query: str, substitution_variables: dict = None, sparql_prefixes: str = "") -> 'RemoteSPARQLEndpointDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
@@ -59,10 +59,12 @@ class RemoteSPARQLEndpointDataSource(DataSource):
             template_query = SubstitutionTemplate(sparql_query)
             sparql_query = template_query.safe_substitute(substitution_variables)
 
-        self.endpoint.setQuery(sparql_query)
+        new_query = (sparql_prefixes + " " + sparql_query).strip()
+
+        self.endpoint.setQuery(new_query)
         return self
 
-    def with_query_from_file(self, sparql_query_file_path: str, substitution_variables: dict = None) -> 'RemoteSPARQLEndpointDataSource':
+    def with_query_from_file(self, sparql_query_file_path: str, substitution_variables: dict = None, prefixes: str = "") -> 'RemoteSPARQLEndpointDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
@@ -75,7 +77,9 @@ class RemoteSPARQLEndpointDataSource(DataSource):
             template_query = SubstitutionTemplate(query_from_file)
             query_from_file = template_query.safe_substitute(substitution_variables)
 
-        self.endpoint.setQuery(query_from_file)
+        new_query = (prefixes + " " + query_from_file).strip()
+
+        self.endpoint.setQuery(new_query)
         return self
 
     def with_uri(self, uri: str, graph_uri: Optional[str] = None) -> 'RemoteSPARQLEndpointDataSource':
@@ -90,7 +94,7 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         return self
 
     def _fetch_tree(self):
-        if not self.endpoint.queryString:
+        if not self.endpoint.queryString or self.endpoint.queryString.isspace():
             raise Exception("The query is empty.")
 
         self.endpoint.setReturnFormat(JSON)
@@ -98,7 +102,7 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         return query.convert()
 
     def _fetch_tabular(self):
-        if not self.endpoint.queryString:
+        if not self.endpoint.queryString or self.endpoint.queryString.isspace():
             raise Exception("The query is empty.")
 
         self.endpoint.setReturnFormat(CSV)

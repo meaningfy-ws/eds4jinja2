@@ -58,6 +58,26 @@ def test_load_local_query_from_file_sparql_fetch_tabular():
     local_rdf_ds.fetch_tabular()
 
 
+def test_load_local_query_from_file_and_prefixes():
+    local_rdf_ds = RDFFileDataSource(
+        str(pathlib.Path("../test_data/shacl.example.shapes.ttl")))
+
+    local_rdf_ds.with_query_from_file(pathlib.Path("./tests/test_data/queries/spo_limit_10.txt"), None, "PREFIX TEST")
+    assert local_rdf_ds.__query__.startswith("PREFIX TEST")
+
+
+def test_load_local_query_and_prefixes():
+    local_rdf_ds = RDFFileDataSource(
+        str(pathlib.Path("../test_data/shacl.example.shapes.ttl")))
+
+    local_rdf_ds.with_query("""SELECT *
+            WHERE {
+                 ?s ?p ?o
+            }
+            limit 10""", None, "PREFIX TEST")
+    assert local_rdf_ds.__query__.startswith("PREFIX TEST")
+
+
 def test_load_local_query_from_file_substitution():
     local_rdf_ds = RDFFileDataSource(
         str(pathlib.Path("../test_data/shacl.example.shapes.ttl")))
