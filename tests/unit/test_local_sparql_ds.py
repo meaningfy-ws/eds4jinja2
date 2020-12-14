@@ -8,6 +8,7 @@ import os
 import pathlib
 import pytest
 from eds4jinja2 import RDFFileDataSource
+import unittest
 
 from eds4jinja2.adapters.base_data_source import UnsupportedRepresentation
 
@@ -22,6 +23,15 @@ def test_load_local_sparql_fetch_tabular():
             }
             limit 10""")
     local_rdf_ds.fetch_tabular()
+
+
+def test_load_local_sparql_fetch_tabular_without_query():
+    local_rdf_ds = RDFFileDataSource(
+        str(pathlib.Path("../test_data/shacl.example.shapes.ttl")))
+
+    local_rdf_ds.with_query("")
+    result, error_string = local_rdf_ds.fetch_tabular()
+    assert error_string == "The query is empty."
 
 
 def test_load_local_sparql_substitution():

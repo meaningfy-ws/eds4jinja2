@@ -41,6 +41,8 @@ class RDFFileDataSource(DataSource):
         if substitution_variables:
             template = SubstitutionTemplate(sparql_query)
             self.__query__ = template.safe_substitute(substitution_variables)
+        else:
+            self.__query__ = sparql_query
 
         return self
 
@@ -70,6 +72,9 @@ class RDFFileDataSource(DataSource):
         return self
 
     def _fetch_tabular(self):
+        if not self.__query__:
+            raise Exception("The query is empty.")
+
         self.__graph__.parse(self.__filename__, format="turtle")
         result = self.__graph__.query(self.__query__)
 

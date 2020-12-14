@@ -2,7 +2,7 @@
 test_sparql_ds.py
 Date:  11/08/2020
 Author: Eugeniu Costetchi
-Email: costezki.eugen@gmail.com 
+Email: costezki.eugen@gmail.com
 """
 import os
 import pathlib
@@ -66,6 +66,18 @@ def test_query_endpoint_and_fetch_tabular():
     assert len(str(response_object)) > 500
     assert "http://" in str(response_object)
     assert error is None
+
+
+def test_query_endpoint_and_fetch_tabular_without_query():
+    fds = RemoteSPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
+    result, error_string = fds.with_query("").fetch_tabular()
+    assert error_string == "The query is empty."
+
+
+def test_query_endpoint_and_fetch_tree_without_query():
+    fds = RemoteSPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
+    result, error_string = fds.with_query("").fetch_tree()
+    assert error_string == "The query is empty."
 
 
 def test_query_endpoint_with_substitution_and_fetch_tabular():

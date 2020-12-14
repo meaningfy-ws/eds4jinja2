@@ -90,11 +90,17 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         return self
 
     def _fetch_tree(self):
+        if not self.endpoint.queryString:
+            raise Exception("The query is empty.")
+
         self.endpoint.setReturnFormat(JSON)
         query = self.endpoint.query()
         return query.convert()
 
     def _fetch_tabular(self):
+        if not self.endpoint.queryString:
+            raise Exception("The query is empty.")
+
         self.endpoint.setReturnFormat(CSV)
         query_result = self.endpoint.queryAndConvert()
         return pd.read_csv(io.StringIO(str(query_result, encoding=DEFAULT_ENCODING)))
