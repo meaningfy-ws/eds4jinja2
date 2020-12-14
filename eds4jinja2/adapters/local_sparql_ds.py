@@ -10,6 +10,7 @@ import pandas as pd
 import rdflib
 
 from eds4jinja2.adapters.base_data_source import DataSource, UnsupportedRepresentation
+from eds4jinja2.adapters.substitution_template import SubstitutionTemplate
 
 DEFAULT_ENCODING = 'utf-8'
 
@@ -29,7 +30,7 @@ class RDFFileDataSource(DataSource):
     def __reduce_bound_triple_to_string_format(self, dict_of_bound_variables: dict):
         return {str(k): str(v) for k, v in dict_of_bound_variables.items()}
 
-    def with_query(self, sparql_query: str) -> 'RDFFileDataSource':
+    def with_query(self, sparql_query: str, substitution_variables: dict = None) -> 'RDFFileDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
@@ -37,10 +38,15 @@ class RDFFileDataSource(DataSource):
         if self.__query__ != "":
             raise Exception("The query was already set.")
 
-        self.__query__ = sparql_query
+        if substitution_variables:
+            template = SubstitutionTemplate(sparql_query)
+            self.__query__ = template.safe_substitute(substitution_variables)
+        else:
+            self.__query__ = sparql_query
+
         return self
 
-    def with_query_from_file(self, sparql_query_file_path: str) -> 'RDFFileDataSource':
+    def with_query_from_file(self, sparql_query_file_path: str, substitution_variables: dict = None) -> 'RDFFileDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
@@ -50,6 +56,10 @@ class RDFFileDataSource(DataSource):
 
         with open(Path(sparql_query_file_path).resolve(), 'r') as file:
             self.__query__ = file.read()
+
+        if substitution_variables:
+            template = SubstitutionTemplate(self.__query__)
+            self.__query__ = template.safe_substitute(substitution_variables)
 
         return self
 
@@ -62,6 +72,9 @@ class RDFFileDataSource(DataSource):
         return self
 
     def _fetch_tabular(self):
+        if not self.__query__:
+            raise Exception("The query is empty.")
+
         self.__graph__.parse(self.__filename__, format="turtle")
         result = self.__graph__.query(self.__query__)
 

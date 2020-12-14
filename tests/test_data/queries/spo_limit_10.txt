@@ -1,3 +1,5 @@
+# ~substitution_placeholder
+
 SELECT *
 WHERE {
      ?s ?p ?o
