@@ -5,6 +5,7 @@ Embedded Datasource Specification in Jinja2 templates (v. |release|)
 ============================================================================
 
 .. toctree::
+
     :maxdepth: 2
 
 An easy way to reports generation with Jinja2 templates. With Embedded Datasource Specifications inside Jinja2 templates, you can fetch the data you need on the spot.
@@ -14,19 +15,20 @@ relative to the running script.
 
 .. code-block:: Jinja
 
-    {% set content, error = from_file(path).fetch_tree() %} \n
-    content:  {{ content }}\n
-    error: {{ error }}\n
+    {% set content, error = from_file(path).fetch_tree() %}
+    content:  {{ content }}
+    error: {{ error }}
 
 In case you need to fetch data from a SPARQL endpoint, define a sparql_endpoint (usually in the global configuration)
 and a custom sparql query_text. Use them in the template like this:
 
 .. code-block:: Jinja
+
     {% set query_string = "select * where {?s ?p ?o} limit 10" %}
     {% set content, error =
         from_endpoint(endpoint).with_query(query_string).fetch_tabular() %}
-    content:  {{ content }} \n
-    error: {{ error }} \n
+    content:  {{ content }}
+    error: {{ error }}
 
 Currently supported data sources are:
 
@@ -68,14 +70,14 @@ just use it in the template.
 
 .. code-block:: jinja
 
-    {% set config_content, error = from_file("path/to/the/config/file.json").fetch_tree() %}\n
-    The configuration content: \n
-    {{ config_content }} \n
+    {% set config_content, error = from_file("path/to/the/config/file.json").fetch_tree() %}
+    The configuration content:
+    {{ config_content }}
 
     {% set query_string = "select * where {?s ?p ?o} limit 10" %}
-    {% set endpoint_content, error = from_endpoint(endpoint).with_query(query_string).fetch_tree() %} \n
-    content: {{ endpoint_content }}\n
-    error: {{ error }}\n
+    {% set endpoint_content, error = from_endpoint(endpoint).with_query(query_string).fetch_tree() %}
+    content: {{ endpoint_content }}
+    error: {{ error }}
 
 3. render the template with no context. The context is dynamically generated during the template rendering. Bingo!
 
@@ -92,6 +94,30 @@ So, what are the benefits?
 * the queries and the template to visualise the query result set are tightly coupled and easy to modify
 * this allows for building quickly custom visualisation templates (or modifying existent ones), before you even decide what the final query looks like
 
+:code:`ReportBuilder` class usage
+####################################################
+:code:`ReportBuilder` accepts 4 parameters when instantiating:
+
+:code:`target_path` (required) - the folder where the required resources are found.
+
+:code:`config_file` (optional) - the name of the configuration file (defaults :code:`config.json`).
+
+:code:`output_path` (optional) - the output folder where the result of the rendering will be created.
+
+:code:`additional_config` (optional) - additional config parameters that are added to the default ones and are overwritten (deep update) in the project :code:`config.json`.
+
+Example:
+
+.. code-block:: py3
+
+    target_path = 'some/path/for/template'
+    config_file = 'other.json'
+    output_path = 'some/other/path'
+    additional_config = {"default_endpoint": 'http://localhost:9999'}
+    report_builder = ReportBuilder(target_path=location,
+                                   config_file=config_file,
+                                   output_path=output_path,
+                                   additional_config=additional_config)
 
 CLI Usage
 ####################################################
@@ -108,8 +134,8 @@ The command line interface has three arguments:
 Example:
 
 .. code-block:: bash
-mkreport --target=template --output=report_location --config=report_config.json
 
+    mkreport --target=template --output=report_location --config=report_config.json
 
 Target directory layout:
 ########################################################################################################
@@ -126,8 +152,6 @@ By convention, the target directory **must** contain:
 
 Example:
 
-.. example-code::
-
 .. code-block:: json
 
     {
@@ -140,8 +164,6 @@ Example:
             "author": "Your name here"
         }
     }
-
-
 
 
 Indices and tables
