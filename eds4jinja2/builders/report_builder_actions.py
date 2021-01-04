@@ -36,9 +36,9 @@ def make_pdf_from_latex(configuration_context: dict = {}) -> None:
     cmd_args = ["pdflatex", "-file-line-error", "-interaction=nonstopmode", "-synctex=1",
                 "-output-format=pdf", "-output-directory=.", str(input_file_name)]
 
-    for latex_pass in range(LATEX_RUNS):
+    for _ in range(LATEX_RUNS):
         process = Popen(args=cmd_args, stdout=PIPE,
-                        cwd=str(output_folder))  # + configuration_context["output_folder"]
+                        cwd=str(output_folder))
         try:
             output, errs = process.communicate(timeout=120)
         except TimeoutExpired:
@@ -53,6 +53,7 @@ def make_pdf_from_latex(configuration_context: dict = {}) -> None:
     logger.info('Subprocess finished successfully.')
     logger.info(output.decode())
 
+    # deleting all the source and auxiliary files
     file_list = [f for f in list(output_folder.rglob("*.*")) if f.suffix != ".pdf"]
     for file in file_list:
         if file.is_dir():
