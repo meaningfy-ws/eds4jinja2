@@ -28,10 +28,26 @@ eds4jinja2.adapters.http\_ds module
    :undoc-members:
    :show-inheritance:
 
-eds4jinja2.adapters.sparql\_ds module
--------------------------------------
+eds4jinja2.adapters.local\_sparql\_ds module
+--------------------------------------------
 
-.. automodule:: eds4jinja2.adapters.sparql_ds
+.. automodule:: eds4jinja2.adapters.local_sparql_ds
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+eds4jinja2.adapters.remote\_sparql\_ds module
+---------------------------------------------
+
+.. automodule:: eds4jinja2.adapters.remote_sparql_ds
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+eds4jinja2.adapters.substitution\_template module
+-------------------------------------------------
+
+.. automodule:: eds4jinja2.adapters.substitution_template
    :members:
    :undoc-members:
    :show-inheritance:
