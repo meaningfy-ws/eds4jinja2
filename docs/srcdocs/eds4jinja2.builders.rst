@@ -20,6 +20,14 @@ eds4jinja2.builders.report\_builder module
    :undoc-members:
    :show-inheritance:
 
+eds4jinja2.builders.report\_builder\_actions module
+---------------------------------------------------
+
+.. automodule:: eds4jinja2.builders.report_builder_actions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------

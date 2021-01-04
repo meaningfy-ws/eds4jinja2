@@ -13,14 +13,12 @@ folder (for example, in case of a more complex rendered HTML, you will need this
 the input directory structure is preserved to the output folder during copying
 
 """
-import glob
 import logging
-import os
 import pathlib
 from distutils.dir_util import copy_tree
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, TimeoutExpired
 
-__logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def make_pdf_from_latex(configuration_context: dict = {}) -> None:
@@ -28,30 +26,39 @@ def make_pdf_from_latex(configuration_context: dict = {}) -> None:
     :rtype: None :param configuration_context: the configuration context of the renderer; in this method it is used
     to construct the output PDF file name
 
+    LaTex will have to run 4 times to ensure proper output results (unfortunately this is a multi pass build process)
     """
-    input_file_name = pathlib.Path(configuration_context["output_folder"]) / configuration_context["template"]
-    output_pdf_file = input_file_name.with_suffix(".pdf")
-    process = Popen(
-        ["pdflatex", "-file-line-error", "-interaction=nonstopmode", "-synctex=1",
-         "-output-format=pdf", "-output-directory=" + configuration_context["output_folder"], input_file_name],
-        stdout=PIPE)
-    output, _ = process.communicate()
+    LATEX_RUNS = 4  # LaTex will have to run 4 times to ensure proper output results
 
-    if process.returncode != 0:
-        __logger.fatal('pdflatex execution failed.')
-        __logger.fatal(f'OUTPUT: {output.decode()}')
-        raise RuntimeError(output)
+    output_folder = pathlib.Path(configuration_context["output_folder"])
+    input_file_name = pathlib.Path(configuration_context["template"])
 
-    __logger.info('Subprocess finished successfully.')
-    __logger.info(output.decode())
+    cmd_args = ["pdflatex", "-file-line-error", "-interaction=nonstopmode", "-synctex=1",
+                "-output-format=pdf", "-output-directory=.", str(input_file_name)]
 
-    file_list = glob.glob(configuration_context["output_folder"] + "/*.*")
-    for file in file_list:
+    for latex_pass in range(LATEX_RUNS):
+        process = Popen(args=cmd_args, stdout=PIPE,
+                        cwd=str(output_folder))  # + configuration_context["output_folder"]
         try:
-            if file != str(output_pdf_file):
-                os.remove(file)
-        except Exception:
-            __logger.exception("Error while deleting file : " + file)
+            output, errs = process.communicate(timeout=120)
+        except TimeoutExpired:
+            process.kill()
+            output, errs = process.communicate()
+
+        if process.returncode != 0:
+            logger.fatal('pdflatex execution failed.')
+            logger.fatal(f'OUTPUT: {output.decode()}')
+            raise RuntimeError(output)
+
+    logger.info('Subprocess finished successfully.')
+    logger.info(output.decode())
+
+    file_list = [f for f in list(output_folder.rglob("*.*")) if f.suffix != ".pdf"]
+    for file in file_list:
+        if file.is_dir():
+            file.rmdir()
+        else:
+            file.unlink(missing_ok=True)
 
 
 def copy_static_content(configuration_context: dict) -> None:
@@ -62,4 +69,4 @@ def copy_static_content(configuration_context: dict) -> None:
     if pathlib.Path(configuration_context["static_folder"]).is_dir():
         copy_tree(configuration_context["static_folder"], configuration_context["output_folder"])
     else:
-        __logger.warning(configuration_context["static_folder"] + " is not a directory !")
+        logger.warning(configuration_context["static_folder"] + " is not a directory !")

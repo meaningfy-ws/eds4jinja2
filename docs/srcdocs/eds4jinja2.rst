@@ -8,6 +8,7 @@ Subpackages
 
    eds4jinja2.adapters
    eds4jinja2.builders
+   eds4jinja2.entrypoints
 
 Module contents
 ---------------
