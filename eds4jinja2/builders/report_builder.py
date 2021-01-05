@@ -96,6 +96,8 @@ class ReportBuilder:
                 self.template_flavour_syntax_spec = HTML_TEMPLATE_SYNTAX
             else:
                 self.template_flavour_syntax_spec = DEFAULT_TEMPLATE_SYNTAX
+        else:
+            self.template_flavour_syntax_spec = DEFAULT_TEMPLATE_SYNTAX
 
         template_loader = jinja2.FileSystemLoader(searchpath=template_path)
         self.template_env = build_eds_environment(loader=template_loader, **self.template_flavour_syntax_spec)
