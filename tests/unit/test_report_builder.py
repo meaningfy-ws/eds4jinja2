@@ -20,6 +20,11 @@ def sample_data_path() -> str:
     return pathlib.Path(__file__).parent.parent / "test_data/templates_test"
 
 
+@pytest.fixture(scope="function")
+def sample_data_path_latex() -> str:
+    return pathlib.Path(__file__).parent.parent / "test_data/latex_templates_test"
+
+
 def test_report_builder_config_file_not_found():
     with pytest.raises(FileNotFoundError) as exception:
         ReportBuilder(pathlib.Path.cwd())
@@ -28,6 +33,17 @@ def test_report_builder_config_file_not_found():
 
 def test_report_builder_config_file_exists(sample_data_path):
     ReportBuilder(sample_data_path)
+
+
+def test_report_builder_flavour_config(sample_data_path):
+    r = ReportBuilder(sample_data_path, additional_config={"template_flavour_syntax": "tex"})
+    assert r.template_env.block_start_string == r'\BLOCK{'
+
+    r = ReportBuilder(sample_data_path, additional_config={"template_flavour_syntax": "xml"})
+    assert r.template_env.block_start_string == '{%'
+
+    r = ReportBuilder(sample_data_path, additional_config={"template_flavour_syntax": ""})
+    assert r.template_env.block_start_string == '{%'
 
 
 def test_report_builder_make_document(sample_data_path):
@@ -50,6 +66,14 @@ def test_report_builder_make_document(sample_data_path):
 
     path = pathlib.Path(sample_data_path) / "output"
     shutil.rmtree(path)
+
+
+def test_report_builder_make_latex_document(sample_data_path_latex):
+    out_path = sample_data_path_latex / "output"
+    report_builder = ReportBuilder(target_path=sample_data_path_latex, output_path=out_path)
+    report_builder.make_document()
+    assert (out_path / "main.tex").exists()
+    shutil.rmtree(out_path)
 
 
 def test_deep_update():
