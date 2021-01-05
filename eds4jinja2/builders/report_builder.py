@@ -15,6 +15,35 @@ import jinja2
 from eds4jinja2.builders import deep_update
 from eds4jinja2.builders.jinja_builder import build_eds_environment, inject_environment_globals
 
+HTML_TEMPLATE_SYNTAX = {'block_start_string': '{%',
+                        'block_end_string': '%}',
+                        'variable_start_string': '{{',
+                        'variable_end_string': '}}',
+                        'comment_start_string': '{#',
+                        'comment_end_string': '#}',
+                        'line_statement_prefix': '#',
+                        'line_comment_prefix': '##',
+                        'trim_blocks': False, }
+
+# do not change anything
+DEFAULT_TEMPLATE_SYNTAX = {}
+
+######################################################################
+# Jinja2 Environment ARGS
+#   Constant borrowed from Marc Brinkmann's latex repository (mbr/latex on github)
+#   Reused also by Samuel Roeca's in his latex repository (pappasam/latexbuild on github)
+######################################################################
+LATEX_TEMPLATE_SYNTAX = {'block_start_string': r'\BLOCK{',
+                         'block_end_string': '}',
+                         'variable_start_string': r'\VAR{',
+                         'variable_end_string': '}',
+                         'comment_start_string': r'\#{',
+                         'comment_end_string': '}',
+                         'line_statement_prefix': '%-',
+                         'line_comment_prefix': '%#',
+                         'trim_blocks': True,
+                         'autoescape': False, }
+
 
 class ReportBuilder:
     """
@@ -22,11 +51,14 @@ class ReportBuilder:
     """
     configuration_context: dict = {}
 
-    def __init__(self, target_path, config_file="config.json",
-                 output_path=None, additional_config: dict = {}, ):
+    def __init__(self, target_path: str, config_file: str = "config.json",
+                 output_path: str = None, additional_config: dict = {},
+                 template_flavour: dict = DEFAULT_TEMPLATE_SYNTAX):
         """
             Instantiates builders form a template providing an optional configuration context.
 
+        :type template_flavour: Provides a configuration of the templating syntax flavour. By default it is configured
+                for HTML but could be adapted as necessary. For LaTex, LATEX_TEMPLATE_SYNTAX is available.
         :type additional_config: additional config parameters that are added to the default
                                 ones be overwritten (deep update) in the project config.json
         :param target_path: the folder where the required resources are found
@@ -56,7 +88,8 @@ class ReportBuilder:
         self.configuration_context = self.configuration_context
 
         template_loader = jinja2.FileSystemLoader(searchpath=template_path)
-        self.template_env = build_eds_environment(loader=template_loader)
+        self.template_env = build_eds_environment(loader=template_loader, **template_flavour)
+
         self.configuration_context["conf"]["template_path"] = template_path
         inject_environment_globals(self.template_env, {'conf': self.configuration_context["conf"]},
                                    False if self.configuration_context is None else True)
