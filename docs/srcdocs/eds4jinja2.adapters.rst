@@ -28,6 +28,14 @@ eds4jinja2.adapters.http\_ds module
    :undoc-members:
    :show-inheritance:
 
+eds4jinja2.adapters.latex\_utils module
+---------------------------------------
+
+.. automodule:: eds4jinja2.adapters.latex_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 eds4jinja2.adapters.local\_sparql\_ds module
 --------------------------------------------
 

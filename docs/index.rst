@@ -127,7 +127,7 @@ The command to run the report generation is `mkreport`
 The command line interface has three arguments:
 ########################################################################################################
 
-* **--target** (mandatory): the directory where eds4jinja2 will load the content from, for rendering a template; this directory has a mandatory layout (see below)
+* **--target** (optional): the directory where eds4jinja2 will load the content from, for rendering a template; this directory has a mandatory layout (see below)
 * **--output** (optional): the directory where eds4jinja2 will place the rendered output; if this parameter is not specified, it will be placed in an "output" subdirectory that will be created where the "--target" parameter points to
 * **--config** (optional): the name of the configuration file from where eds4jinja2 will load the configuration that's passed to Jinja2; default "config.json"
 
@@ -156,14 +156,72 @@ Example:
 
     {
         "template": "main.html",
+        "template_flavour_syntax": "html",
         "conf":
         {
             "default_endpoint" : "http://example.com/path/sparqlendpoint",
             "title": "Pretty printed relevant information",
             "type": "report",
             "author": "Your name here"
+            "nexted_properties": {
+                "graph": "http://publications.europa.eu/resources/authority/lam/DocumentProperty"
+            },
         }
     }
+
+Latex templates:
+########################################################################################################
+
+It is possible to write templates with LaTex documents.
+To do so, first make sure you have specified the template flavour in the config file
+
+.. code-block:: json
+
+    {
+        "template": "main.tex",
+        "template_flavour_syntax": "latex",
+        "conf":
+        {
+            "title": "Pretty printed relevant information",
+            ...
+
+
+Next write your templates using the following conventions:
+
+* Blocks:  ``\BLOCK{block block_name}\BLOCK{endblock}``
+* Line statement:  ``%- line instruction``
+* Variables:  ``\VAR{variable_name}``
+* Comments (long form):  ``\#{This is a long-form Jinja comment}``
+* Comments (short form):  ``%# This is a short-form Jinja comment``
+
+
+An example ``jinja-test.tex`` is available below:
+
+.. code-block:: latex
+
+    \documentclass{article}
+    \begin{document}
+    \section{Example}
+    An example document using \LaTeX, Python, and Jinja.
+
+    % This is a regular LaTeX comment
+    \section{\VAR{section1}}
+    \#{This is a long-form Jinja comment}
+    \begin{itemize}
+    \BLOCK{ for x in range(0, 3) }
+      \item Counting: \VAR{x}
+    \BLOCK{ endfor }
+    \end{itemize}
+
+    \section{\VAR{section2}}
+    %# This is a short-form Jinja comment
+    \begin{itemize}
+    %- for x in range(0, 3)
+      \item Counting: \VAR{x}
+    %- endfor
+    \end{itemize}
+
+    \end{document}
 
 
 Indices and tables

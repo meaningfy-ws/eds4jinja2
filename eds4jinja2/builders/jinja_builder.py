@@ -7,6 +7,7 @@
 
 import jinja2
 
+from eds4jinja2.adapters.latex_utils import escape_latex
 from eds4jinja2.adapters.local_sparql_ds import RDFFileDataSource
 from eds4jinja2.adapters.tabular_utils import invert_dict, replace_strings_in_tabular, add_relative_figures
 from eds4jinja2.adapters.file_ds import FileDataSource
@@ -30,24 +31,48 @@ TABULAR_HELPERS = {
                                                                          percentage),
 }
 
+ADDITIONAL_VARIABLE_FILTERS = {
+    "escape_latex": lambda value: escape_latex(value),
+}
 
-def build_eds_environment(external_data_source_builders={**DATA_SOURCE_BUILDERS, **TABULAR_HELPERS}, **kwargs):
+
+def build_eds_environment(external_data_source_builders={**DATA_SOURCE_BUILDERS, **TABULAR_HELPERS},
+                          external_filters=ADDITIONAL_VARIABLE_FILTERS, **kwargs):
     """
         creates a JINJA environment and injects the global context with EDS functions
-    :param external_data_source_builders:
+    :param external_filters: additional filters to be make available in the templates
+    :param external_data_source_builders: additional instructions to be made available in the templates
     :param kwargs:
     :return:
     """
     template_env = jinja2.Environment(**kwargs)
     inject_environment_globals(template_env, external_data_source_builders)
+    inject_environment_filters(template_env, external_filters)
     return template_env
+
+
+def inject_environment_filters(jinja_environment: jinja2.Environment, filters: dict, update_existent=True):
+    """
+        Inject the filters into JINJA2 environment making them globally available from any template.
+        Updates in place the `filter` environment dictionary by adding non existent keys from another dictionary.
+        If the dictionary keys exist then they are replaced depending whether the update_existent flag is set.
+    :param update_existent: whether the overlapping values shall be overwritten
+    :param filters: additional filters to be injected
+    :param jinja_environment: JINJA environment to be updated
+    :return:
+    """
+    if update_existent:
+        jinja_environment.filters.update(filters)
+    else:
+        jinja_environment.filters.update(
+            {k: v for k, v in filters.items() if k not in jinja_environment.filters.keys()})
 
 
 def inject_environment_globals(jinja_environment: jinja2.Environment, context: dict, update_existent=True):
     """
         Inject the context into JINJA2 environment making it globally available from any template.
-        Update in place a dictionary by adding non existent keys from another dictionary.
-        If the dictionary keys exist then they are replaced depending whether the update_existent flag is set.
+        Updates in place the `global` environment dictionary by adding non existent keys from another dictionary.
+        If the keys exist then they are replaced depending whether the update_existent flag is set.
     :param update_existent: whether the overlapping values shall be overwritten
     :param context: additional context to be injected
     :param jinja_environment: JINJA environment to be updated
