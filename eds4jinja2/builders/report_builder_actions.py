@@ -47,7 +47,7 @@ def make_pdf_from_latex(configuration_context: dict = {}) -> None:
 
         if process.returncode != 0:
             logger.fatal('pdflatex execution failed.')
-            logger.fatal(f'OUTPUT: {output.decode()}')
+            logger.fatal(output)
             raise RuntimeError(output)
 
     logger.info('Subprocess finished successfully.')
