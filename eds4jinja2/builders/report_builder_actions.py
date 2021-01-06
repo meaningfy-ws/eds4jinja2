@@ -51,7 +51,7 @@ def make_pdf_from_latex(configuration_context: dict = {}) -> None:
             raise RuntimeError(output)
 
     logger.info('Subprocess finished successfully.')
-    logger.info(output.decode())
+    logger.info(output)
 
     # deleting all the source and auxiliary files
     file_list = [f for f in list(output_folder.rglob("*.*")) if f.suffix != ".pdf"]
