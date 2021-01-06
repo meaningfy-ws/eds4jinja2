@@ -43,6 +43,7 @@ def make_pdf_from_latex(configuration_context: dict = {}) -> None:
             output, errs = process.communicate(timeout=120)
         except TimeoutExpired:
             process.kill()
+            process.kill()
             output, errs = process.communicate()
 
         if process.returncode != 0:
@@ -51,7 +52,7 @@ def make_pdf_from_latex(configuration_context: dict = {}) -> None:
             raise RuntimeError(output)
 
     logger.info('Subprocess finished successfully.')
-    logger.info(output.decode())
+    logger.info(output)
 
     # deleting all the source and auxiliary files
     file_list = [f for f in list(output_folder.rglob("*.*")) if f.suffix != ".pdf"]
