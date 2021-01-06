@@ -43,7 +43,6 @@ def make_pdf_from_latex(configuration_context: dict = {}) -> None:
             output, errs = process.communicate(timeout=120)
         except TimeoutExpired:
             process.kill()
-            process.kill()
             output, errs = process.communicate()
 
         if process.returncode != 0:
