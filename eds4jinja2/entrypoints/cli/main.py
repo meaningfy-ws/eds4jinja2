@@ -4,7 +4,7 @@ import click
 from eds4jinja2.builders.report_builder import ReportBuilder
 from eds4jinja2.builders.report_builder_actions import copy_static_content, make_pdf_from_latex
 
-__logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 @click.command()
