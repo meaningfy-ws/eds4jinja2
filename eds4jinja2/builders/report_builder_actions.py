@@ -33,6 +33,8 @@ def make_pdf_from_latex(configuration_context: dict = {}) -> None:
     output_folder = pathlib.Path(configuration_context["output_folder"])
     input_file_name = pathlib.Path(configuration_context["template"])
 
+    engine = configuration_context["latex_engine"] if "latex_engine" in configuration_context else "pdflatex"
+
     cmd_args = ["pdflatex", "-file-line-error", "-interaction=nonstopmode", "-synctex=1",
                 "-output-format=pdf", "-output-directory=.", str(input_file_name)]
 
