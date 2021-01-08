@@ -54,7 +54,9 @@ def make_pdf_from_latex(configuration_context: dict = {}) -> None:
             logger.fatal(output)
             raise RuntimeError(output)
 
-    logger.info('LaTex subprocess finished successfully.')
+        logger.info('LaTex subprocess finished successfully.')
+
+    logger.info('LaTex multi-pass build finished successfully.')
     logger.info(output)
 
     # deleting all the source and auxiliary files
