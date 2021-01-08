@@ -35,7 +35,7 @@ def make_pdf_from_latex(configuration_context: dict = {}) -> None:
 
     engine = configuration_context["latex_engine"] if "latex_engine" in configuration_context else "pdflatex"
 
-    cmd_args = ["pdflatex", "-file-line-error", "-interaction=nonstopmode", "-synctex=1",
+    cmd_args = [engine, "-file-line-error", "-interaction=nonstopmode", "-synctex=1",
                 "-output-format=pdf", "-output-directory=.", str(input_file_name)]
 
     for _ in range(LATEX_RUNS):
