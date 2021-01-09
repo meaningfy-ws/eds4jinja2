@@ -39,8 +39,9 @@ def make_pdf_from_latex(configuration_context: dict = {}) -> None:
     cmd_args = [engine, "-file-line-error", "-interaction=nonstopmode", "-synctex=1",
                 "-output-format=pdf", "-output-directory=.", str(input_file_name)]
 
-    for p in range(LATEX_RUNS):
-        logger.info(f"Running pass {p} in a multi-pass LaTex build")
+    output = "LaTex engine logs"
+    for _pass in range(LATEX_RUNS):
+        logger.info(f"Running pass {_pass} in a multi-pass LaTex build")
         process = Popen(args=cmd_args, stdout=PIPE,
                         cwd=str(output_folder))
         try:
