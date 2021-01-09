@@ -33,10 +33,15 @@ def make_pdf_from_latex(configuration_context: dict = {}) -> None:
     output_folder = pathlib.Path(configuration_context["output_folder"])
     input_file_name = pathlib.Path(configuration_context["template"])
 
-    cmd_args = ["pdflatex", "-file-line-error", "-interaction=nonstopmode", "-synctex=1",
+    engine = configuration_context["latex_engine"] if "latex_engine" in configuration_context else "pdflatex"
+    logger.info(f"Using {configuration_context['latex_engine']} to compile LaTex sources")
+
+    cmd_args = [engine, "-file-line-error", "-interaction=nonstopmode", "-synctex=1",
                 "-output-format=pdf", "-output-directory=.", str(input_file_name)]
 
-    for _ in range(LATEX_RUNS):
+    output = "LaTex engine logs"
+    for _pass in range(LATEX_RUNS):
+        logger.info(f"Running pass {_pass} in a multi-pass LaTex build")
         process = Popen(args=cmd_args, stdout=PIPE,
                         cwd=str(output_folder))
         try:
@@ -50,7 +55,9 @@ def make_pdf_from_latex(configuration_context: dict = {}) -> None:
             logger.fatal(output)
             raise RuntimeError(output)
 
-    logger.info('Subprocess finished successfully.')
+        logger.info('LaTex subprocess finished successfully.')
+
+    logger.info('LaTex multi-pass build finished successfully.')
     logger.info(output)
 
     # deleting all the source and auxiliary files
@@ -67,6 +74,7 @@ def copy_static_content(configuration_context: dict) -> None:
     :param configuration_context: the configuration context for the currently executing processing pipeline
     :rtype: None
     """
+
     if pathlib.Path(configuration_context["static_folder"]).is_dir():
         copy_tree(configuration_context["static_folder"], configuration_context["output_folder"])
     else:
