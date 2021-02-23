@@ -6,7 +6,7 @@
 # Email: costezki.eugen@gmail.com
 
 """ An abstract data source that is implemented by the specific ones. """
-
+import json
 from abc import ABC, abstractmethod
 from typing import Tuple, Optional
 
@@ -70,6 +70,25 @@ class DataSource(ABC):
             else:
                 result = self._fetch_tree()
                 logger.info(f"With {type(self).__name__}, fetching as tree {str(self)}")
+                return result, None
+        except Exception as e:
+            logger.exception(f"With {type(self).__name__}, failed tree fetching {str(self)}")
+            return None, str(e)
+
+    def fetch_tree_raw(self) -> Tuple[Optional[object], Optional[str]]:
+        """
+            Read the content from the data source and return a tree structure.
+
+        :return: a tuple where the first element is a result of a successful data reading and
+                 the second is the error message in case of failure
+        """
+        try:
+
+            if not self._can_be_tree():
+                raise UnsupportedRepresentation("Only TABULAR representation is supported")
+            else:
+                logger.info(f"With {type(self).__name__}, fetching as tree {str(self)}")
+                result = json.dumps(self._fetch_tree())
                 return result, None
         except Exception as e:
             logger.exception(f"With {type(self).__name__}, failed tree fetching {str(self)}")
