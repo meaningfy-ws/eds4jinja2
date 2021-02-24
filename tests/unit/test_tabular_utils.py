@@ -80,6 +80,15 @@ def test_replace_strings_in_tabular2(dummy_df, dummy_namespaces):
     assert dummy_df['_touched_'].all()
 
 
+def test_count_string_replacement(dummy_df, dummy_namespaces):
+    strings_found = replace_strings_in_tabular(dummy_df, target_columns=[], value_mapping_dict=dummy_namespaces,
+                                               mark_touched_rows=True)
+    assert "http://publications.europa.eu/ontology/euvoc#" in strings_found
+    assert "http://publications.europa.eu/resource/authority/corporate-body/" in strings_found
+    assert "http://www.w3.org/1999/02/22-rdf-syntax-ns#" in strings_found
+
+
+
 def test_make_relative(dummy_df_numbers):
     add_relative_figures(dummy_df_numbers, target_columns=['subject_cnt', 'pattern_cnt'], relativisers=[100, None],
                          percentage=False)
@@ -111,4 +120,3 @@ def test_make_relative(dummy_df_numbers):
                              percentage=True)
     # print('\n\n\n')
     # print(tabulate(dummy_df_numbers, headers='keys'))
-

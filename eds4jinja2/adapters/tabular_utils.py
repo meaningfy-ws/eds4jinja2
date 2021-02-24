@@ -48,18 +48,19 @@ def invert_dict(mapping_dict: Dict, reduce_values: bool = True):
 
 def replace_strings_in_tabular(data_frame: pd.DataFrame, target_columns: List[str] = None,
                                value_mapping_dict: Dict = None,
-                               mark_touched_rows: bool = False):
+                               mark_touched_rows: bool = False) -> List[str]:
     """
         Replaces the values from the target columns in a data frame according to the value-mapping dictionary.
         If the inverted_mapping flag is true, then the inverted value_mapping_dict is considered.
         If mark_touched_rows is true, then adds a boolean column _touched_ where
 
-        >>> mapping_dict example = {"old value 1" : "new value 1", "old value 2","new value 2"}
+        >>> mapping_dict example = {"old value 1" : "new value 1", "old value 2":"new value 2"}
 
         :param mark_touched_rows: add a new boolean column _touched_ indicating which rows were updated
         :param value_mapping_dict: the string substitution mapping
         :param target_columns: a list of column names otehrwise leave empty if substitution applies to all columns
         :param data_frame: the data frame
+        :return the list of unique strings found in the dataframe
     """
     if not target_columns:
         target_columns = []
@@ -85,6 +86,15 @@ def replace_strings_in_tabular(data_frame: pd.DataFrame, target_columns: List[st
             [data_frame[col].str.contains('(' + '|'.join(escaped_value_mapping_dict.keys()) + ')', na=False)
              for col in obj_columns])
         data_frame["_touched_"] = np.logical_or.reduce(mask, axis=1)
+        # data_frame["_found_"] = found_strings_column_stack
+
+    # which (unique) strings are found in the dataframe?
+    strings_found_column_stack = np.array(
+        [data_frame[col].str.findall('(' + '|'.join(escaped_value_mapping_dict.keys()) + ')',
+                                     flags=re.IGNORECASE).values
+         for col in obj_columns]
+    )
+    strings_found = np.unique(np.concatenate(strings_found_column_stack.flatten()))
 
     # create a nested dictionary that pandas replace understand
     # For a DataFrame nested dictionaries, e.g., {'a': {'b': np.nan}},
@@ -93,6 +103,8 @@ def replace_strings_in_tabular(data_frame: pd.DataFrame, target_columns: List[st
     # to use a nested dict in this way.
     nested_dict = {column: escaped_value_mapping_dict for column in obj_columns}
     data_frame.replace(to_replace=nested_dict, value=None, regex=True, inplace=True)
+
+    return strings_found
 
 
 def add_relative_figures(data_frame: pd.DataFrame, target_columns: List[str], relativisers: List,
