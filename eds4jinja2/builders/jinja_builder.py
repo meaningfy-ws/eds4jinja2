@@ -4,6 +4,7 @@
 # Created:  18/03/2019
 # Author: Eugeniu Costetchi
 # Email: costezki.eugen@gmail.com
+import json
 
 import jinja2
 
@@ -31,12 +32,16 @@ TABULAR_HELPERS = {
                                                                          percentage),
 }
 
+TREE_HELPERS = {
+    "object_to_json": lambda obj, **kwargs: json.dumps(obj, **kwargs)
+}
+
 ADDITIONAL_VARIABLE_FILTERS = {
     "escape_latex": lambda value: escape_latex(value),
 }
 
 
-def build_eds_environment(external_data_source_builders={**DATA_SOURCE_BUILDERS, **TABULAR_HELPERS},
+def build_eds_environment(external_data_source_builders={**DATA_SOURCE_BUILDERS, **TABULAR_HELPERS, **TREE_HELPERS},
                           external_filters=ADDITIONAL_VARIABLE_FILTERS, **kwargs):
     """
         creates a JINJA environment and injects the global context with EDS functions

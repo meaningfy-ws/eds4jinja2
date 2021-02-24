@@ -6,7 +6,6 @@
 # Email: costezki.eugen@gmail.com
 
 """ An abstract data source that is implemented by the specific ones. """
-
 from abc import ABC, abstractmethod
 from typing import Tuple, Optional
 
