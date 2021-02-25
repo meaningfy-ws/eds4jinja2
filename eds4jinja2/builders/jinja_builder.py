@@ -8,11 +8,12 @@ import json
 
 import jinja2
 
+from eds4jinja2.adapters.file_ds import FileDataSource
 from eds4jinja2.adapters.latex_utils import escape_latex
 from eds4jinja2.adapters.local_sparql_ds import RDFFileDataSource
-from eds4jinja2.adapters.tabular_utils import invert_dict, replace_strings_in_tabular, add_relative_figures
-from eds4jinja2.adapters.file_ds import FileDataSource
+from eds4jinja2.adapters import invert_dict
 from eds4jinja2.adapters.remote_sparql_ds import RemoteSPARQLEndpointDataSource
+from eds4jinja2.adapters.tabular_utils import replace_strings_in_tabular, add_relative_figures
 
 DATA_SOURCE_BUILDERS = {
     "from_endpoint": lambda endpoint: RemoteSPARQLEndpointDataSource(endpoint),

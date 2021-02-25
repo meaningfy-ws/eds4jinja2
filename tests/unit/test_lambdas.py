@@ -8,8 +8,8 @@
 """ """
 import json
 
-import tests
-
+import rdflib
+from rdflib.term import URIRef
 
 def test_call_lambda():
     """
@@ -59,3 +59,11 @@ def test_dict_filtering_and_list_extension_in_template(eds_environment):
     rendered_text = template.render()
     print()
     print(rendered_text)
+
+
+def test_uri_ref():
+    ns = rdflib.namespace.NamespaceManager(rdflib.Graph())
+    u = URIRef("email@sdfds.dfgd")
+    v = URIRef("https://rdflib.readthedocs.io/en/stable/rdf_terms")
+
+

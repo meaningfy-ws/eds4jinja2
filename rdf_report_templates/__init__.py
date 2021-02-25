@@ -6,3 +6,4 @@
 # Email: costezki.eugen@gmail.com 
 
 """ This package includes eds4jinja2 templates used by a few Meaningfy projects """
+# TODO: remove this package and all the
