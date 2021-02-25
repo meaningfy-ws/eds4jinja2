@@ -16,17 +16,17 @@ pd.options.display.max_columns = None
 def test_replace_strings_in_tabular(dummy_df, dummy_namespaces):
     replace_strings_in_tabular(dummy_df, target_columns=['s'], value_mapping_dict=dummy_namespaces,
                                mark_touched_rows=True)
-    assert dummy_df['s'].str.contains("corporate-body:SPC", na=False).any()
-    assert not dummy_df['o'].str.contains("euvoc:Corporate", na=False).any()
-    assert not dummy_df['p'].str.contains("rdf:type", na=False).any()
+    assert dummy_df['s'].str.contains("corporate-bodySPC", na=False).any()
+    assert not dummy_df['o'].str.contains("euvocCorporate", na=False).any()
+    assert not dummy_df['p'].str.contains("rdftype", na=False).any()
 
 
 def test_replace_strings_in_tabular2(dummy_df, dummy_namespaces):
     replace_strings_in_tabular(dummy_df, target_columns=[], value_mapping_dict=dummy_namespaces,
                                mark_touched_rows=True)
-    assert dummy_df['o'].str.contains("euvoc:Corporate", na=False).any()
-    assert dummy_df['s'].str.contains("corporate-body:SPC", na=False).any()
-    assert dummy_df['p'].str.contains("rdf:type", na=False).any()
+    assert dummy_df['o'].str.contains("euvocCorporate", na=False).any()
+    assert dummy_df['s'].str.contains("corporate-bodySPC", na=False).any()
+    assert dummy_df['p'].str.contains("rdftype", na=False).any()
     assert dummy_df['_touched_'].all()
 
 

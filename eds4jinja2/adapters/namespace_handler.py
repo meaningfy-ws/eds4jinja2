@@ -75,18 +75,6 @@ class NamespaceInventory(rdflib.namespace.NamespaceManager):
                 lambda x: self.uri_to_qname(x, prefix_cc_lookup=prefix_cc_lookup, error_fail=error_fail))
         return result_frame
 
-    def reduce_uri_to_qname(self, data_frame: DataFrame, target_columns: List = None, inplace=True) -> DataFrame:
-        """
-            Replace the URIs with QNames in the target columns of teh dataframe 
-            based on the current namespace inventory. The replacement is performed inplace.
-        :param data_frame: the Pandas DataFrame
-        :param target_columns: the target columns to replace uris;
-                Note that these columns may also be free text columns, not necessary with URI values.
-        :param inplace: indicate whether the replacement shall be performed on the same dataframe or
-                copied into a new one.
-        :return: the dataframe with replaced values.
-        """
-
     def uri_to_qname(self, uri_string, prefix_cc_lookup=True, error_fail=True):
         """
             Transform the uri_string to a qname string and remember the namespace.
@@ -112,17 +100,3 @@ class NamespaceInventory(rdflib.namespace.NamespaceManager):
                 raise e
 
             return uri_string
-
-    # def forget_prefix(self, prefix: str):
-    #     """
-    #         delete the prefix from the namespace inventory
-    #     :param prefix:
-    #     :return:
-    #     """
-    #
-    # def forget_namespace(self, namespace: str):
-    #     """
-    #         delete the prefixes that point fo tha namespace
-    #     :param namespace:
-    #     :return:
-    #     """

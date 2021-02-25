@@ -11,6 +11,9 @@ import json
 import rdflib
 from rdflib.term import URIRef
 
+from eds4jinja2.adapters import deep_update
+
+
 def test_call_lambda():
     """
         testing that the json.dumps can be passed **kwargs arguments
@@ -67,3 +70,28 @@ def test_uri_ref():
     v = URIRef("https://rdflib.readthedocs.io/en/stable/rdf_terms")
 
 
+def test_deep_update():
+    source = {'hello1': 1}
+    overrides = {'hello2': 2}
+    deep_update(source, overrides)
+    assert source == {'hello1': 1, 'hello2': 2}
+
+    source = {'hello': 'to_override'}
+    overrides = {'hello': 'over'}
+    deep_update(source, overrides)
+    assert source == {'hello': 'over'}
+
+    source = {'hello': {'value': 'to_override', 'no_change': 1}}
+    overrides = {'hello': {'value': 'over'}}
+    deep_update(source, overrides)
+    assert source == {'hello': {'value': 'over', 'no_change': 1}}
+
+    source = {'hello': {'value': 'to_override', 'no_change': 1}}
+    overrides = {'hello': {'value': {}}}
+    deep_update(source, overrides)
+    assert source == {'hello': {'value': {}, 'no_change': 1}}
+
+    source = {'hello': {'value': {}, 'no_change': 1}}
+    overrides = {'hello': {'value': 2}}
+    deep_update(source, overrides)
+    assert source == {'hello': {'value': 2, 'no_change': 1}}

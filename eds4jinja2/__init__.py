@@ -27,6 +27,7 @@ __all__ = ["build_eds_environment",
            "RDFFileDataSource",
            "add_relative_figures",
            "replace_strings_in_tabular",
+
            ]
 
 # hard coding the log level and format
