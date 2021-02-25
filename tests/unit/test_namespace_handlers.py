@@ -58,9 +58,9 @@ def test_invert_dict(dummy_prefixes):
 
 def test_ns_inventory(dummy_prefixes):
     ni = NamespaceInventory(dummy_prefixes)
-    assert "dcterms" not in ni.namespaces_dict()
-    assert "dct" in ni.namespaces_dict()
-    assert "http://purl.org/vocab/frbr/core#" not in ni.namespaces_dict()
+    assert "dcterms" not in ni.namespaces_as_dict()
+    assert "dct" in ni.namespaces_as_dict()
+    assert "http://purl.org/vocab/frbr/core#" not in ni.namespaces_as_dict()
 
 
 def test_uri_to_qname(dummy_prefixes):
@@ -72,9 +72,9 @@ def test_uri_to_qname(dummy_prefixes):
 
 def test_simplify_uri_to_qname_open(dummy_df):
     ni = NamespaceInventory()
-    ni.simplify_uri_to_qname(dummy_df, target_columns=["s", "p", "o"])
+    ni.simplify_uris_in_tabular(dummy_df, target_columns=["s", "p", "o"])
 
-    ns_inv = ni.namespaces_dict()
+    ns_inv = ni.namespaces_as_dict()
     assert "ns1" in ns_inv
     assert "rdf" in ns_inv
     assert "skos" in ns_inv
@@ -87,9 +87,9 @@ def test_simplify_uri_to_qname_open(dummy_df):
 
 def test_simplify_uri_to_qname_close(dummy_df):
     ni = NamespaceInventory()
-    ni.simplify_uri_to_qname(dummy_df, prefix_cc_lookup=False, target_columns=["s", "p", "o"])
+    ni.simplify_uris_in_tabular(dummy_df, prefix_cc_lookup=False, target_columns=["s", "p", "o"])
 
-    ns_inv = ni.namespaces_dict()
+    ns_inv = ni.namespaces_as_dict()
     assert "ns1" in ns_inv
     assert "rdf" in ns_inv
     assert "ns2" in ns_inv

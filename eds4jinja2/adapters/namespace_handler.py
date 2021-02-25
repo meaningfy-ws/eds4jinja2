@@ -31,19 +31,22 @@ class NamespaceInventory(rdflib.namespace.NamespaceManager):
 
     def __init__(self, namespace_definition_dict=None):
         super().__init__(rdflib.Graph())
+
         if namespace_definition_dict:
             # reduce the namespace definition dictionary and bind the definitions
             for prefix, namespace in invert_dict(invert_dict(namespace_definition_dict)).items():
                 self.bind(prefix=prefix, namespace=namespace, replace=True, override=True)
 
-    def namespaces_dict(self):
+        self._remote_query_cash = []
+
+    def namespaces_as_dict(self):
         """
         :return: return the namespace definitions as a dict
         """
         return {prefix: ns_uri.toPython() for prefix, ns_uri in self.namespaces()}
 
-    def simplify_uri_to_qname(self, data_frame: DataFrame, target_columns: List = None,
-                              prefix_cc_lookup=True, inplace=True, error_fail=True) -> Dict:
+    def simplify_uris_in_tabular(self, data_frame: DataFrame, target_columns: List = None,
+                                 prefix_cc_lookup=True, inplace=True, error_fail=True) -> Dict:
         """
             Replace the full URIs by their qname counterparts. Discover the namespaces
             in the process, if the namespaces are not defined.
@@ -86,16 +89,17 @@ class NamespaceInventory(rdflib.namespace.NamespaceManager):
         """
         try:
             computed_ns = self.compute_qname_strict(uri_string)
-            if prefix_cc_lookup:
-                lookup_result = prefix_cc_lookup_base_uri(computed_ns[1].toPython())
+            base_uri = computed_ns[1].toPython()
+            if prefix_cc_lookup and base_uri not in self._remote_query_cash:
+                self._remote_query_cash.append(base_uri)
+                lookup_result = prefix_cc_lookup_base_uri(base_uri=base_uri)
                 if lookup_result:
                     for prefix, namespace in lookup_result.items():  # expecting at most one result
                         self.bind(prefix=prefix, namespace=namespace, override=True, replace=True)
             self.reset()
             return self.qname_strict(uri_string)
         except Exception as e:
-            logger.warning(f"Could not transform the URI <{uri_string}> to its QName form.", exc_info=True,
-                           stack_info=True)
+            logger.warning(f"Could not transform the URI <{uri_string}> to its QName form.")
             if error_fail:
                 raise e
 

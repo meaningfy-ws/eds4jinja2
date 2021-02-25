@@ -47,6 +47,14 @@ def test_file_fetch_tabular_successful(eds_environment):
     assert "error: None" in rendered_text
 
 
+def test_file_fetch_tabular_successful_reduce_uris(eds_environment):
+    template = eds_environment.from_string(tests.TEMPLATE_FILE_FETCH_TABULAR_REDUCED_URIS)
+    rendered_text = template.render()
+    assert "skos:Concept" in rendered_text
+    assert "ns1:SPC" in rendered_text
+    assert "rdf:type" in rendered_text
+
+
 def test_e2e_sparql_fetch_tree_successful():
     eds_environment = build_eds_environment()
     template = eds_environment.from_string(tests.TEMPLATE_SPARQL_FETCH_TREE)

@@ -9,13 +9,15 @@ import pandas as pd
 import pytest
 
 from eds4jinja2.adapters import invert_dict
-from eds4jinja2.builders.jinja_builder import build_eds_environment
+from eds4jinja2.builders.jinja_builder import build_eds_environment, TABULAR_HELPERS, TREE_HELPERS
 from tests import FAKE_DATA_SOURCE_BUILDERS, RESPONSE_SPARQL_CSV_CORPORATE_BODY, RESPONSE_SPARQL_WITH_NUMBERS
 
 
 @pytest.fixture(scope="function")
 def eds_environment():
-    return build_eds_environment(external_data_source_builders=FAKE_DATA_SOURCE_BUILDERS)
+    return build_eds_environment(external_data_source_builders={**FAKE_DATA_SOURCE_BUILDERS,
+                                                                **TABULAR_HELPERS,
+                                                                **TREE_HELPERS})
 
 
 @pytest.fixture(scope='function')

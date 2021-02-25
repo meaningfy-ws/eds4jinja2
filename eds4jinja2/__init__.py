@@ -15,6 +15,7 @@ import logging
 
 from eds4jinja2.adapters.file_ds import FileDataSource
 from eds4jinja2.adapters.local_sparql_ds import RDFFileDataSource
+from eds4jinja2.adapters.namespace_handler import NamespaceInventory
 from eds4jinja2.adapters.remote_sparql_ds import RemoteSPARQLEndpointDataSource
 from eds4jinja2.adapters.tabular_utils import add_relative_figures, replace_strings_in_tabular
 from eds4jinja2.builders.jinja_builder import build_eds_environment, inject_environment_globals
@@ -27,7 +28,7 @@ __all__ = ["build_eds_environment",
            "RDFFileDataSource",
            "add_relative_figures",
            "replace_strings_in_tabular",
-
+           "NamespaceInventory"
            ]
 
 # hard coding the log level and format
