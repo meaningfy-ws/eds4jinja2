@@ -63,7 +63,6 @@ def the_fetched_content_should_be_none(scenarioContext):
     assert "content:  None" in scenarioContext["renderedText"]
 
 
-
 @then('the fetched content text should contain keys <content_keys>')
 def the_fetched_content_text_should_contain_keys_content_keys(scenarioContext, content_keys):
     assert content_keys in scenarioContext["renderedText"]
@@ -74,7 +73,6 @@ def the_fetched_content_text_should_contain_values_content_values(scenarioContex
     assert content_values in scenarioContext["renderedText"]
 
 
-
 @then('the returned error should be None')
 def the_returned_error_should_be_none(scenarioContext):
     assert "error: None" in scenarioContext["renderedText"]
@@ -82,5 +80,4 @@ def the_returned_error_should_be_none(scenarioContext):
 
 @then('the returned error should contain <error_fragment>')
 def the_returned_error_should_contain_error_fragment(scenarioContext, error_fragment):
-    print("XXX " + "renderedText")
     assert error_fragment in scenarioContext["renderedText"]
