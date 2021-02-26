@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Optional
 
 from SPARQLWrapper import SPARQLWrapper, JSON, CSV
+from py_singleton import singleton
 
 from eds4jinja2.adapters.base_data_source import DataSource
 import pandas as pd
@@ -18,6 +19,27 @@ import pandas as pd
 from eds4jinja2.adapters.substitution_template import SubstitutionTemplate
 
 DEFAULT_ENCODING = 'utf-8'
+
+
+@singleton
+class SPARQLClientPool(object):
+    """
+        A singleton connection pool, that hosts a dictionary of endpoint_urls and
+        a corresponding SPARQLWrapper object connecting to it.
+
+        The rationale of this connection pool is to reuse connection objects and save time.
+    """
+    connection_pool = {}
+
+    @staticmethod
+    def create_or_reuse_connection(endpoint_url: str):
+        if endpoint_url not in SPARQLClientPool.connection_pool:
+            SPARQLClientPool.connection_pool[endpoint_url] = SPARQLWrapper(endpoint_url)
+        return SPARQLClientPool.connection_pool[endpoint_url]
+
+
+# safe instantiation
+SPARQLClientPool.instance()
 
 
 class RemoteSPARQLEndpointDataSource(DataSource):
@@ -46,11 +68,12 @@ class RemoteSPARQLEndpointDataSource(DataSource):
     """
 
     def __init__(self, endpoint_url):
-        self.endpoint = SPARQLWrapper(endpoint_url)
+        self.endpoint = SPARQLClientPool.create_or_reuse_connection(endpoint_url)
         self.__can_be_tree = True
         self.__can_be_tabular = True
 
-    def with_query(self, sparql_query: str, substitution_variables: dict = None, sparql_prefixes: str = "") -> 'RemoteSPARQLEndpointDataSource':
+    def with_query(self, sparql_query: str, substitution_variables: dict = None,
+                   sparql_prefixes: str = "") -> 'RemoteSPARQLEndpointDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
@@ -64,7 +87,8 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         self.endpoint.setQuery(new_query)
         return self
 
-    def with_query_from_file(self, sparql_query_file_path: str, substitution_variables: dict = None, prefixes: str = "") -> 'RemoteSPARQLEndpointDataSource':
+    def with_query_from_file(self, sparql_query_file_path: str, substitution_variables: dict = None,
+                             prefixes: str = "") -> 'RemoteSPARQLEndpointDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:

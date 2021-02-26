@@ -14,7 +14,7 @@ from typing import Union
 
 import jinja2
 
-from eds4jinja2.builders import deep_update
+from eds4jinja2.adapters import deep_update
 from eds4jinja2.builders.jinja_builder import build_eds_environment, inject_environment_globals
 
 # aims to be close to the J2 default env syntax definition, but explicitly specified

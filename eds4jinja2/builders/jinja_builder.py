@@ -4,15 +4,16 @@
 # Created:  18/03/2019
 # Author: Eugeniu Costetchi
 # Email: costezki.eugen@gmail.com
-import json
 
 import jinja2
 
+from eds4jinja2.adapters import invert_dict
+from eds4jinja2.adapters.file_ds import FileDataSource
 from eds4jinja2.adapters.latex_utils import escape_latex
 from eds4jinja2.adapters.local_sparql_ds import RDFFileDataSource
-from eds4jinja2.adapters.tabular_utils import invert_dict, replace_strings_in_tabular, add_relative_figures
-from eds4jinja2.adapters.file_ds import FileDataSource
+from eds4jinja2.adapters.namespace_handler import NamespaceInventory
 from eds4jinja2.adapters.remote_sparql_ds import RemoteSPARQLEndpointDataSource
+from eds4jinja2.adapters.tabular_utils import replace_strings_in_tabular, add_relative_figures
 
 DATA_SOURCE_BUILDERS = {
     "from_endpoint": lambda endpoint: RemoteSPARQLEndpointDataSource(endpoint),
@@ -30,19 +31,19 @@ TABULAR_HELPERS = {
     "add_relative_figures": lambda data_frame, target_columns, relativisers,
                                    percentage=True: add_relative_figures(data_frame, target_columns, relativisers,
                                                                          percentage),
+    "namespace_inventory": lambda namespace_definition_dict: NamespaceInventory(
+        namespace_definition_dict=namespace_definition_dict),
 }
 
-TREE_HELPERS = {
-    "object_to_json": lambda obj, **kwargs: json.dumps(obj, **kwargs)
-}
+TREE_HELPERS = {}
 
-ADDITIONAL_VARIABLE_FILTERS = {
+ADDITIONAL_FILTERS = {
     "escape_latex": lambda value: escape_latex(value),
 }
 
 
 def build_eds_environment(external_data_source_builders={**DATA_SOURCE_BUILDERS, **TABULAR_HELPERS, **TREE_HELPERS},
-                          external_filters=ADDITIONAL_VARIABLE_FILTERS, **kwargs):
+                          external_filters=ADDITIONAL_FILTERS, **kwargs):
     """
         creates a JINJA environment and injects the global context with EDS functions
     :param external_filters: additional filters to be make available in the templates

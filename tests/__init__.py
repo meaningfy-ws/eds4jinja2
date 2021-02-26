@@ -12,7 +12,6 @@ from eds4jinja2.adapters.base_data_source import UnsupportedRepresentation, Data
 from eds4jinja2.adapters.file_ds import FileDataSource
 from eds4jinja2.adapters.remote_sparql_ds import RemoteSPARQLEndpointDataSource
 
-
 SPO_LIMIT_10 = "select * where {?s ?p ?o} limit 10"
 DUMMY_DESCRIBE_URI = "http://publications.europa.eu/resource/authority/corporate-body/SPC"
 DUMMY_DESCRIBE_URI_GRAPH = "http://publications.europa.eu/resource/authority/corporate-body"
@@ -280,6 +279,15 @@ TEMPLATE_FILE_FETCH_TABULAR = '''
 {% set content, error = from_file(path).fetch_tabular() %} \n
 content:  {{ content }}\n
 error: {{ error }}\n
+'''
+
+TEMPLATE_FILE_FETCH_TABULAR_REDUCED_URIS = '''
+{% set content, error = from_file(path).fetch_tabular() %} \n
+{% set ni = namespace_inventory({}) %}
+
+content:  {{ ni.simplify_uris_in_tabular(content, error_fail=False) }}\n
+error: {{ error }}\n
+namespace definitions: {{ ni.namespaces_as_dict() | tojson }}
 '''
 
 

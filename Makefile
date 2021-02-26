@@ -14,10 +14,6 @@ install:
 	@ pip install -r requirements.txt
 	@ pip install -r requirements-dev.txt
 
-lint:
-	@ echo "$(BUILD_PRINT)Linting the code"
-	@ flake8 || true
-
 test:
 	@ echo "$(BUILD_PRINT)Running the tests"
 	@ pytest
