@@ -14,10 +14,8 @@
 """
 
 import logging
-from pprint import pprint
-from typing import Dict, List
+from typing import List
 
-import numpy as np
 import rdflib
 from pandas import DataFrame
 
@@ -46,7 +44,7 @@ class NamespaceInventory(rdflib.namespace.NamespaceManager):
         return {prefix: ns_uri.toPython() for prefix, ns_uri in self.namespaces()}
 
     def simplify_uris_in_tabular(self, data_frame: DataFrame, target_columns: List = None,
-                                 prefix_cc_lookup=True, inplace=True, error_fail=True) -> Dict:
+                                 prefix_cc_lookup=True, inplace=True, error_fail=True) -> DataFrame:
         """
             Replace the full URIs by their qname counterparts. Discover the namespaces
             in the process, if the namespaces are not defined.
@@ -57,7 +55,7 @@ class NamespaceInventory(rdflib.namespace.NamespaceManager):
         :param target_columns: the target columns to explore;
                                     Expectation is that these columns exclusively contain only URIs as values
         :param data_frame: the dataframe to explore
-        :return:  dictionary with newly discovered namespace definitions
+        :return:  the DataFrame with replaced values
         """
         if not target_columns:
             target_columns = []
@@ -66,7 +64,7 @@ class NamespaceInventory(rdflib.namespace.NamespaceManager):
             if col not in data_frame.columns.values.tolist():
                 raise ValueError("The target column not found in the data frame")
         # get all the string columns
-        obj_columns = data_frame.select_dtypes([np.object]).columns  # [1:]
+        obj_columns = data_frame.select_dtypes([object]).columns  # [1:]
         # limit to columns indicated in the self.target_columns
         obj_columns = filter(lambda x: x in target_columns, obj_columns) if target_columns else obj_columns
 
@@ -78,7 +76,7 @@ class NamespaceInventory(rdflib.namespace.NamespaceManager):
                 lambda x: self.uri_to_qname(x, prefix_cc_lookup=prefix_cc_lookup, error_fail=error_fail))
         return result_frame
 
-    def uri_to_qname(self, uri_string, prefix_cc_lookup=True, error_fail=True):
+    def uri_to_qname(self, uri_string, prefix_cc_lookup=True, error_fail=False):
         """
             Transform the uri_string to a qname string and remember the namespace.
             If the namespace is not defined, the prefix can be looked up on prefix.cc
