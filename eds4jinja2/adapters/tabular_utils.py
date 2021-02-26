@@ -43,7 +43,7 @@ def replace_strings_in_tabular(data_frame: pd.DataFrame, target_columns: List[st
         if col not in data_frame.columns.values.tolist():
             raise ValueError("The target column not found in the data frame")
     # get all the string columns
-    obj_columns = data_frame.select_dtypes([np.object]).columns  # [1:]
+    obj_columns = data_frame.select_dtypes([object]).columns  # [1:]
     # columns = self.target_columns if self.target_columns else self.data_frame.columns
     # limit to columns indicated in the self.target_columns
     if target_columns:

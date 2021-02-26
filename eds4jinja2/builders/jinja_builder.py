@@ -11,7 +11,7 @@ from eds4jinja2.adapters import invert_dict
 from eds4jinja2.adapters.file_ds import FileDataSource
 from eds4jinja2.adapters.latex_utils import escape_latex
 from eds4jinja2.adapters.local_sparql_ds import RDFFileDataSource
-from eds4jinja2.adapters.namespace_handler import NamespaceInventory
+from eds4jinja2.adapters.namespace_handler import NamespaceInventory, simplify_uris_in_tabular
 from eds4jinja2.adapters.remote_sparql_ds import RemoteSPARQLEndpointDataSource
 from eds4jinja2.adapters.tabular_utils import replace_strings_in_tabular, add_relative_figures
 
@@ -23,16 +23,26 @@ DATA_SOURCE_BUILDERS = {
 
 TABULAR_HELPERS = {
     "invert_dict": lambda mapping_dict, reduce_values=True: invert_dict(mapping_dict, reduce_values),
-    "replace_strings_in_tabular": lambda data_frame, target_columns, value_mapping_dict,
-                                         mark_touched_rows=False: replace_strings_in_tabular(data_frame,
-                                                                                             target_columns,
-                                                                                             value_mapping_dict,
-                                                                                             mark_touched_rows),
-    "add_relative_figures": lambda data_frame, target_columns, relativisers,
-                                   percentage=True: add_relative_figures(data_frame, target_columns, relativisers,
-                                                                         percentage),
+    "replace_strings_in_tabular": lambda data_frame, target_columns,
+                                         value_mapping_dict, mark_touched_rows=False: replace_strings_in_tabular(
+        data_frame,
+        target_columns,
+        value_mapping_dict,
+        mark_touched_rows),
+    "add_relative_figures": lambda data_frame, target_columns, relativisers, percentage=True: add_relative_figures(
+        data_frame,
+        target_columns,
+        relativisers, percentage),
     "namespace_inventory": lambda namespace_definition_dict: NamespaceInventory(
         namespace_definition_dict=namespace_definition_dict),
+    "simplify_uri_columns_in_tabular": lambda data_frame, namespace_inventory, target_columns=None, prefix_cc_lookup=True,
+                                       inplace=True, error_fail=True: simplify_uris_in_tabular(
+        data_frame,
+        namespace_inventory,
+        target_columns,
+        prefix_cc_lookup,
+        inplace,
+        error_fail)
 }
 
 TREE_HELPERS = {}
