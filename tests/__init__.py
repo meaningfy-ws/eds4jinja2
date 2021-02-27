@@ -285,7 +285,7 @@ TEMPLATE_FILE_FETCH_TABULAR_REDUCED_URIS = '''
 {% set content, error = from_file(path).fetch_tabular() %} \n
 {% set ni = namespace_inventory({}) %}
 
-content:  {{ ni.simplify_uris_in_tabular(content, error_fail=False) }}\n
+content:  {{ simplify_uri_columns_in_tabular(content, ni, error_fail=False) }}\n
 error: {{ error }}\n
 namespace definitions: {{ ni.namespaces_as_dict() | tojson }}
 '''

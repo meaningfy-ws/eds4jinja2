@@ -17,23 +17,19 @@ def sort_by_size_and_alphabet(l: List) -> List:
     return sorted(l, key=lambda x: (len(x), x))
 
 
-def first_key(d: Dict) -> object:
+def first_key(d: (Dict, None)) -> object:
     """
         Return the first dict key that from all the keys ordered first by their length and then alphabetically.
-    :param d:
-    :return:
     """
-    return sort_by_size_and_alphabet(d.keys())[0] if d else None
+    return sort_by_size_and_alphabet(list(d.keys()))[0] if d else None
 
 
-def first_key_value(d: Dict) -> object:
+def first_key_value(d: (Dict, None)) -> object:
     """
         Return the dict value for the first key in the dict;
         The first key is determined using `first_key` function.
-    :param d:
-    :return:
     """
-    return d[first_key(d)]
+    return d[first_key(d)] if d else None
 
 
 def invert_dict(mapping_dict: Dict, reduce_values: bool = True):
@@ -44,7 +40,7 @@ def invert_dict(mapping_dict: Dict, reduce_values: bool = True):
 
         The list can be reduced to single item by setting reduce_values=True.
 
-        >>> d = {"a":1, "b":2, c:1}
+        >>> d = {"a":1, "b":2, "c":1}
         >>> reduced_d = invert_dict(d)
         {1: 'a', 2: 'b'}
 

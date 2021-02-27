@@ -6,10 +6,11 @@
 # Email: costezki.eugen@gmail.com 
 
 """ """
-from pprint import pprint
+
+import pytest
 
 from eds4jinja2.adapters import first_key, first_key_value, invert_dict
-from eds4jinja2.adapters.namespace_handler import NamespaceInventory
+from eds4jinja2.adapters.namespace_handler import NamespaceInventory, simplify_uris_in_tabular
 from eds4jinja2.adapters.prefix_cc_fetcher import prefix_cc_lookup_prefix, prefix_cc_lookup_base_uri, prefix_cc_all
 
 
@@ -72,7 +73,7 @@ def test_uri_to_qname(dummy_prefixes):
 
 def test_simplify_uri_to_qname_open(dummy_df):
     ni = NamespaceInventory()
-    ni.simplify_uris_in_tabular(dummy_df, target_columns=["s", "p", "o"])
+    simplify_uris_in_tabular(dummy_df, namespace_inventory=ni, target_columns=["s", "p", "o"])
 
     ns_inv = ni.namespaces_as_dict()
     assert "ns1" in ns_inv
@@ -87,7 +88,7 @@ def test_simplify_uri_to_qname_open(dummy_df):
 
 def test_simplify_uri_to_qname_close(dummy_df):
     ni = NamespaceInventory()
-    ni.simplify_uris_in_tabular(dummy_df, prefix_cc_lookup=False, target_columns=["s", "p", "o"])
+    simplify_uris_in_tabular(dummy_df, namespace_inventory=ni, prefix_cc_lookup=False, target_columns=["s", "p", "o"])
 
     ns_inv = ni.namespaces_as_dict()
     assert "ns1" in ns_inv
@@ -97,11 +98,22 @@ def test_simplify_uri_to_qname_close(dummy_df):
 
 
 def test_new_namespace_inventory(dummy_prefixes):
-    nm = NamespaceInventory(dummy_prefixes)
-    assert nm.uri_to_qname(
+    ni = NamespaceInventory(dummy_prefixes)
+    assert ni.uri_to_qname(
         "http://publications.europa.eu/resource/authority/corporate-body/COB1") == "corporate-body:COB1"
-    assert nm.uri_to_qname(
+    assert ni.uri_to_qname(
         "http://publications.e67u/resource/authority/corporate-body/cmdfg34") == "ns1:cmdfg34"
-    assert nm.uri_to_qname("http://www.w3.org/2004/02/skos/core#Concept") == "skos:Concept"
+    assert ni.uri_to_qname("http://www.w3.org/2004/02/skos/core#Concept") == "skos:Concept"
 
 
+def test_qname_to_uri(dummy_prefixes):
+    ni = NamespaceInventory(dummy_prefixes)
+    assert ni.qname_to_uri(qname_string="dct:date", error_fail=False) == "http://purl.org/dc/terms/date"
+    assert ni.qname_to_uri(qname_string="rdf:type",
+                           error_fail=False) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+    assert ni.qname_to_uri(qname_string="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                           error_fail=False) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+    assert ni.qname_to_uri(qname_string="bowlik", error_fail=False) == "bowlik"
+
+    with pytest.raises(ValueError):
+        assert ni.qname_to_uri(qname_string="bowlik", error_fail=True) == "bowlik"
