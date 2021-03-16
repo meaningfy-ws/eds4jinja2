@@ -10,3 +10,4 @@ Click
 rdflib
 py-singleton
 beautifulsoup4
+requests
