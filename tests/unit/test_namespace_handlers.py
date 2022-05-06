@@ -59,7 +59,7 @@ def test_invert_dict(dummy_prefixes):
 
 def test_ns_inventory(dummy_prefixes):
     ni = NamespaceInventory(dummy_prefixes)
-    assert "dcterms" not in ni.namespaces_as_dict()
+    assert "dcterms1" not in ni.namespaces_as_dict()
     assert "dct" in ni.namespaces_as_dict()
     assert "http://purl.org/vocab/frbr/core#" not in ni.namespaces_as_dict()
 
@@ -67,8 +67,8 @@ def test_ns_inventory(dummy_prefixes):
 def test_uri_to_qname(dummy_prefixes):
     ni = NamespaceInventory(dummy_prefixes)
     assert ni.uri_to_qname("http://www.w3.org/2004/02/skos/core#Concept") == "skos:Concept"
-    assert ni.uri_to_qname("http://www.w3.org/2004/02/skos/1core#Concept") == "ns2:Concept"
-    assert ni.uri_to_qname("http://www.w3.org/2004/02/skos/2core#Concept") == "ns3:Concept"
+    assert ni.uri_to_qname("http://www.w3.org/2004/02/skos/1core#Concept") == "ns1:Concept"
+    assert ni.uri_to_qname("http://www.w3.org/2004/02/skos/2core#Concept") == "ns2:Concept"
 
 
 def test_simplify_uri_to_qname_open(dummy_df):
@@ -94,7 +94,7 @@ def test_simplify_uri_to_qname_close(dummy_df):
     assert "ns1" in ns_inv
     assert "rdf" in ns_inv
     assert "ns2" in ns_inv
-    assert "ns3" in ns_inv
+
 
 
 def test_new_namespace_inventory(dummy_prefixes):
@@ -117,3 +117,6 @@ def test_qname_to_uri(dummy_prefixes):
 
     with pytest.raises(ValueError):
         assert ni.qname_to_uri(qname_string="bowlik", error_fail=True) == "bowlik"
+
+
+

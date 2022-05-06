@@ -26,7 +26,7 @@ def test_errors_of_file_request():
     """Errors of file request."""
 
 
-@given('a path to a <file>')
+@given(parsers.parse('a path to a {file}'))
 def a_path_to_a_file_state(scenarioContext, file):
     scenarioContext["filePath"] = os.getcwd() + file
 
@@ -65,11 +65,11 @@ def then_the_fetched_content_should_be_none(scenarioContext):
     assert "content:  None" in scenarioContext["renderedText"]
 
 
-@then('Then the fetched content should contain <content_keys>')
+@then(parsers.parse('Then the fetched content should contain {content_keys}'))
 def then_the_fetched_content_should_contain_content_keys(scenarioContext, content_keys):
     assert content_keys in scenarioContext["renderedText"]
 
-@then('Then the fetched content should contain <content_values>')
+@then(parsers.parse('Then the fetched content should contain {content_values}'))
 def then_the_fetched_content_should_contain_content_values(scenarioContext, content_values):
     assert content_values in scenarioContext["renderedText"]
 
@@ -79,7 +79,7 @@ def the_returned_error_should_be_none(scenarioContext):
     assert "error: None" in scenarioContext["renderedText"]
 
 
-@then('the returned error should contain <error_fragment>')
+@then(parsers.parse('the returned error should contain {error_fragment}'))
 def the_returned_error_should_contain_error_fragment(scenarioContext, error_fragment):
     assert "error: " + error_fragment in scenarioContext["renderedText"]
 

@@ -1,9 +1,10 @@
 tabulate
 # Testing Dependencies
-pytest
-coverage
-pytest-cov
-pytest-bdd
+coverage~=6.3.1
+pytest~=7.0.0
+pytest-bdd~=5.0.0
+pytest-cov~=3.0.0
+pytest-subtests~=0.6.0
 
 # Linting dependencies
 flake8

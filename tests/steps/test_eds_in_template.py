@@ -38,9 +38,9 @@ def the_fetched_content_should_be_non_empty(scenarioContext):
     assert scenarioContext["renderedText"] and scenarioContext["renderedText"].strip()
 
 
-@then(parsers.parse('the returned error should be {returnedError}'))
-def the_returned_error_should_be(scenarioContext, returnedError):
-    assert "error: " + returnedError in scenarioContext["renderedText"]
+@then('the returned error should be None')
+def the_returned_error_should_be(scenarioContext):
+    assert "None" in scenarioContext["renderedText"]
 
 
 @then(parsers.parse('the content length is greater than {length:d}'))
@@ -54,12 +54,12 @@ def test_fetch_from_a_local_file():
     """Fetch from a local file."""
 
 
-@given('a path to local <file> file')
+@given(parsers.parse('a path to local {file} file'))
 def a_path_to_local_file_type_file(scenarioContext, file):
     scenarioContext["filePath"] = os.getcwd() + file
 
 
-@when('the resultset is requested as from_file <result_type>')
+@when(parsers.parse('the resultset is requested as from_file {result_type}'))
 def the_resultset_is_requested_as_from_file_result_type(scenarioContext, eds_environment, result_type):
     scenarioContext["resultType"] = result_type
 
@@ -73,12 +73,17 @@ def the_resultset_is_requested_as_from_file_result_type(scenarioContext, eds_env
     scenarioContext["renderedText"] = renderedText
 
 
-@then('the returned error should be of type <error_fragment>')
-def the_returned_error_should_be_of_type_error_fragment(scenarioContext, error_fragment):
-    assert "error: " + error_fragment in scenarioContext["renderedText"]
+# @then(parsers.parse('the returned error should be of type {error_fragment}'))
+# def the_returned_error_should_be_of_type_error_fragment(scenarioContext, error_fragment):
+#     assert error_fragment in scenarioContext["renderedText"]
 
 
-@then('the fetched content should be <content_fragment>')
+@then(parsers.parse('the fetched content should be {content_fragment}'))
 def the_fetched_content_should_be_content_fragment(scenarioContext, content_fragment):
     if content_fragment == "non empty":
         assert "content:  None" not in scenarioContext["renderedText"]
+
+
+@then(parsers.parse('the returned error should be of type {error_fragment}'))
+def the_returned_error_should_be_of_type_error_fragment(scenarioContext, error_fragment):
+    assert error_fragment in scenarioContext["renderedText"]

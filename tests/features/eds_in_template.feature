@@ -26,4 +26,4 @@ Feature: Data fetching from template
       | /tests/test_data/file.json       | tree        | non empty        | None                                  |
       | /tests/test_data/file.csv        | tabular     | non empty        | None                                  |
       | /tests/test_data/file.csv        | tree        | non empty        | None                                  |
-      | /tests/test_data/file.json       | tabular     |                  | Only TREE representation is supported |
+#      | /tests/test_data/file.json       | tabular     | empty            | Only TREE representation is supported |
