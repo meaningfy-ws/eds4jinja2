@@ -79,7 +79,7 @@ class RDFFileDataSource(DataSource):
         if not self.__query__:
             raise Exception("The query is empty.")
 
-        self.__graph__.parse(self.__filename__, format="turtle")
+        self.__graph__.parse(self.__filename__)
         result = self.__graph__.query(self.__query__)
 
         reduced_result_binding = [self.__reduce_bound_triple_to_string_format(t) for t in result.bindings]
