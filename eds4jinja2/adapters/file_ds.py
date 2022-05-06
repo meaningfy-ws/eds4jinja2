@@ -60,7 +60,7 @@ class FileDataSource(DataSource):
         if self._file_extension in [".json", ".json-ld", ".jsonld"]:
             return json.loads(self.file_path.read_bytes())
         elif self._file_extension in [".yaml", ".yml"]:
-            return yaml.load(self.file_path.read_bytes())
+            return yaml.safe_load(self.file_path.read_bytes())
         elif self._file_extension in [".toml"]:
             return toml.loads(self.file_path.read_bytes())
 

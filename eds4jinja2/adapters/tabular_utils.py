@@ -74,7 +74,10 @@ def replace_strings_in_tabular(data_frame: pd.DataFrame, target_columns: List[st
     # replace it with NaN. The value parameter should be None
     # to use a nested dict in this way.
     nested_dict = {column: escaped_value_mapping_dict for column in obj_columns}
+
     data_frame.replace(to_replace=nested_dict, value=None, regex=True, inplace=True)
+    # TODO: This is a possible fix in the new version fo pandas >1.4.2
+    # data_frame.replace(to_replace=None, value=None, regex=nested_dict, inplace=True)
 
     return strings_found
 

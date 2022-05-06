@@ -10,6 +10,7 @@ from pytest_bdd import (
     scenario,
     then,
     when,
+    parsers
 )
 
 from eds4jinja2.entrypoints.cli.main import build_report
@@ -22,7 +23,7 @@ def test_generate_a_report_from_a_template():
     """Generate a report from a template."""
 
 
-@given('a path to a <directory>')
+@given(parsers.parse('a path to a {directory}'))
 def a_path_to_a_directory(scenarioContext, directory, sample_data_path):
     scenarioContext["input_path"] = pathlib.Path(sample_data_path) / directory
 
@@ -36,14 +37,14 @@ def the_cli_is_invoked(scenarioContext):
     assert (pathlib.Path(scenarioContext["input_path"]) / "output" / "main.html").exists()
 
 
-@then('<output> path contains the <file>')
+@then(parsers.parse('{output} path contains the {file}'))
 def output_path_contains_the_file(scenarioContext, sample_data_path, output, file):
     scenarioContext["outputPath"] = pathlib.Path(sample_data_path) / output
     scenarioContext["outputFile"] = pathlib.Path(sample_data_path) / output / file
     assert pathlib.Path(scenarioContext["outputFile"]).is_file()
 
 
-@then('Then file contains the <content>')
+@then(parsers.parse('Then file contains the {content}'))
 def then_file_contains_the_content(scenarioContext, content):
     with open(pathlib.Path(scenarioContext["outputFile"]), 'r') as htmlFile:
         parsed_html = BeautifulSoup(htmlFile.read())
