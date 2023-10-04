@@ -40,7 +40,7 @@ def test_prefix_cc_prefix():
 
 
 def test_prefix_cc_lookup_base_uri():
-    assert "skos" in prefix_cc_lookup_base_uri("http://www.w3.org/2004/02/skos/core#")
+    assert "dc" in prefix_cc_lookup_base_uri("http://purl.org/dc/elements/1.1/")
     # assert "rdf" in prefix_cc_lookup_base_uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
     assert prefix_cc_lookup_base_uri("http://xmlns.com/foaf/0.1/")
     assert not prefix_cc_lookup_base_uri("http://purl.org/dc/terms/")
