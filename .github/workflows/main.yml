@@ -6,16 +6,18 @@ name: test
 # events but only for the master branch
 on:
   push:
-    branches: [ master, feature/* ]
-  pull_request:
-    branches: [ master ]
+    branches: [ feature/* , main, master, hotfix/*, release/* ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  py38:
     # The type of runner that the job will run on
-    name: Build    
+    name: pyTest_38
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -30,8 +32,9 @@ jobs:
     - name: Install dependencies
       run: |
         make install    
+        make install-dev
     - name: Run tests
-      run: make test
+      run: make test-all
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       with:
@@ -40,9 +43,31 @@ jobs:
         env_vars: OS,PYTHON
         name: codecov-umbrella
         fail_ci_if_error: true
-#    - name: Publish on PiPy
-#      env:
-#          TWINE_USERNAME: __token__
-#          TWINE_PASSWORD: ${{ secrets.PIPY_USER_TOKEN }}
-#      run: make publish-pipy
-#
+  py311:
+    # The type of runner that the job will run on
+    name: pyTest_311
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Check out
+        uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@master
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: |
+          make install  
+          make install-dev
+      - name: Run tests
+        run: make test-all
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: coverage.xml
+          env_vars: OS,PYTHON
+          name: codecov-umbrella
+          fail_ci_if_error: true
