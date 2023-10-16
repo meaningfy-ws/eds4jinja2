@@ -5,6 +5,8 @@ pytest~=7.0.0
 pytest-bdd~=5.0.0
 pytest-cov~=3.0.0
 pytest-subtests~=0.6.0
+tox
+tox-pytest-summary
 
 # Linting dependencies
 flake8
@@ -18,4 +20,3 @@ sphinxcontrib-apidoc
 twine
 setuptools
 wheel
-
