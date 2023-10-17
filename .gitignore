@@ -140,7 +140,7 @@ junit_report.xml
 /tests/test_data/validation-reports/simple/results/
 /tests/test_data/validation-reports/simple/tests/
 /tests/test_data/validation-reports/treaties-ap/results/
-
+/tests/test_data/templates_test/output
 
 # Auxiliary files resulted by latex processing
 *.aux

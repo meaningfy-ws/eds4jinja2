@@ -69,14 +69,14 @@ def replace_strings_in_tabular(data_frame: pd.DataFrame, target_columns: List[st
     strings_found = np.unique(np.concatenate(strings_found_column_stack.flatten()))
 
     # create a nested dictionary that pandas replace understand
-    # For a DataFrame nested dictionaries, e.g., {'a': {'b': np.nan}},
-    # are read as follows: look in column ‘a’ for the value ‘b’ and
-    # replace it with NaN. The value parameter should be None
-    # to use a nested dict in this way.
+    # For a DataFrame nested dictionaries, e.g., {'a': {'b': np.nan}}, are read as
+    # follows: look in column ‘a’ for the value ‘b’ and replace it with NaN. The
+    # optional value parameter should not be specified to use a nested dict in this
+    # way.
     nested_dict = {column: escaped_value_mapping_dict for column in obj_columns}
 
-    data_frame.replace(to_replace=nested_dict, value=None, regex=True, inplace=True)
-    # TODO: This is a possible fix in the new version fo pandas >1.4.2
+    data_frame.replace(to_replace=nested_dict, regex=True, inplace=True)
+    # FIXME: Could this also be a possible fix for pandas >1.4.2?
     # data_frame.replace(to_replace=None, value=None, regex=nested_dict, inplace=True)
 
     return strings_found
