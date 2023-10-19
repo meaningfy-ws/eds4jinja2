@@ -2,72 +2,50 @@
 
 name: test
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
+# Controls when the action will run. Triggers the workflow on push or pull
+# request events for the specified branches.
 on:
   push:
-    branches: [ feature/* , main, master, hotfix/*, release/* ]
+    branches: [ feature/* , master, fix/*, hotfix/*, release/* ]
 
+# Ensure redundant parallel runs don't occur in the same workflow.
+# Use either PR or branch information to prevent such runs.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+# A workflow run is made up of one or more jobs that can run sequentially or in
+# parallel
 jobs:
   # This workflow contains a single job called "build"
-  py38:
+  build:
     # The type of runner that the job will run on
-    name: pyTest_38
+    name: pytest
     runs-on: ubuntu-latest
+    # A job can run for multiple environments given by a strategy matrix
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.11']
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Check out
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Set up Python
-      uses: actions/setup-python@master
+      uses: actions/setup-python@v4
       with:
-        python-version: 3.8
+        python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        make install    
-        make install-dev
+        make install-all
     - name: Run tests
       run: make test-all
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: coverage.xml
         env_vars: OS,PYTHON
         name: codecov-umbrella
         fail_ci_if_error: true
-  py311:
-    # The type of runner that the job will run on
-    name: pyTest_311
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: Check out
-        uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@master
-        with:
-          python-version: 3.11
-      - name: Install dependencies
-        run: |
-          make install  
-          make install-dev
-      - name: Run tests
-        run: make test-all
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: coverage.xml
-          env_vars: OS,PYTHON
-          name: codecov-umbrella
-          fail_ci_if_error: true

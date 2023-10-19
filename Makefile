@@ -8,6 +8,10 @@ BUILD_PRINT = \e[1;34mSTEP: \e[0m
 # Basic commands
 #-----------------------------------------------------------------------------
 
+install-all:
+	@ echo -e "$(BUILD_PRINT)Installing the dev requirements$(END_BUILD_PRINT)"
+	@ pip install --upgrade pip
+	@ pip install -r requirements.txt -r requirements-dev.txt
 
 install-dev:
 	@ echo -e "$(BUILD_PRINT)Installing the dev requirements$(END_BUILD_PRINT)"
