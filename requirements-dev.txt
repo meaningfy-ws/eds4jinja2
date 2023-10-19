@@ -1,22 +1,20 @@
-tabulate
+tabulate~=0.9.0
 # Testing Dependencies
-coverage~=6.3.1
-pytest~=7.0.0
-pytest-bdd~=5.0.0
-pytest-cov~=3.0.0
-pytest-subtests~=0.6.0
-tox
-tox-pytest-summary
+coverage~=7.3.2
+pytest~=7.4.2
+pytest-bdd~=7.0.0
+pytest-cov~=4.1.0
+pytest-subtests~=0.11.0
+tox~=4.11.3
+tox-pytest-summary~=0.1.2
 
 # Linting dependencies
-flake8
+flake8~=6.1.0
 
 # Documentation Dependencies
-myst-parser
-sphinx
-sphinxcontrib-apidoc
+myst-parser~=2.0.0
+Sphinx~=7.1.2
+sphinxcontrib-apidoc~=0.4.0
 
 # pipy publishing
-twine
-setuptools
-wheel
+twine~=4.0.2
