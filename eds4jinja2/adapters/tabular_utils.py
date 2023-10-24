@@ -75,9 +75,10 @@ def replace_strings_in_tabular(data_frame: pd.DataFrame, target_columns: List[st
     # way.
     nested_dict = {column: escaped_value_mapping_dict for column in obj_columns}
 
-    data_frame.replace(to_replace=nested_dict, regex=True, inplace=True)
-    # FIXME: Could this also be a possible fix for pandas >1.4.2?
-    # data_frame.replace(to_replace=None, value=None, regex=nested_dict, inplace=True)
+    # this is the way to do it for pandas >1.4.2, aligned with official docs
+    data_frame.replace(to_replace=None, regex=nested_dict, inplace=True)
+    # this apparently also works but is not aligned with official docs
+    # data_frame.replace(to_replace=nested_dict, regex=True, inplace=True)
 
     return strings_found
 
