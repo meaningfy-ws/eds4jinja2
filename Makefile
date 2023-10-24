@@ -9,18 +9,18 @@ BUILD_PRINT = \e[1;34mSTEP: \e[0m
 #-----------------------------------------------------------------------------
 
 install-all:
-	@ echo -e "$(BUILD_PRINT)Installing the dev requirements$(END_BUILD_PRINT)"
+	@ echo -e "$(BUILD_PRINT)Installing both user and dev requirements$(END_BUILD_PRINT)"
 	@ pip install --upgrade pip
 	@ pip install -r requirements.txt -r requirements-dev.txt
 
 install-dev:
-	@ echo -e "$(BUILD_PRINT)Installing the dev requirements$(END_BUILD_PRINT)"
+	@ echo -e "$(BUILD_PRINT)Installing only dev requirements$(END_BUILD_PRINT)"
 	@ pip install --upgrade pip
 	@ pip install -r requirements-dev.txt
 
 
 install:
-	@ echo "$(BUILD_PRINT)Installing the requirements"
+	@ echo "$(BUILD_PRINT)Installing user requirements"
 	@ pip install --upgrade pip
 	@ pip install -r requirements.txt
 
@@ -39,7 +39,7 @@ test-features:
 
 
 test-all:
-	@ echo "$(BUILD_PRINT)Running the tests"
+	@ echo "$(BUILD_PRINT)Running all tests"
 	@ tox
 
 
