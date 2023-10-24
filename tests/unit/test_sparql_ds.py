@@ -37,7 +37,8 @@ def test_connect_to_endpoint_fails():
         fds.with_query(WRONG_SPO_LIMIT_10)._fetch_tree()
         fds._fetch_tree()
 
-    with pytest.raises(URITooLong):
+    # sometimes we get BrokenPipe on some (CI) systems
+    with pytest.raises((URITooLong, BrokenPipeError)):
         fds = RemoteSPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
         fds.with_query(QUERY_LONGER_THAN_2048KB)._fetch_tree()
 
