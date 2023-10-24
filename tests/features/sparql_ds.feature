@@ -16,7 +16,7 @@ Feature: SPARQL query fetcher
     Examples:
       | endpoint_reference                                     | query_text_reference                           | error_fragment        |
       | https://dc51efef6cca43debdb478b330dc7379.com           | select * where {?s ?p ?o} limit 10             | urlopen error         |
-      | https://httpstat.us/500                                 | select * where {?s ?p ?o} limit 10             | EndPointInternalError |
+      | https://httpbin.org/status/500                         | select * where {?s ?p ?o} limit 10             | EndPointInternalError |
       | http://publications.europa.eu/webapi/rdf/sparql        | select *                                       |  QueryBadFormed       |
 
 

@@ -2,47 +2,60 @@
 
 name: test
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
+# Controls when the action will run. Triggers the workflow on push or pull
+# request events for the specified branches.
 on:
   push:
-    branches: [ master, feature/* ]
-  pull_request:
-    branches: [ master ]
+    branches: [ feature/* , master, fix/*, hotfix/*, release/* ]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+# Ensure redundant parallel runs don't occur in the same workflow.
+# Use either PR or branch information to prevent such runs.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+# A workflow run is made up of one or more jobs that can run sequentially or in
+# parallel
 jobs:
   # This workflow contains a single job called "build"
   build:
+    name: pytest
+    strategy:
+      fail-fast: false
+    # A job can run for multiple environments
+      matrix:
+        python-version: ['3.8', '3.11']
+        os: ['ubuntu-latest', 'macos-latest', 'windows-latest']
     # The type of runner that the job will run on
-    name: Build    
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ matrix.os }}-${{ matrix.python-version}}
+      cancel-in-progress: true
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Check out
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Set up Python
-      uses: actions/setup-python@master
+      uses: actions/setup-python@v4
       with:
-        python-version: 3.8
+        python-version: ${{ matrix.python-version }}
+    - name: Set up Windows tooling
+      if: matrix.os == 'windows-latest'
+      uses: crazy-max/ghaction-chocolatey@v3
+      with:
+        args: install make
     - name: Install dependencies
       run: |
-        make install    
+        make install-all
     - name: Run tests
-      run: make test
+      run: make test-all
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: coverage.xml
         env_vars: OS,PYTHON
         name: codecov-umbrella
         fail_ci_if_error: true
-#    - name: Publish on PiPy
-#      env:
-#          TWINE_USERNAME: __token__
-#          TWINE_PASSWORD: ${{ secrets.PIPY_USER_TOKEN }}
-#      run: make publish-pipy
-#

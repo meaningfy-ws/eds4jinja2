@@ -8,15 +8,40 @@ BUILD_PRINT = \e[1;34mSTEP: \e[0m
 # Basic commands
 #-----------------------------------------------------------------------------
 
-install:
-	@ echo "$(BUILD_PRINT)Installing the requirements"
-	@ pip install --upgrade pip
-	@ pip install -r requirements.txt
-	@ pip install -r requirements-dev.txt
+install-all:
+	@ echo -e "$(BUILD_PRINT)Installing both user and dev requirements$(END_BUILD_PRINT)"
+	@ python -m pip install --upgrade pip
+	@ python -m pip install -r requirements.txt -r requirements-dev.txt
 
-test:
-	@ echo "$(BUILD_PRINT)Running the tests"
-	@ pytest
+install-dev:
+	@ echo -e "$(BUILD_PRINT)Installing only dev requirements$(END_BUILD_PRINT)"
+	@ python -m pip install --upgrade pip
+	@ python -m pip install -r requirements-dev.txt
+
+
+install:
+	@ echo "$(BUILD_PRINT)Installing user requirements"
+	@ python -m pip install --upgrade pip
+	@ python -m pip install -r requirements.txt
+
+
+test: test-unit
+
+
+test-unit:
+	@ echo -e "$(BUILD_PRINT)Unit Testing ...$(END_BUILD_PRINT)"
+	@ tox -e unit
+
+
+test-features:
+	@ echo -e "$(BUILD_PRINT)Gherkin Features Testing ...$(END_BUILD_PRINT)"
+	@ tox -e features
+
+
+test-all:
+	@ echo "$(BUILD_PRINT)Running all tests"
+	@ tox
+
 
 #-----------------------------------------------------------------------------
 # Gherkin feature and acceptance test generation commands
