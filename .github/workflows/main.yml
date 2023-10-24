@@ -21,6 +21,7 @@ jobs:
   build:
     name: pytest
     strategy:
+      fail-fast: false
     # A job can run for multiple environments
       matrix:
         python-version: ['3.8', '3.11']
