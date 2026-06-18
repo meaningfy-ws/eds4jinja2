@@ -4,7 +4,7 @@
 # Date:  07/08/2020
 # Author: Eugeniu Costetchi
 # Email: costezki.eugen@gmail.com
-import collections
+import collections.abc
 from typing import List, Dict
 
 

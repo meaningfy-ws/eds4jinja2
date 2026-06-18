@@ -15,7 +15,7 @@ the input directory structure is preserved to the output folder during copying
 """
 import logging
 import pathlib
-from distutils.dir_util import copy_tree
+from shutil import copytree
 from subprocess import Popen, PIPE, TimeoutExpired
 
 logger = logging.getLogger(__name__)
@@ -76,6 +76,9 @@ def copy_static_content(configuration_context: dict) -> None:
     """
 
     if pathlib.Path(configuration_context["static_folder"]).is_dir():
-        copy_tree(configuration_context["static_folder"], configuration_context["output_folder"])
+        # shutil.copytree with dirs_exist_ok merges into an existing output folder,
+        # matching the old distutils.dir_util.copy_tree behaviour (distutils removed in 3.12).
+        copytree(configuration_context["static_folder"], configuration_context["output_folder"],
+                 dirs_exist_ok=True)
     else:
         logger.warning(configuration_context["static_folder"] + " is not a directory !")
