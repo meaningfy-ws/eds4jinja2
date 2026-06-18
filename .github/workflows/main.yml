@@ -2,11 +2,13 @@
 
 name: test
 
-# Controls when the action will run. Triggers the workflow on push or pull
-# request events for the specified branches.
+# Gate per PR (every commit pushed to a PR re-runs this) and on merge to master.
+# No branch globs on push, so a PR branch is tested once (via pull_request), not twice.
 on:
   push:
-    branches: [ feature/* , master, fix/*, hotfix/*, release/* ]
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 # Ensure redundant parallel runs don't occur in the same workflow.
 # Use either PR or branch information to prevent such runs.
@@ -24,7 +26,7 @@ jobs:
       fail-fast: false
     # A job can run for multiple environments
       matrix:
-        python-version: ['3.8', '3.11']
+        python-version: ['3.11', '3.12']
         os: ['ubuntu-latest', 'macos-latest', 'windows-latest']
     # The type of runner that the job will run on
     runs-on: ${{ matrix.os }}

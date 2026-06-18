@@ -5,6 +5,8 @@ Author: Eugeniu Costetchi
 Email: costezki.eugen@gmail.com 
 """
 
+import pytest
+
 import tests
 from eds4jinja2.builders.jinja_builder import build_eds_environment
 
@@ -55,6 +57,7 @@ def test_file_fetch_tabular_successful_reduce_uris(eds_environment):
     assert "rdf:type" in rendered_text
 
 
+@pytest.mark.network  # build_eds_environment() with no fakes hits the live remote endpoint
 def test_e2e_sparql_fetch_tree_successful():
     eds_environment = build_eds_environment()
     template = eds_environment.from_string(tests.TEMPLATE_SPARQL_FETCH_TREE)

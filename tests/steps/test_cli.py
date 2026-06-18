@@ -3,6 +3,7 @@
 import pathlib
 import shutil
 
+import pytest
 from bs4 import BeautifulSoup
 from click.testing import CliRunner
 from pytest_bdd import (
@@ -14,6 +15,9 @@ from pytest_bdd import (
 )
 
 from eds4jinja2.entrypoints.cli.main import build_report
+
+# The report template renders a live Cellar SPARQL endpoint fragment — network integration test.
+pytestmark = pytest.mark.network
 
 runner = CliRunner()
 

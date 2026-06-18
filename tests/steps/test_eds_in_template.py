@@ -2,6 +2,7 @@
 """Data fetching from template feature tests."""
 import os
 
+import pytest
 from pytest_bdd import (
     given,
     scenario,
@@ -12,6 +13,7 @@ from tests.steps.conftest import file_fetch_tabular, file_fetch_tree, sparql_fet
 
 
 # -------------------- HTTP-related steps --------------------
+@pytest.mark.network  # drives a live SPARQL endpoint
 @scenario('../features/eds_in_template.feature', 'Fetch from SPARQL endpoint')
 def test_fetch_from_sparql_endpoint():
     """Fetch from SPARQL endpoint."""

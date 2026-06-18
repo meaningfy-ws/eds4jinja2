@@ -1,4 +1,4 @@
-.PHONY: test install lint generate-tests-from-features
+.PHONY: test install install-all install-dev build publish-pipy test-unit test-features test-all test-network generate-tests-from-features
 
 include .env-dev
 
@@ -9,20 +9,20 @@ BUILD_PRINT = \e[1;34mSTEP: \e[0m
 #-----------------------------------------------------------------------------
 
 install-all:
-	@ echo -e "$(BUILD_PRINT)Installing both user and dev requirements$(END_BUILD_PRINT)"
+	@ echo -e "$(BUILD_PRINT)Installing the package with its dev extra$(END_BUILD_PRINT)"
 	@ python -m pip install --upgrade pip
-	@ python -m pip install -r requirements.txt -r requirements-dev.txt
+	@ python -m pip install ".[dev]"
 
 install-dev:
-	@ echo -e "$(BUILD_PRINT)Installing only dev requirements$(END_BUILD_PRINT)"
+	@ echo -e "$(BUILD_PRINT)Installing the package (editable) with its dev extra$(END_BUILD_PRINT)"
 	@ python -m pip install --upgrade pip
-	@ python -m pip install -r requirements-dev.txt
+	@ python -m pip install -e ".[dev]"
 
 
 install:
-	@ echo "$(BUILD_PRINT)Installing user requirements"
+	@ echo "$(BUILD_PRINT)Installing the package (runtime only)"
 	@ python -m pip install --upgrade pip
-	@ python -m pip install -r requirements.txt
+	@ python -m pip install .
 
 
 test: test-unit
@@ -39,8 +39,12 @@ test-features:
 
 
 test-all:
-	@ echo "$(BUILD_PRINT)Running all tests"
+	@ echo "$(BUILD_PRINT)Running all tests (excludes live-network tests)"
 	@ tox
+
+test-network:
+	@ echo -e "$(BUILD_PRINT)Running live-network integration tests (need network)$(END_BUILD_PRINT)"
+	@ tox -e network
 
 
 #-----------------------------------------------------------------------------
@@ -91,9 +95,12 @@ start-service: start-fuseki fuseki-create-test-dbs
 
 stop-service: stop-fuseki clean-data
 
-publish-pipy:
-	@ echo "$(BUILD_PRINT)Creating the source distribution"
-	@ python3 setup.py sdist bdist_wheel
+build:
+	@ echo "$(BUILD_PRINT)Building the sdist and wheel (PEP 517 via python -m build)"
+	@ rm -rf dist
+	@ python -m build
+
+publish-pipy: build
 	@ echo "$(BUILD_PRINT)Checking the distribution"
 	@ twine check dist/*
 	@ echo "$(BUILD_PRINT)Uploading the distribution"
