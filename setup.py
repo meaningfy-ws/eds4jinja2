@@ -62,8 +62,8 @@ setup(
         "Development Status :: 3 - Alpha",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
@@ -73,7 +73,7 @@ setup(
         "Operating System :: OS Independent",
         "Natural Language :: English",
     ],
-    python_requires='>=3.8',
+    python_requires='>=3.11',
     entry_points={
         "console_scripts": ["mkreport=eds4jinja2.entrypoints.cli.main:build_report"],
     },
