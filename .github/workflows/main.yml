@@ -2,10 +2,11 @@
 
 name: test
 
-# Gate every commit (push to a working branch) and every pull request to master.
+# Gate per PR (every commit pushed to a PR re-runs this) and on merge to master.
+# No branch globs on push, so a PR branch is tested once (via pull_request), not twice.
 on:
   push:
-    branches: [ feature/* , master, fix/*, hotfix/*, release/*, chore/* ]
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
