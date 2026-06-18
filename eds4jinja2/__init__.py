@@ -7,7 +7,8 @@
 
 __docformat__ = "restructuredtext en"
 
-# The format of the __version__ line is matched by a regex in setup.py and /docs/conf.py
+# The __version__ literal is read by pyproject.toml ([tool.setuptools.dynamic]) and by a
+# regex in /docs/conf.py — keep it a simple string assignment.
 __version__ = "0.3.0"
 __date__ = "2026-06-18"
 

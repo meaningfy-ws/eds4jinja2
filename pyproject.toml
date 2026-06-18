@@ -1,0 +1,85 @@
+# Standards-based packaging (PEP 517/518/621) with the setuptools backend.
+# Single source of truth for dependencies; the version is read from
+# eds4jinja2/__init__.py. No setup.py, no requirements*.txt.
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eds4jinja2"
+description = "Embed the data source specifications in your JINJA templates directly, and enjoy the dynamic data contexts."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache License 2.0" }
+authors = [{ name = "Eugeniu Costetchi", email = "costezki.eugen@gmail.com" }]
+maintainers = [{ name = "Eugeniu Costetchi", email = "costezki.eugen@gmail.com" }]
+keywords = ["template", "jinja", "report", "report generation", "rdf", "sparql", "linked-data", "data-source", "dynamic-context"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Topic :: Utilities",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Natural Language :: English",
+]
+# Only the version is dynamic (read from eds4jinja2/__init__.py); deps are declared below.
+dynamic = ["version"]
+dependencies = [
+    "Jinja2~=3.1.2",
+    "SPARQLWrapper~=2.0.0",
+    "pandas~=2.2.0",
+    "PyYAML~=6.0.1",
+    "toml~=0.10.2",
+    "xlrd~=2.0.1",        # pandas read_excel backend for .xls
+    "openpyxl~=3.1.2",    # pandas read_excel backend for .xlsx
+    "numpy~=1.26.0",
+    "click~=8.1.7",
+    "rdflib~=7.0.0",
+    "py-singleton~=1.0.0",
+    "beautifulsoup4~=4.12.2",
+    "requests~=2.31.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "tabulate~=0.9.0",
+    "coverage~=7.3.2",
+    "pytest~=7.4.2",
+    "pytest-bdd~=7.0.0",
+    "pytest-cov~=4.1.0",
+    "pytest-subtests~=0.11.0",
+    "flake8~=6.1.0",
+]
+docs = [
+    "myst-parser~=2.0.0",
+    "Sphinx~=7.1.2",
+    "sphinxcontrib-apidoc~=0.4.0",
+]
+dev = [
+    "eds4jinja2[test,docs]",
+    "tox~=4.11.3",
+    "tox-pytest-summary~=0.1.2",
+    "build~=1.2",
+    "twine~=4.0.2",
+    "setuptools~=68.2.2",
+    "wheel~=0.41.2",
+]
+
+[project.urls]
+Homepage = "https://github.com/meaningfy-ws/eds4jinja2"
+
+[project.scripts]
+mkreport = "eds4jinja2.entrypoints.cli.main:build_report"
+
+[tool.setuptools.dynamic]
+version = { attr = "eds4jinja2.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["eds4jinja2*"]
+exclude = ["tests*"]

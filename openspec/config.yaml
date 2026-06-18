@@ -9,8 +9,9 @@ context: |
   `mkreport` CLI.
   Architecture: real layers entrypoints > builders > adapters (adapters is innermost). This repo
   keeps its real layer names — NOT the generic domain/services/commons folders.
-  Tooling: pip + tox + setup.py (NOT Poetry). Deps in requirements*.txt; tests via tox (py311,
-  py312); `make` is the dev/CI interface. Target interpreters: Python 3.11 and 3.12.
+  Tooling: pip + tox + pyproject.toml (setuptools backend; NOT Poetry). Deps declared in
+  pyproject.toml (no setup.py, no requirements*.txt); build with `python -m build`; tests via tox
+  (py311, py312); `make` is the dev/CI interface. Target interpreters: Python 3.11 and 3.12.
   Top-level package: eds4jinja2 (no /src). Default branch: master.
   Commits: Conventional Commits (imperative, no trailing punctuation).
   Artifact vocabulary: EPIC ≡ proposal.md (Shape-Up work shape);

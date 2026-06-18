@@ -10,8 +10,9 @@
   dynamic report generation. PyPI package; CLI entrypoint `mkreport`.
 - Top-level package: `eds4jinja2/` (no `/src`). Default branch: `master`.
 - Real layers: `entrypoints → builders → adapters` (adapters innermost).
-- Tooling: pip + tox + setup.py (NOT Poetry). Deps in requirements*.txt. Tests via tox
-  (`py311`, `py312`). `make` is the dev/CI interface (`make install-all`, `make test-all`).
+- Tooling: pip + tox + pyproject.toml (setuptools backend; NOT Poetry). Deps declared in
+  pyproject.toml (runtime + test/docs/dev extras); no setup.py, no requirements*.txt. Build with
+  `python -m build`. Tests via tox (`py311`, `py312`). `make` is the dev/CI interface.
 - Target interpreters: Python 3.11 and 3.12.
 
 ## Spine (where work and truth live)
@@ -25,6 +26,9 @@
 - 2026-06-18: Added Python 3.12 support on top of master's tox/setup.py approach (kept tox; did
   NOT migrate to Poetry). Dropped Python 3.8 — numpy>=1.26 / pandas>=2.1 (needed for 3.12) require
   Python >=3.9. Bumped numpy ~=1.26.0, pandas ~=2.2.0.
+- 2026-06-18: Adopted pyproject.toml (setuptools backend), removed setup.py + setup.cfg +
+  requirements*.txt + MANIFEST.in (the latter referenced a non-existent dir; no package data
+  ships). Deps now live in pyproject (runtime + test/docs/dev extras); build via `python -m build`.
 - 2026-06-18: 3.12 code fix — distutils.copy_tree → shutil.copytree(dirs_exist_ok=True);
   `import collections` → `import collections.abc`. (master already fixed collections.Mapping and
   the pandas df.replace usage.)

@@ -48,14 +48,15 @@ commits reference the change.
 - **Real layers** (verified): `entrypoints → builders → adapters`. `adapters` is the innermost
   layer (imports nothing upward); `builders` orchestrates adapters; `entrypoints` (CLI `mkreport`)
   drives builders. This library keeps these real layer names.
-- **Tooling is pip + tox + setup.py** (NOT Poetry): dependencies in `requirements.txt` /
-  `requirements-dev.txt`, build via `setup.py`, tests via `tox` (envs `py311`, `py312`). The
-  `make` targets are the dev/CI interface: `make install-all`, `make test-unit`,
-  `make test-features`, `make test-all`.
+- **Tooling is pip + tox + `pyproject.toml`** (setuptools backend; NOT Poetry): runtime and
+  `test`/`docs`/`dev` dependencies are declared in `pyproject.toml` (no `setup.py`, no
+  `requirements*.txt`). Build with `python -m build`; run tests via `tox` (envs `py311`, `py312`).
+  The `make` targets are the dev/CI interface: `make install-all`, `make test-unit`,
+  `make test-features`, `make test-all`, `make build`.
 - Target interpreters: **Python 3.11 and 3.12** (3.8 dropped — incompatible with the numpy/pandas
   versions needed for 3.12).
 - The package version is the single source of truth in `eds4jinja2/__init__.py:__version__`
-  (`setup.py` and `docs/conf.py` read it via regex).
+  (`pyproject.toml` reads it via `[tool.setuptools.dynamic]`; `docs/conf.py` reads it via regex).
 - Tests: `tests/unit/` (unit) and `tests/steps/` + `tests/features/` (BDD). Some SPARQL tests hit
   live remote endpoints and need network; `test_describe_uri` asserts on remote data that can
   drift.
