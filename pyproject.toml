@@ -66,7 +66,7 @@ dev = [
     "tox~=4.11.3",
     "tox-pytest-summary~=0.1.2",
     "build~=1.2",
-    "twine~=4.0.2",
+    "twine~=6.2",
     "setuptools~=68.2.2",
     "wheel~=0.41.2",
 ]
