@@ -9,7 +9,7 @@ __docformat__ = "restructuredtext en"
 
 # The __version__ literal is read by pyproject.toml ([tool.setuptools.dynamic]) and by a
 # regex in /docs/conf.py — keep it a simple string assignment.
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 __date__ = "2026-06-18"
 
 import logging
