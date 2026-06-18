@@ -15,6 +15,10 @@ from eds4jinja2.adapters.remote_sparql_ds import RemoteSPARQLEndpointDataSource
 from tests import ENDPOINT_REMOTE_CORRECT, DUMMY_DESCRIBE_URI, SPO_LIMIT_10, WRONG_SPO_LIMIT_10, \
     QUERY_LONGER_THAN_2048KB, ENDPOINT_INEXISTENT_SERVER, DUMMY_DESCRIBE_URI_GRAPH
 
+# Every test here drives a LIVE remote SPARQL endpoint (publications.europa.eu) — it is a
+# network integration test, excluded from the default gate. Run with: make test-network
+pytestmark = pytest.mark.network
+
 
 def test_connect_to_remote_endpoint():
     fds = RemoteSPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)

@@ -1,6 +1,7 @@
 # coding=utf-8
 """SPARQL query fetcher feature tests."""
 
+import pytest
 from pytest_bdd import (
     given,
     scenario,
@@ -9,6 +10,9 @@ from pytest_bdd import (
 )
 
 from tests.steps.conftest import sparql_fetch_tree, sparql_fetch_tabular
+
+# These scenarios drive LIVE remote SPARQL endpoints — network integration tests.
+pytestmark = pytest.mark.network
 
 
 @scenario('../features/sparql_ds.feature', 'Content of SPARQL select request for a tabular structure')

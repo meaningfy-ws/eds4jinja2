@@ -14,6 +14,7 @@ from eds4jinja2.adapters.namespace_handler import NamespaceInventory, simplify_u
 from eds4jinja2.adapters.prefix_cc_fetcher import prefix_cc_lookup_prefix, prefix_cc_lookup_base_uri, prefix_cc_all
 
 
+@pytest.mark.network  # queries the live prefix.cc service
 def test_prefix_cc_all():
     p = prefix_cc_all()
     assert "rdfs" in p
@@ -32,6 +33,7 @@ def test_first_key_in_dict():
     assert first_key_value({"ns0": "1", "nq": "2", "addf": "3", "az": "4"}) == "4"
 
 
+@pytest.mark.network  # queries the live prefix.cc service
 def test_prefix_cc_prefix():
     assert prefix_cc_lookup_prefix("skos")["skos"] == "http://www.w3.org/2004/02/skos/core#"
     assert prefix_cc_lookup_prefix("dct")["dct"] == "http://purl.org/dc/terms/"
@@ -39,6 +41,7 @@ def test_prefix_cc_prefix():
     assert prefix_cc_lookup_prefix("rdf")["rdf"] == "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 
 
+@pytest.mark.network  # queries the live prefix.cc service
 def test_prefix_cc_lookup_base_uri():
     assert "dc" in prefix_cc_lookup_base_uri("http://purl.org/dc/elements/1.1/")
     # assert "rdf" in prefix_cc_lookup_base_uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#")

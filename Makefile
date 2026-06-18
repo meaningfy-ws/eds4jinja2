@@ -1,4 +1,4 @@
-.PHONY: test install install-all install-dev build publish-pipy test-unit test-features test-all generate-tests-from-features
+.PHONY: test install install-all install-dev build publish-pipy test-unit test-features test-all test-network generate-tests-from-features
 
 include .env-dev
 
@@ -39,8 +39,12 @@ test-features:
 
 
 test-all:
-	@ echo "$(BUILD_PRINT)Running all tests"
+	@ echo "$(BUILD_PRINT)Running all tests (excludes live-network tests)"
 	@ tox
+
+test-network:
+	@ echo -e "$(BUILD_PRINT)Running live-network integration tests (need network)$(END_BUILD_PRINT)"
+	@ tox -e network
 
 
 #-----------------------------------------------------------------------------
