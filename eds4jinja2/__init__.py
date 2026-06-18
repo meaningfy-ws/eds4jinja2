@@ -9,12 +9,14 @@ __docformat__ = "restructuredtext en"
 
 # The __version__ literal is read by pyproject.toml ([tool.setuptools.dynamic]) and by a
 # regex in /docs/conf.py — keep it a simple string assignment.
-__version__ = "0.3.1"
-__date__ = "2026-06-18"
+__version__ = "0.4.0"
+__date__ = "2026-06-19"
 
 import logging
 
 from eds4jinja2.adapters.file_ds import FileDataSource
+from eds4jinja2.adapters.graph_store import Engine, make_graph_store, RdflibGraphStore, OxigraphGraphStore
+from eds4jinja2.adapters.in_memory_sparql_ds import InMemorySPARQLDataSource
 from eds4jinja2.adapters.local_sparql_ds import RDFFileDataSource
 from eds4jinja2.adapters.namespace_handler import NamespaceInventory
 from eds4jinja2.adapters.remote_sparql_ds import RemoteSPARQLEndpointDataSource
@@ -27,6 +29,11 @@ __all__ = ["build_eds_environment",
            "FileDataSource",
            "RemoteSPARQLEndpointDataSource",
            "RDFFileDataSource",
+           "InMemorySPARQLDataSource",
+           "make_graph_store",
+           "RdflibGraphStore",
+           "OxigraphGraphStore",
+           "Engine",
            "add_relative_figures",
            "replace_strings_in_tabular",
            "NamespaceInventory"

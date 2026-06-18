@@ -7,6 +7,7 @@
 
 
 import io
+import threading
 from pathlib import Path
 from typing import Optional
 
@@ -28,14 +29,29 @@ class SPARQLClientPool(object):
         a corresponding SPARQLWrapper object connecting to it.
 
         The rationale of this connection pool is to reuse connection objects and save time.
+
+        The pool is **per-thread**: a SPARQLWrapper holds a mutable query string (``setQuery``),
+        so sharing one wrapper across threads would let concurrent queries to the same endpoint
+        clobber each other. Each thread therefore gets its own wrapper per endpoint — reused
+        within the thread (single-threaded behaviour unchanged), isolated across threads. This
+        makes the parallel report executor safe.
     """
-    connection_pool = {}
+    _local = threading.local()
+
+    @staticmethod
+    def _pool() -> dict:
+        pool = getattr(SPARQLClientPool._local, "connection_pool", None)
+        if pool is None:
+            pool = {}
+            SPARQLClientPool._local.connection_pool = pool
+        return pool
 
     @staticmethod
     def create_or_reuse_connection(endpoint_url: str):
-        if endpoint_url not in SPARQLClientPool.connection_pool:
-            SPARQLClientPool.connection_pool[endpoint_url] = SPARQLWrapper(endpoint_url)
-        return SPARQLClientPool.connection_pool[endpoint_url]
+        pool = SPARQLClientPool._pool()
+        if endpoint_url not in pool:
+            pool[endpoint_url] = SPARQLWrapper(endpoint_url)
+        return pool[endpoint_url]
 
 
 # safe instantiation

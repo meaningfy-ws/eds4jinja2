@@ -9,13 +9,20 @@
 this module implements the report generation functionality.
 """
 import json
+import logging
 import pathlib
 from typing import Union
 
 import jinja2
 
 from eds4jinja2.adapters import deep_update
-from eds4jinja2.builders.jinja_builder import build_eds_environment, inject_environment_globals
+from eds4jinja2.builders.jinja_builder import (build_eds_environment, inject_environment_globals,
+                                               DATA_SOURCE_BUILDERS, TABULAR_HELPERS, TREE_HELPERS,
+                                               ADDITIONAL_FILTERS)
+from eds4jinja2.builders.parallel_executor import (FetchCoordinator, Phase, wrap_builders,
+                                                   PARALLELISM, DEFAULT_PARALLELISM)
+
+logger = logging.getLogger(__name__)
 
 # aims to be close to the J2 default env syntax definition, but explicitly specified
 HTML_TEMPLATE_SYNTAX = {'block_start_string': '{%',
@@ -55,7 +62,8 @@ class ReportBuilder:
     configuration_context: dict = {}
 
     def __init__(self, target_path: Union[str, pathlib.Path], config_file: str = "config.json",
-                 output_path: str = None, additional_config: dict = {}):
+                 output_path: str = None, additional_config: dict = {},
+                 external_data_source_builders: dict = None, external_filters: dict = None):
         """
             Instantiates builders form a template providing an optional configuration context.
 
@@ -64,6 +72,11 @@ class ReportBuilder:
         :param target_path: the folder where the required resources are found
         :param config_file: the configuration file (default 'config.json')
         :param output_path: the output folder where the result of the rendering will be created
+        :param external_data_source_builders: additional/overriding data-source builders made
+                                available to templates; merged *over* the framework defaults, so a
+                                consumer can e.g. override ``from_endpoint`` to serve an in-memory
+                                graph. Empty/None reproduces the default behaviour exactly.
+        :param external_filters: additional/overriding Jinja filters, merged over the defaults.
         """
 
         with open(pathlib.Path(target_path) / config_file, encoding='utf-8') as configFile:
@@ -99,8 +112,19 @@ class ReportBuilder:
         else:
             self.template_flavour_syntax_spec = DEFAULT_TEMPLATE_SYNTAX
 
+        # Merge any injected builders/filters OVER the framework defaults. build_eds_environment
+        # *replaces* its registries with whatever it receives, so forwarding a partial dict would
+        # silently drop the default helpers (from_file, invert_dict, escape_latex, ...). Merging
+        # preserves them while letting an injected entry (e.g. from_endpoint) override its default.
+        data_source_builders = {**DATA_SOURCE_BUILDERS, **TABULAR_HELPERS, **TREE_HELPERS,
+                                **(external_data_source_builders or {})}
+        filters = {**ADDITIONAL_FILTERS, **(external_filters or {})}
+
         template_loader = jinja2.FileSystemLoader(searchpath=template_path)
-        self.template_env = build_eds_environment(loader=template_loader, **self.template_flavour_syntax_spec)
+        self.template_env = build_eds_environment(loader=template_loader,
+                                                  external_data_source_builders=data_source_builders,
+                                                  external_filters=filters,
+                                                  **self.template_flavour_syntax_spec)
         inject_environment_globals(self.template_env, {'conf': self.configuration_context["conf"]},
                                    False if self.configuration_context is None else True)
 
@@ -132,6 +156,18 @@ class ReportBuilder:
             return self.template_env.get_template(template_name)
 
     def make_document(self):
+        """
+            Render the report. Sequential by default; when the config sets ``parallelism`` > 1
+            the data fetches are pre-warmed in parallel (see ``parallel_executor``). With
+            ``parallelism`` unset or 1 the behaviour is byte-for-byte the previous sequential path.
+        """
+        parallelism = int(self.configuration_context.get(PARALLELISM, DEFAULT_PARALLELISM) or DEFAULT_PARALLELISM)
+        if parallelism > 1:
+            self.__make_document_parallel(parallelism)
+        else:
+            self.__render_to_output()
+
+    def __render_to_output(self):
         for listener in self.__before_rendering_listeners:
             listener(self.configuration_context)
 
@@ -142,3 +178,35 @@ class ReportBuilder:
 
         for listener in self.__after_rendering_listeners:
             listener(self.configuration_context)
+
+    def __make_document_parallel(self, parallelism: int):
+        coordinator = FetchCoordinator()
+        original_globals = dict(self.template_env.globals)
+        try:
+            self.template_env.globals.update(
+                wrap_builders(self.template_env.globals, set(DATA_SOURCE_BUILDERS), coordinator))
+
+            # Record pass: discover the fetch units. If it fails (e.g. a data-dependent template
+            # chokes on placeholder results) we fall back to a normal sequential render.
+            coordinator.set_phase(Phase.RECORD)
+            try:
+                self.__get_template(self.template).render()
+            except Exception as record_error:
+                logger.warning("Parallel record pass failed (%s); rendering sequentially", record_error)
+                self.__restore_globals(original_globals)
+                self.__render_to_output()
+                return
+
+            # Pre-warm in parallel — all-or-nothing: a failure here aborts the whole report.
+            coordinator.prewarm(parallelism)
+
+            # Real render: fetches are served from the cache (misses run live).
+            coordinator.set_phase(Phase.RENDER)
+            self.__render_to_output()
+        finally:
+            coordinator.cleanup()
+            self.__restore_globals(original_globals)
+
+    def __restore_globals(self, original_globals: dict):
+        self.template_env.globals.clear()
+        self.template_env.globals.update(original_globals)

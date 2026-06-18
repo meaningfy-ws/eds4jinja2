@@ -9,6 +9,8 @@ import jinja2
 
 from eds4jinja2.adapters import invert_dict
 from eds4jinja2.adapters.file_ds import FileDataSource
+from eds4jinja2.adapters.graph_store import Engine, make_graph_store
+from eds4jinja2.adapters.in_memory_sparql_ds import InMemorySPARQLDataSource
 from eds4jinja2.adapters.latex_utils import escape_latex
 from eds4jinja2.adapters.local_sparql_ds import RDFFileDataSource
 from eds4jinja2.adapters.namespace_handler import NamespaceInventory, simplify_uris_in_tabular
@@ -18,7 +20,13 @@ from eds4jinja2.adapters.tabular_utils import replace_strings_in_tabular, add_re
 DATA_SOURCE_BUILDERS = {
     "from_endpoint": lambda endpoint: RemoteSPARQLEndpointDataSource(endpoint),
     "from_file": lambda file_path: FileDataSource(file_path),
-    "from_rdf_file": lambda from_rdf_file: RDFFileDataSource(from_rdf_file)
+    "from_rdf_file": lambda from_rdf_file: RDFFileDataSource(from_rdf_file),
+    # Bring-your-own in-memory graph/store (rdflib.Graph, a query callable, ...).
+    "from_graph": lambda source: InMemorySPARQLDataSource(source),
+    "from_memory": lambda source: InMemorySPARQLDataSource(source),
+    # Load RDF file(s)/URL(s) into an in-memory graph (engine configurable) and query it.
+    "from_rdf": lambda sources, engine="rdflib": InMemorySPARQLDataSource(
+        make_graph_store(Engine(engine), sources=sources).query),
 }
 
 TABULAR_HELPERS = {
