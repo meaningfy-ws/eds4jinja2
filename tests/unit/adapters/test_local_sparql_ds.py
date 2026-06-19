@@ -1,127 +1,88 @@
 """
-test_sparql_ds.py
-Date:  25/09/2020
-Author: Laurentiu Mandru
-Email: mclaurentiu79@gmail.com
-"""
-import os
-import pathlib
-import pytest
-from eds4jinja2 import RDFFileDataSource
-import unittest
+test_local_sparql_ds.py
 
+Tests for RDFFileDataSource (query a local RDF file with SPARQL). Paths are anchored on the
+shared `test_data_dir` fixture so the tests actually load the fixture graph regardless of the
+working directory, and the tabular fetches assert on the real query result.
+"""
+import pytest
+
+from eds4jinja2 import RDFFileDataSource
 from eds4jinja2.models.data_source import UnsupportedRepresentation
 
-
-def test_load_local_sparql_fetch_tabular():
-    local_rdf_ds = RDFFileDataSource(
-        str(pathlib.Path("../test_data/shacl.example.shapes.ttl")))
-
-    local_rdf_ds.with_query("""SELECT *
-            WHERE {
-                 ?s ?p ?o
-            }
-            limit 10""")
-    local_rdf_ds.fetch_tabular()
+SPO_QUERY = "SELECT * WHERE { ?s ?p ?o } LIMIT 10"
 
 
-def test_load_local_sparql_fetch_tabular_without_query():
-    local_rdf_ds = RDFFileDataSource(
-        str(pathlib.Path("../test_data/shacl.example.shapes.ttl")))
+@pytest.fixture
+def shapes_ttl(test_data_dir):
+    return str(test_data_dir / "shacl.example.shapes.ttl")
 
-    local_rdf_ds.with_query("")
-    result, error_string = local_rdf_ds.fetch_tabular()
+
+@pytest.fixture
+def spo_query_file(test_data_dir):
+    return str(test_data_dir / "queries" / "spo_limit_10.txt")
+
+
+def test_load_local_sparql_fetch_tabular(shapes_ttl):
+    data_frame, error = RDFFileDataSource(shapes_ttl).with_query(SPO_QUERY).fetch_tabular()
+    assert error is None
+    assert not data_frame.empty
+    assert set(data_frame.columns) == {"s", "p", "o"}
+    assert len(data_frame) <= 10
+
+
+def test_load_local_sparql_fetch_tabular_without_query(shapes_ttl):
+    result, error_string = RDFFileDataSource(shapes_ttl).with_query("").fetch_tabular()
+    assert result is None
     assert error_string == "The query is empty."
 
 
-def test_load_local_sparql_substitution():
-    local_rdf_ds = RDFFileDataSource(
-        str(pathlib.Path("../test_data/shacl.example.shapes.ttl")))
-
-    local_rdf_ds.with_query("""SELECT *
-            WHERE {
-                 ~a ~b ~c
-            }
-            limit 10""", {'a': '?s', 'b': '?p', 'c': '?o'})
-    assert local_rdf_ds.__query__ == """SELECT *
-            WHERE {
-                 ?s ?p ?o
-            }
-            limit 10"""
+def test_load_local_sparql_substitution(shapes_ttl):
+    local_rdf_ds = RDFFileDataSource(shapes_ttl).with_query(
+        "SELECT * WHERE { ~a ~b ~c } LIMIT 10", {'a': '?s', 'b': '?p', 'c': '?o'})
+    assert local_rdf_ds.__query__ == "SELECT * WHERE { ?s ?p ?o } LIMIT 10"
 
 
-def test_load_local_query_from_file_sparql_fetch_tabular():
-    local_rdf_ds = RDFFileDataSource(
-        str(pathlib.Path("../test_data/shacl.example.shapes.ttl")))
+def test_load_local_query_from_file_sparql_fetch_tabular(shapes_ttl, spo_query_file):
+    data_frame, error = RDFFileDataSource(shapes_ttl).with_query_from_file(spo_query_file).fetch_tabular()
+    assert error is None
+    assert not data_frame.empty
+    assert set(data_frame.columns) == {"s", "p", "o"}
 
-    local_rdf_ds.with_query_from_file(pathlib.Path("./tests/test_data/queries/spo_limit_10.txt"))
-    local_rdf_ds.fetch_tabular()
 
-
-def test_load_local_query_from_file_and_prefixes():
-    local_rdf_ds = RDFFileDataSource(
-        str(pathlib.Path("../test_data/shacl.example.shapes.ttl")))
-
-    local_rdf_ds.with_query_from_file(pathlib.Path("./tests/test_data/queries/spo_limit_10.txt"), None, "PREFIX TEST")
+def test_load_local_query_from_file_and_prefixes(shapes_ttl, spo_query_file):
+    local_rdf_ds = RDFFileDataSource(shapes_ttl).with_query_from_file(spo_query_file, None, "PREFIX TEST")
     assert local_rdf_ds.__query__.startswith("PREFIX TEST")
 
 
-def test_load_local_query_and_prefixes():
-    local_rdf_ds = RDFFileDataSource(
-        str(pathlib.Path("../test_data/shacl.example.shapes.ttl")))
-
-    local_rdf_ds.with_query("""SELECT *
-            WHERE {
-                 ?s ?p ?o
-            }
-            limit 10""", None, "PREFIX TEST")
+def test_load_local_query_and_prefixes(shapes_ttl):
+    local_rdf_ds = RDFFileDataSource(shapes_ttl).with_query(SPO_QUERY, None, "PREFIX TEST")
     assert local_rdf_ds.__query__.startswith("PREFIX TEST")
 
 
-def test_load_local_query_from_file_substitution():
-    local_rdf_ds = RDFFileDataSource(
-        str(pathlib.Path("../test_data/shacl.example.shapes.ttl")))
-
-    local_rdf_ds.with_query_from_file(pathlib.Path("./tests/test_data/queries/spo_limit_10.txt"),
-                                      {'substitution_placeholder': 'after_substitution'})
+def test_load_local_query_from_file_substitution(shapes_ttl, spo_query_file):
+    local_rdf_ds = RDFFileDataSource(shapes_ttl).with_query_from_file(
+        spo_query_file, {'substitution_placeholder': 'after_substitution'})
     assert 'after_substitution' in local_rdf_ds.__query__
     assert '~substitution_placeholder' not in local_rdf_ds.__query__
 
 
-def test_load_local_query_from_file_and_direct_text_sparql_fetch_tabular():
-    local_rdf_ds = RDFFileDataSource(
-        str(pathlib.Path("../test_data/shacl.example.shapes.ttl")))
-
-    local_rdf_ds.with_query_from_file(pathlib.Path("./tests/test_data/queries/spo_limit_10.txt"))
+def test_setting_query_twice_raises(shapes_ttl, spo_query_file):
+    local_rdf_ds = RDFFileDataSource(shapes_ttl).with_query_from_file(spo_query_file)
     with pytest.raises(Exception):
-        local_rdf_ds.with_query("""SELECT *
-                WHERE {
-                     ?s ?p ?o
-                }
-                limit 10""")
-    local_rdf_ds.fetch_tabular()
+        local_rdf_ds.with_query(SPO_QUERY)
+    # the originally-set query still resolves
+    data_frame, error = local_rdf_ds.fetch_tabular()
+    assert error is None and not data_frame.empty
 
 
-def test_load_local_sparql_fetch_tree():
+def test_load_local_sparql_fetch_tree_unsupported(shapes_ttl):
     with pytest.raises(UnsupportedRepresentation):
-        local_rdf_ds = RDFFileDataSource(
-            str(pathlib.Path("../test_data/shacl.example.shapes.ttl")))
-        local_rdf_ds.with_query("""SELECT *
-                WHERE {
-                     ?s ?p ?o
-                }
-                limit 10""")
-        local_rdf_ds._fetch_tree()
+        RDFFileDataSource(shapes_ttl).with_query(SPO_QUERY)._fetch_tree()
 
 
-def test_load_local_sparql_fetch_tabular_inexistent_file():
-    local_rdf_ds = RDFFileDataSource(
-        str(pathlib.Path("inexistent.ttl")))
-
-    local_rdf_ds.with_query("""SELECT *
-            WHERE {
-                 ?s ?p ?o
-            }
-            limit 10""")
-    result = local_rdf_ds.fetch_tabular()
-    assert "[Errno 2] No such file or directory" in str(result)
+def test_load_local_sparql_fetch_tabular_inexistent_file(test_data_dir):
+    local_rdf_ds = RDFFileDataSource(str(test_data_dir / "does_not_exist.ttl")).with_query(SPO_QUERY)
+    result, error = local_rdf_ds.fetch_tabular()
+    assert result is None
+    assert "No such file or directory" in str(error)

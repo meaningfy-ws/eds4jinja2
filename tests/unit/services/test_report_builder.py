@@ -10,9 +10,26 @@ import shutil
 from unittest.mock import Mock
 
 import pytest
+import rdflib
+from eds4jinja2 import InMemorySPARQLDataSource
 from eds4jinja2.services.report_builder import ReportBuilder
-from eds4jinja2.models.collections import deep_update
 from bs4 import BeautifulSoup
+
+# A tiny in-process graph so make_document renders the dqgen-style template fully OFFLINE
+# (the template's section runs `select ?class (count(?instance) as ?instances) ...`).
+INSTANCES_TTL = """
+@prefix ex: <http://example.org/> .
+ex:a a ex:Thing .
+ex:b a ex:Thing .
+ex:c a ex:Person .
+"""
+
+
+def _in_memory_endpoint_builders():
+    graph = rdflib.Graph()
+    graph.parse(data=INSTANCES_TTL, format="turtle")
+    # override the builder the templates already call, so no live SPARQL endpoint is hit
+    return {"from_endpoint": lambda _endpoint: InMemorySPARQLDataSource(graph)}
 
 
 @pytest.fixture(scope="function")
@@ -50,7 +67,8 @@ def test_report_builder_make_document(sample_data_path):
     before_listener = Mock()
     after_listener = Mock()
 
-    report_builder = ReportBuilder(target_path=sample_data_path, output_path=pathlib.Path(sample_data_path) / "output")
+    report_builder = ReportBuilder(target_path=sample_data_path, output_path=pathlib.Path(sample_data_path) / "output",
+                                   external_data_source_builders=_in_memory_endpoint_builders())
 
     report_builder.add_before_rendering_listener(before_listener)
     report_builder.add_after_rendering_listener(after_listener)
@@ -74,7 +92,3 @@ def test_report_builder_make_latex_document(sample_data_path_latex):
     report_builder.make_document()
     assert (out_path / "main.tex").exists()
     shutil.rmtree(out_path)
-
-
-
-
