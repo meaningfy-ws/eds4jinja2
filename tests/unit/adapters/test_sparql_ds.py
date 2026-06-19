@@ -4,7 +4,6 @@ Date:  11/08/2020
 Author: Eugeniu Costetchi
 Email: costezki.eugen@gmail.com
 """
-import os
 import pathlib
 from urllib.error import URLError
 
