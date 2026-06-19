@@ -95,3 +95,35 @@ jobs:
           path: dist/
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          attestations: true   # PEP 740 provenance attestations, signed via OIDC
+
+  supply-chain:
+    name: SBOM + signatures
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # attach assets to the GitHub Release
+      id-token: write   # Sigstore keyless signing
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - name: Generate SBOM (CycloneDX, via Syft)
+        uses: anchore/sbom-action@v0
+        with:
+          path: dist/
+          format: cyclonedx-json
+          output-file: eds4jinja2-sbom.cyclonedx.json
+      - name: Sign distributions (Sigstore, keyless)
+        uses: sigstore/gh-action-sigstore-python@v3
+        with:
+          inputs: ./dist/*.tar.gz ./dist/*.whl
+      - name: Attach SBOM and signatures to the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          gh release upload "$RELEASE_TAG" \
+            eds4jinja2-sbom.cyclonedx.json dist/*.sigstore* --clobber
