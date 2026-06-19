@@ -6,6 +6,21 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-06-19
+
+### Fixed
+- **Logging no longer hijacks the root logger.** Importing `eds4jinja2` previously added a
+  `StreamHandler` to the *root* logger and forced `INFO` level — affecting every consumer and
+  duplicating output. The library now attaches only a `NullHandler` to its package logger;
+  applications own logging configuration, and the `mkreport` CLI configures logging itself.
+
+### Changed
+- Fail-safe data-source fetches now log handled failures (e.g. `UnsupportedRepresentation`, empty
+  query) at **WARNING with the message** instead of ERROR with a full stack trace.
+- Docs/tests: README rewritten (why / what it solves / how to use, data-source table); the
+  `RDFFileDataSource` unit tests now assert on real query results and `make_document` is tested
+  offline (no live SPARQL endpoint in the default test gate).
+
 ## [1.0.0] - 2026-06-19
 
 First major release. Adds in-memory RDF reporting and opt-in parallel execution, and realigns the
@@ -58,6 +73,7 @@ only deep import paths moved (see **Migration**).
 ## [0.3.1] - 2026-06-18
 - Modernised packaging (pip + `pyproject.toml`, setuptools backend; Python 3.11/3.12) and CI.
 
-[Unreleased]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.0...HEAD
+[Unreleased]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.1...HEAD
+[1.0.1]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/meaningfy-ws/eds4jinja2/compare/0.3.1...1.0.0
 [0.3.1]: https://github.com/meaningfy-ws/eds4jinja2/releases/tag/0.3.1
