@@ -29,7 +29,8 @@ def test_public_all_is_the_expected_set():
 
 
 def test_version_is_major_one():
-    assert eds4jinja2.__version__ == "1.0.0"
+    # major version is 1.x.x (stable across patch/minor bumps; exact value lives in VERSION)
+    assert eds4jinja2.__version__.split(".")[0] == "1"
 
 
 @pytest.mark.parametrize("module", [
