@@ -5,6 +5,7 @@ Subpackages
 -----------
 
 .. toctree::
+   :maxdepth: 4
 
    eds4jinja2.entrypoints.api
    eds4jinja2.entrypoints.cli

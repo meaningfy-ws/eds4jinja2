@@ -12,7 +12,6 @@ eds4jinja2.entrypoints.cli.main module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

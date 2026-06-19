@@ -5,8 +5,9 @@ Embedded Datasource Specification in Jinja2 templates (v. |release|)
 ============================================================================
 
 .. toctree::
-
     :maxdepth: 2
+
+    srcdocs/modules
 
 An easy way to reports generation with Jinja2 templates. With Embedded Datasource Specifications inside Jinja2 templates, you can fetch the data you need on the spot.
 
@@ -32,8 +33,15 @@ and a custom sparql query_text. Use them in the template like this:
 
 Currently supported data sources are:
 
-* from file - tabular (CSV, Excel, etc.) and tree-structured (JSON, YAML, etc.)
-* from SPARQL endpoint - through a select query or describe request
+* ``from_file`` - tabular (CSV, Excel, etc.) and tree-structured (JSON, YAML, etc.) files
+* ``from_endpoint`` - a remote SPARQL endpoint, through a select query or describe request
+* ``from_graph`` (alias ``from_memory``) - an in-process RDF graph you already hold (an
+  ``rdflib.Graph``, a ``pyoxigraph`` store, or any ``query(sparql)`` callable); no server needed
+* ``from_rdf`` - load one or more RDF files/URLs into an in-memory graph (engine ``rdflib`` by
+  default, or ``oxigraph``) and query it; both tabular and tree results
+* ``from_rdf_file`` - a single RDF file queried with SPARQL (tabular only; superseded by ``from_rdf``)
+
+See `Capabilities`_ and `Extending eds4jinja2`_ below.
 
 Not yet supported data sources are:
 
@@ -59,7 +67,7 @@ just use it in the template.
 
 .. code-block:: py3
 
-    from eds4jinja2.builders.jinja_builder import build_eds_environment
+    from eds4jinja2.services.jinja_builder import build_eds_environment
     from jinja2 import PackageLoader
 
     loader=PackageLoader('your_application', 'templates')
@@ -96,7 +104,7 @@ So, what are the benefits?
 
 :code:`ReportBuilder` class usage
 ####################################################
-:code:`ReportBuilder` accepts 4 parameters when instantiating:
+:code:`ReportBuilder` accepts these parameters when instantiating:
 
 :code:`target_path` (required) - the folder where the required resources are found.
 
@@ -105,6 +113,10 @@ So, what are the benefits?
 :code:`output_path` (optional) - the output folder where the result of the rendering will be created.
 
 :code:`additional_config` (optional) - additional config parameters that are added to the default ones and are overwritten (deep update) in the project :code:`config.json`.
+
+:code:`external_data_source_builders` (optional) - a mapping of extra/overriding data-source builders, merged *over* the defaults, so a consumer can override e.g. ``from_endpoint`` to serve an in-memory graph (see `In-memory graph data sources`_). Empty/None reproduces the default behaviour exactly.
+
+:code:`external_filters` (optional) - a mapping of extra/overriding Jinja filters, merged over the defaults.
 
 Example:
 
@@ -223,6 +235,146 @@ An example ``jinja-test.tex`` is available below:
 
     \end{document}
 
+
+Capabilities
+====================================================
+
+eds4jinja2 turns a Jinja2 template into a self-describing report: the template declares *how* to
+fetch its data and the environment resolves it at render time. The available capabilities are:
+
+* **File data sources** (``from_file``) - tabular and tree-structured files.
+* **Remote SPARQL** (``from_endpoint``) - query a live SPARQL endpoint (tabular or tree).
+* **In-memory graph data sources** (``from_graph`` / ``from_rdf``) - render against an in-process
+  RDF graph with no SPARQL server (see below).
+* **Parallel report execution** - optionally pre-fetch all queries concurrently before rendering
+  (see below).
+* **Template flavours** - HTML/XML and LaTeX syntax (see `Latex templates:`_).
+* **Builder injection** - override or add data-source builders/filters per ``ReportBuilder``.
+
+In-memory graph data sources
+####################################################
+
+Two builders render reports against an in-process RDF graph - no Fuseki/SPARQL server required.
+
+Query a graph you already hold (an ``rdflib.Graph``, a ``pyoxigraph`` store, or any
+``query(sparql)`` callable):
+
+.. code-block:: jinja
+
+    {% set rows, error = from_graph(my_graph).with_query("SELECT ?s WHERE { ?s a ex:Thing }").fetch_tabular() %}
+
+Load RDF file(s)/URL(s) into an in-memory graph (engine ``rdflib`` by default, or ``oxigraph``)
+and query it - both ``fetch_tabular`` and ``fetch_tree`` are supported:
+
+.. code-block:: jinja
+
+    {% set rows, error = from_rdf(["data.ttl", "http://example.org/more.ttl"], "oxigraph").with_query(q).fetch_tabular() %}
+
+To render an **existing** report against an in-memory graph with the **templates unchanged**,
+inject a builder that overrides ``from_endpoint`` (which the templates already call):
+
+.. code-block:: py3
+
+    import rdflib
+    from eds4jinja2 import InMemorySPARQLDataSource
+    from eds4jinja2.services.report_builder import ReportBuilder
+
+    graph = rdflib.Graph().parse("dataset.ttl")  # the consumer owns loading / manipulation
+    ReportBuilder(
+        "report/",
+        external_data_source_builders={"from_endpoint": lambda _endpoint: InMemorySPARQLDataSource(graph)},
+    ).make_document()
+
+The ``oxigraph`` engine is an optional extra: ``pip install eds4jinja2[oxigraph]``. The ``rdflib``
+engine needs no extra dependency.
+
+Parallel report execution
+####################################################
+
+For large reports whose runtime is dominated by SPARQL query latency, set ``parallelism`` in the
+report ``config.json`` to pre-fetch all data concurrently before rendering:
+
+.. code-block:: json
+
+    { "template": "report.html", "conf": {}, "parallelism": 16 }
+
+Execution is threads-only and **all-or-nothing** (any fetch failure aborts the report, no partial
+output); results are staged in a temp folder that is cleaned up afterwards. With ``parallelism``
+unset or ``1`` the behaviour is exactly the previous sequential render. Threaded speed-up is real
+for remote endpoints and ``oxigraph`` in-memory graphs (both release the GIL); ``rdflib`` in-memory
+queries are GIL-bound (correct, limited speed-up).
+
+Development
+====================================================
+
+The package follows Cosmic-Python layers, enforced by import-linter:
+
+.. code-block:: text
+
+    entrypoints  ->  services  ->  adapters  ->  models
+                                       \------------^
+    models       pure domain (no I/O): sparql, data_source (+ Engine), transformations, collections
+    adapters     I/O + integration: file/remote/local/in-memory SPARQL, graph_store, query_files, ...
+    services     use-case orchestration: jinja_builder, report_builder, parallel_executor, actions
+    entrypoints  the `mkreport` CLI
+
+``models`` imports nothing upward; ``adapters`` import only ``models``; ``services`` import
+``adapters`` + ``models``; ``entrypoints`` import ``services``.
+
+Tooling is pip + tox + ``pyproject.toml`` (setuptools; not Poetry). The ``make`` targets are the
+dev/CI interface:
+
+.. code-block:: bash
+
+    make install-all          # install the project with the dev extra
+    make test-unit            # unit tests (tox: py311, py312)
+    make test-features        # BDD feature tests
+    make test-all             # full suite (excludes live-network tests)
+    make check-architecture   # validate the layer boundaries (import-linter)
+    make build                # build the wheel/sdist
+
+Tests live under ``tests/unit/`` (isomorphic to the layers: ``models/adapters/services/meta``) and
+``tests/steps`` + ``tests/features`` (BDD). The package version is a single source of truth in the
+``eds4jinja2/VERSION`` file (read by the package, ``pyproject.toml`` and the docs).
+
+Extending eds4jinja2
+====================================================
+
+**Add a new data source.** Subclass ``DataSource`` in the ``adapters`` layer and implement the four
+abstract methods; the base class wraps them in fail-safe ``fetch_tabular`` / ``fetch_tree``
+(returning ``(content, error)``).
+
+.. code-block:: py3
+
+    # eds4jinja2/adapters/my_source.py
+    from eds4jinja2.models.data_source import DataSource
+
+    class MyDataSource(DataSource):
+        def _can_be_tabular(self): return True
+        def _can_be_tree(self): return False
+        def _fetch_tabular(self): ...   # return a pandas DataFrame
+        def _fetch_tree(self): ...      # return a dict / raise UnsupportedRepresentation
+
+Register it as a template builder in ``services/jinja_builder.py``:
+
+.. code-block:: py3
+
+    DATA_SOURCE_BUILDERS = {
+        ...,
+        "from_my_source": lambda location: MyDataSource(location),
+    }
+
+Templates can then call ``{{ from_my_source(...).fetch_tabular() }}``. Alternatively, inject the
+builder per report without editing the library, via
+``ReportBuilder(..., external_data_source_builders={"from_my_source": ...})``.
+
+**Respect the layers.** Pure domain logic goes in ``models`` (no I/O), integration in ``adapters``,
+orchestration in ``services``. Run ``make check-architecture`` - the import-linter contracts fail
+the build if a boundary is crossed (e.g. a model importing an adapter).
+
+**Add an in-memory engine.** The built-in graph store (``adapters/graph_store.py``) exposes a
+``GraphStorePort``; add a new ``...GraphStore`` implementation and wire it into ``make_graph_store``
+behind a new ``Engine`` value. Reuse ``InMemorySPARQLDataSource`` for tabular/tree parity.
 
 Indices and tables
 ===================================
