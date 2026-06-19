@@ -84,7 +84,8 @@ jobs:
     name: SBOM + signatures
     needs: build
     runs-on: ubuntu-latest
-    continue-on-error: true   # optional hardening — never block/fail a release on signing hiccups
+    # Not gating: no job has `needs: supply-chain`, so a failure here never blocks the PyPI
+    # publish — but it stays fail-visible so missing SBOM/signatures are not silent.
     permissions:
       contents: write   # attach assets to the GitHub Release
       id-token: write   # Sigstore keyless signing
