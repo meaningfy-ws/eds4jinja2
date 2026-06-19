@@ -13,8 +13,8 @@ from eds4jinja2.services.report_builder import ReportBuilder
 
 
 @pytest.fixture
-def sample_data_path() -> pathlib.Path:
-    return pathlib.Path(__file__).parent.parent / "test_data/templates_test"
+def sample_data_path(test_data_dir) -> pathlib.Path:
+    return test_data_dir / "templates_test"
 
 
 def test_no_injection_preserves_default_globals_and_filters(sample_data_path):

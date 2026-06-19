@@ -4,8 +4,11 @@ Date:  11/08/2020
 Author: Eugeniu Costetchi
 Email: costezki.eugen@gmail.com 
 """
-import pytest
 import pathlib
+
+import pytest
+
+import tests
 from eds4jinja2.adapters.file_ds import FileDataSource
 
 FILE_PATH_RELATIVE = ""
@@ -14,7 +17,8 @@ FILE_PATH_ABSOLUTE = ""
 TABULAR_FILE_NAME_EXAMPLES = ["file.xlsx", "file.xls", "file.csv"]
 TREE_FILE_NAME_EXAMPLES = ["file.json", "file.yaml"]
 
-TEST_DATA_FOLDER = pathlib.Path(__file__).parents[1] / "test_data"
+# Anchored on the `tests` package so it is stable regardless of this file's sub-folder.
+TEST_DATA_FOLDER = pathlib.Path(tests.__file__).parent / "test_data"
 
 
 @pytest.mark.parametrize("file_name", TABULAR_FILE_NAME_EXAMPLES)

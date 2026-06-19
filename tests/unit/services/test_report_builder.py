@@ -16,13 +16,13 @@ from bs4 import BeautifulSoup
 
 
 @pytest.fixture(scope="function")
-def sample_data_path() -> str:
-    return pathlib.Path(__file__).parent.parent / "test_data/templates_test"
+def sample_data_path(test_data_dir) -> str:
+    return test_data_dir / "templates_test"
 
 
 @pytest.fixture(scope="function")
-def sample_data_path_latex() -> str:
-    return pathlib.Path(__file__).parent.parent / "test_data/latex_templates_test"
+def sample_data_path_latex(test_data_dir) -> str:
+    return test_data_dir / "latex_templates_test"
 
 
 def test_report_builder_config_file_not_found():
