@@ -7,8 +7,8 @@ context: |
   Repo: eds4jinja2. A library that embeds data-source specifications (RDF/SPARQL endpoints and
   tabular files) into Jinja2 templates to drive dynamic report generation. PyPI package with a
   `mkreport` CLI.
-  Architecture: real layers entrypoints > builders > adapters (adapters is innermost). This repo
-  keeps its real layer names — NOT the generic domain/services/commons folders.
+  Architecture: Cosmic-Python layers entrypoints > services > adapters > models (models is the
+  pure innermost layer), enforced by import-linter (.importlinter, `make check-architecture`).
   Tooling: pip + tox + pyproject.toml (setuptools backend; NOT Poetry). Deps declared in
   pyproject.toml (no setup.py, no requirements*.txt); build with `python -m build`; tests via tox
   (py311, py312); `make` is the dev/CI interface. Target interpreters: Python 3.11 and 3.12.

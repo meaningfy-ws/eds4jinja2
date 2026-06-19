@@ -1,0 +1,30 @@
+[importlinter]
+root_package = eds4jinja2
+
+[importlinter:contract:layers]
+name = eds4jinja2 cosmic layers
+type = layers
+layers =
+    eds4jinja2.entrypoints
+    eds4jinja2.services
+    eds4jinja2.adapters
+    eds4jinja2.models
+
+[importlinter:contract:models-are-pure]
+name = models import nothing upward
+type = forbidden
+source_modules =
+    eds4jinja2.models
+forbidden_modules =
+    eds4jinja2.adapters
+    eds4jinja2.services
+    eds4jinja2.entrypoints
+
+[importlinter:contract:adapters-only-models]
+name = adapters import nothing above adapters
+type = forbidden
+source_modules =
+    eds4jinja2.adapters
+forbidden_modules =
+    eds4jinja2.services
+    eds4jinja2.entrypoints

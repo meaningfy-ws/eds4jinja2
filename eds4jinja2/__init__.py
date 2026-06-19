@@ -7,19 +7,23 @@
 
 __docformat__ = "restructuredtext en"
 
-# The __version__ literal is read by pyproject.toml ([tool.setuptools.dynamic]) and by a
-# regex in /docs/conf.py — keep it a simple string assignment.
-__version__ = "0.3.1"
-__date__ = "2026-06-18"
+# Single source of truth for the version is the sibling VERSION file, also read by
+# pyproject.toml ([tool.setuptools.dynamic]) and docs/conf.py. Never hand-edit a literal here.
+import pathlib
+
+__version__ = (pathlib.Path(__file__).parent / "VERSION").read_text(encoding="utf-8").strip()
 
 import logging
 
 from eds4jinja2.adapters.file_ds import FileDataSource
+from eds4jinja2.adapters.graph_store import make_graph_store, RdflibGraphStore, OxigraphGraphStore
+from eds4jinja2.models.data_source import Engine
+from eds4jinja2.adapters.in_memory_sparql_ds import InMemorySPARQLDataSource
 from eds4jinja2.adapters.local_sparql_ds import RDFFileDataSource
 from eds4jinja2.adapters.namespace_handler import NamespaceInventory
 from eds4jinja2.adapters.remote_sparql_ds import RemoteSPARQLEndpointDataSource
-from eds4jinja2.adapters.tabular_utils import add_relative_figures, replace_strings_in_tabular
-from eds4jinja2.builders.jinja_builder import build_eds_environment, inject_environment_globals
+from eds4jinja2.models.transformations import add_relative_figures, replace_strings_in_tabular
+from eds4jinja2.services.jinja_builder import build_eds_environment, inject_environment_globals
 
 # Making usage of this library more convenient
 __all__ = ["build_eds_environment",
@@ -27,6 +31,11 @@ __all__ = ["build_eds_environment",
            "FileDataSource",
            "RemoteSPARQLEndpointDataSource",
            "RDFFileDataSource",
+           "InMemorySPARQLDataSource",
+           "make_graph_store",
+           "RdflibGraphStore",
+           "OxigraphGraphStore",
+           "Engine",
            "add_relative_figures",
            "replace_strings_in_tabular",
            "NamespaceInventory"

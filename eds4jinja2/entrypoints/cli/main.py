@@ -1,8 +1,8 @@
 import logging
 import click
 
-from eds4jinja2.builders.report_builder import ReportBuilder
-from eds4jinja2.builders.report_builder_actions import copy_static_content, make_pdf_from_latex
+from eds4jinja2.services.report_builder import ReportBuilder
+from eds4jinja2.services.report_builder_actions import copy_static_content, make_pdf_from_latex
 
 logger = logging.getLogger(__name__)
 

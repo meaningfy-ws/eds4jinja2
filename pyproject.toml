@@ -16,7 +16,7 @@ authors = [{ name = "Eugeniu Costetchi", email = "costezki.eugen@gmail.com" }]
 maintainers = [{ name = "Eugeniu Costetchi", email = "costezki.eugen@gmail.com" }]
 keywords = ["template", "jinja", "report", "report generation", "rdf", "sparql", "linked-data", "data-source", "dynamic-context"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
@@ -28,7 +28,8 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Natural Language :: English",
 ]
-# Only the version is dynamic (read from eds4jinja2/__init__.py); deps are declared below.
+# Single source of truth for the version is the eds4jinja2/VERSION file (read here at build time
+# and by eds4jinja2/__init__.py at runtime). Deps are declared below.
 dynamic = ["version"]
 dependencies = [
     "Jinja2~=3.1.2",
@@ -41,12 +42,18 @@ dependencies = [
     "numpy~=1.26.0",
     "click~=8.1.7",
     "rdflib~=7.0.0",
+    "pydantic~=2.0",
     "py-singleton~=1.0.0",
     "beautifulsoup4~=4.12.2",
     "requests~=2.31.0",
 ]
 
 [project.optional-dependencies]
+# Opt-in fast in-memory SPARQL engine for the built-in graph store (the `oxigraph`
+# engine of `from_rdf` / make_graph_store). The rdflib engine needs no extra.
+oxigraph = [
+    "pyoxigraph~=0.4",
+]
 test = [
     "tabulate~=0.9.0",
     "coverage~=7.3.2",
@@ -63,6 +70,7 @@ docs = [
 ]
 dev = [
     "eds4jinja2[test,docs]",
+    "import-linter~=2.0",
     "tox~=4.11.3",
     "tox-pytest-summary~=0.1.2",
     "build~=1.2",
@@ -78,8 +86,11 @@ Homepage = "https://github.com/meaningfy-ws/eds4jinja2"
 mkreport = "eds4jinja2.entrypoints.cli.main:build_report"
 
 [tool.setuptools.dynamic]
-version = { attr = "eds4jinja2.__version__" }
+version = { file = ["eds4jinja2/VERSION"] }
 
 [tool.setuptools.packages.find]
 include = ["eds4jinja2*"]
+
+[tool.setuptools.package-data]
+eds4jinja2 = ["VERSION"]
 exclude = ["tests*"]

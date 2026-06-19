@@ -11,7 +11,7 @@ import yaml
 import toml
 import pandas as pd
 
-from eds4jinja2.adapters.base_data_source import DataSource, UnsupportedRepresentation
+from eds4jinja2.models.data_source import DataSource, UnsupportedRepresentation
 
 TABULAR_EXTENSIONS = [".csv", ".tsv", ".xlsx", ".xls", ]
 TREE_EXTENSIONS = [".json", ".yaml", ".yml", ".toml", ".json-ld", ".jsonld"]

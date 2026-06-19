@@ -7,16 +7,17 @@
 
 
 import io
-from pathlib import Path
+import threading
 from typing import Optional
 
 from SPARQLWrapper import SPARQLWrapper, JSON, CSV
 from py_singleton import singleton
 
-from eds4jinja2.adapters.base_data_source import DataSource
+from eds4jinja2.models.data_source import DataSource
 import pandas as pd
 
-from eds4jinja2.adapters.substitution_template import SubstitutionTemplate
+from eds4jinja2.models.sparql import build_query
+from eds4jinja2.adapters.query_files import read_query_file
 
 DEFAULT_ENCODING = 'utf-8'
 
@@ -28,14 +29,29 @@ class SPARQLClientPool(object):
         a corresponding SPARQLWrapper object connecting to it.
 
         The rationale of this connection pool is to reuse connection objects and save time.
+
+        The pool is **per-thread**: a SPARQLWrapper holds a mutable query string (``setQuery``),
+        so sharing one wrapper across threads would let concurrent queries to the same endpoint
+        clobber each other. Each thread therefore gets its own wrapper per endpoint — reused
+        within the thread (single-threaded behaviour unchanged), isolated across threads. This
+        makes the parallel report executor safe.
     """
-    connection_pool = {}
+    _local = threading.local()
+
+    @staticmethod
+    def _pool() -> dict:
+        pool = getattr(SPARQLClientPool._local, "connection_pool", None)
+        if pool is None:
+            pool = {}
+            SPARQLClientPool._local.connection_pool = pool
+        return pool
 
     @staticmethod
     def create_or_reuse_connection(endpoint_url: str):
-        if endpoint_url not in SPARQLClientPool.connection_pool:
-            SPARQLClientPool.connection_pool[endpoint_url] = SPARQLWrapper(endpoint_url)
-        return SPARQLClientPool.connection_pool[endpoint_url]
+        pool = SPARQLClientPool._pool()
+        if endpoint_url not in pool:
+            pool[endpoint_url] = SPARQLWrapper(endpoint_url)
+        return pool[endpoint_url]
 
 
 # safe instantiation
@@ -78,13 +94,7 @@ class RemoteSPARQLEndpointDataSource(DataSource):
             Set the query text and return the reference to self for chaining.
         :return:
         """
-        if substitution_variables:
-            template_query = SubstitutionTemplate(sparql_query)
-            sparql_query = template_query.safe_substitute(substitution_variables)
-
-        new_query = (sparql_prefixes + " " + sparql_query).strip()
-
-        self.endpoint.setQuery(new_query)
+        self.endpoint.setQuery(build_query(sparql_query, substitution_variables, sparql_prefixes))
         return self
 
     def with_query_from_file(self, sparql_query_file_path: str, substitution_variables: dict = None,
@@ -93,17 +103,8 @@ class RemoteSPARQLEndpointDataSource(DataSource):
             Set the query text and return the reference to self for chaining.
         :return:
         """
-
-        with open(Path(sparql_query_file_path).resolve(), 'r') as file:
-            query_from_file = file.read()
-
-        if substitution_variables:
-            template_query = SubstitutionTemplate(query_from_file)
-            query_from_file = template_query.safe_substitute(substitution_variables)
-
-        new_query = (prefixes + " " + query_from_file).strip()
-
-        self.endpoint.setQuery(new_query)
+        self.endpoint.setQuery(
+            build_query(read_query_file(sparql_query_file_path), substitution_variables, prefixes))
         return self
 
     def with_uri(self, uri: str, graph_uri: Optional[str] = None) -> 'RemoteSPARQLEndpointDataSource':

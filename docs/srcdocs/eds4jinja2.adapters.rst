@@ -4,18 +4,18 @@ eds4jinja2.adapters package
 Submodules
 ----------
 
-eds4jinja2.adapters.base\_data\_source module
----------------------------------------------
-
-.. automodule:: eds4jinja2.adapters.base_data_source
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 eds4jinja2.adapters.file\_ds module
 -----------------------------------
 
 .. automodule:: eds4jinja2.adapters.file_ds
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+eds4jinja2.adapters.graph\_store module
+---------------------------------------
+
+.. automodule:: eds4jinja2.adapters.graph_store
    :members:
    :undoc-members:
    :show-inheritance:
@@ -28,10 +28,10 @@ eds4jinja2.adapters.http\_ds module
    :undoc-members:
    :show-inheritance:
 
-eds4jinja2.adapters.latex\_utils module
----------------------------------------
+eds4jinja2.adapters.in\_memory\_sparql\_ds module
+-------------------------------------------------
 
-.. automodule:: eds4jinja2.adapters.latex_utils
+.. automodule:: eds4jinja2.adapters.in_memory_sparql_ds
    :members:
    :undoc-members:
    :show-inheritance:
@@ -44,6 +44,30 @@ eds4jinja2.adapters.local\_sparql\_ds module
    :undoc-members:
    :show-inheritance:
 
+eds4jinja2.adapters.namespace\_handler module
+---------------------------------------------
+
+.. automodule:: eds4jinja2.adapters.namespace_handler
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+eds4jinja2.adapters.prefix\_cc\_fetcher module
+----------------------------------------------
+
+.. automodule:: eds4jinja2.adapters.prefix_cc_fetcher
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+eds4jinja2.adapters.query\_files module
+---------------------------------------
+
+.. automodule:: eds4jinja2.adapters.query_files
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 eds4jinja2.adapters.remote\_sparql\_ds module
 ---------------------------------------------
 
@@ -51,23 +75,6 @@ eds4jinja2.adapters.remote\_sparql\_ds module
    :members:
    :undoc-members:
    :show-inheritance:
-
-eds4jinja2.adapters.substitution\_template module
--------------------------------------------------
-
-.. automodule:: eds4jinja2.adapters.substitution_template
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-eds4jinja2.adapters.tabular\_utils module
------------------------------------------
-
-.. automodule:: eds4jinja2.adapters.tabular_utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 
 Module contents
 ---------------

@@ -20,7 +20,7 @@ from typing import List
 import rdflib
 from pandas import DataFrame
 
-from eds4jinja2.adapters import invert_dict
+from eds4jinja2.models.collections import invert_dict
 from eds4jinja2.adapters.prefix_cc_fetcher import prefix_cc_lookup_base_uri, prefix_cc_lookup_prefix
 
 logger = logging.getLogger(__name__)
