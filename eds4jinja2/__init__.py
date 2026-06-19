@@ -41,11 +41,7 @@ __all__ = ["build_eds_environment",
            "NamespaceInventory"
            ]
 
-# hard coding the log level and format
-logger = logging.getLogger()
-handler = logging.StreamHandler()
-formatter = logging.Formatter(
-    '%(asctime)s %(levelname)-8s %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+# Library logging: attach only a NullHandler so importing eds4jinja2 never configures the root
+# logger, adds an emitting handler, or forces a level on consumers. The application (and the
+# `mkreport` entrypoint) owns logging configuration.
+logging.getLogger(__name__).addHandler(logging.NullHandler())

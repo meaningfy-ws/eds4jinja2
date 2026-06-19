@@ -59,7 +59,9 @@ class DataSource(ABC):
                 logger.info(f"With {type(self).__name__}, fetching as tabular {str(self)}")
                 return result, None
         except Exception as e:
-            logger.exception(f"With {type(self).__name__}, failed tabular fetching {str(self)}")
+            # Handled, fail-safe path: the error is returned to the caller, so log it as a
+            # warning (message only) rather than an ERROR-level stack trace.
+            logger.warning("With %s, failed tabular fetching %s: %s", type(self).__name__, str(self), e)
             return None, str(e)
 
     def fetch_tree(self) -> Tuple[Optional[object], Optional[str]]:
@@ -78,7 +80,9 @@ class DataSource(ABC):
                 logger.info(f"With {type(self).__name__}, fetching as tree {str(self)}")
                 return result, None
         except Exception as e:
-            logger.exception(f"With {type(self).__name__}, failed tree fetching {str(self)}")
+            # Handled, fail-safe path: the error is returned to the caller, so log it as a
+            # warning (message only) rather than an ERROR-level stack trace.
+            logger.warning("With %s, failed tree fetching %s: %s", type(self).__name__, str(self), e)
             return None, str(e)
 
     @abstractmethod

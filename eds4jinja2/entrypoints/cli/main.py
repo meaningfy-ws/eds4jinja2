@@ -20,6 +20,8 @@ logger = logging.getLogger(__name__)
                                               "to generate the PDF output. Either XeLaTex or LaTex shall be used, "
                                               "but not both.")
 def build_report(target, config, output, latex, xelatex):
+    # The entrypoint owns logging configuration (the library only attaches a NullHandler).
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)-8s %(message)s")
     report_builder = ReportBuilder(target_path=target, config_file=config, output_path=output)
     if latex or xelatex:
         report_builder.configuration_context["latex_engine"] = "pdflatex" if latex else "xelatex"
