@@ -84,6 +84,7 @@ jobs:
     name: SBOM + signatures
     needs: build
     runs-on: ubuntu-latest
+    continue-on-error: true   # optional hardening — never block/fail a release on signing hiccups
     permissions:
       contents: write   # attach assets to the GitHub Release
       id-token: write   # Sigstore keyless signing
@@ -99,7 +100,7 @@ jobs:
           format: cyclonedx-json
           output-file: eds4jinja2-sbom.cyclonedx.json
       - name: Sign distributions (Sigstore, keyless)
-        uses: sigstore/gh-action-sigstore-python@v3
+        uses: sigstore/gh-action-sigstore-python@v3.4.0
         with:
           inputs: ./dist/*.tar.gz ./dist/*.whl
       - name: Attach SBOM and signatures to the GitHub Release
