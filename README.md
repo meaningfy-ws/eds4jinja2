@@ -62,7 +62,7 @@ inject a builder that overrides `from_endpoint` (which the templates already cal
 ```python
 import rdflib
 from eds4jinja2 import InMemorySPARQLDataSource
-from eds4jinja2.builders.report_builder import ReportBuilder
+from eds4jinja2.services.report_builder import ReportBuilder
 
 graph = rdflib.Graph().parse("dataset.ttl")  # the consumer owns loading/manipulation
 ReportBuilder(
