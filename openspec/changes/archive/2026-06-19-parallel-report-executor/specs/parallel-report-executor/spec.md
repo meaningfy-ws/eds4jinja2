@@ -68,8 +68,8 @@ their own correct results.
 
 ### Requirement: Identical queries are fetched once
 
-When the same `(source, query)` pair appears more than once within a single report run, the library
-SHALL execute it only once, keying the cache by the source identity and the normalised query.
+The library SHALL execute an identical `(source, query)` pair only once within a single report run,
+keying the cache by the source identity and the normalised query, so repeats are served from cache.
 
 #### Scenario: A repeated source-and-query is executed a single time
 - **WHEN** parallelism is enabled and the same source with the same normalised query is requested twice in one report
