@@ -4,40 +4,26 @@
 # An engine-agnostic, in-process SPARQL data source.
 
 """
-A data source that queries an in-memory RDF graph held by the consumer — no SPARQL
-server and no file I/O. It accepts either an ``rdflib.Graph`` or a ``query(sparql_text)``
-callable (e.g. a pyoxigraph-backed store's ``query`` method), so it serves rdflib and
-pyoxigraph consumers alike *without* eds4jinja2 importing pyoxigraph.
+A data source that queries an in-memory RDF graph held by the consumer — no SPARQL server and no
+file I/O. It accepts either an ``rdflib.Graph`` or a ``query(sparql_text)`` callable (e.g. a
+pyoxigraph store's ``query`` method), so it serves rdflib and pyoxigraph consumers alike *without*
+eds4jinja2 importing pyoxigraph.
 
-Result shapes mirror :class:`RemoteSPARQLEndpointDataSource` exactly so that templates
-cannot tell which source produced the data:
-
-- tabular -> a pandas ``DataFrame`` of stringified bindings;
-- tree    -> the SPARQL 1.1 JSON results object, closing the tree gap that
-  ``RDFFileDataSource`` leaves open.
+Result shapes mirror :class:`RemoteSPARQLEndpointDataSource` exactly so templates cannot tell which
+source produced the data: tabular -> a pandas ``DataFrame`` of stringified bindings; tree -> the
+SPARQL-1.1 JSON results dict (built from the :class:`SparqlResults` model), closing the tree gap
+that ``RDFFileDataSource`` leaves open.
 """
-from pathlib import Path
-
 import pandas as pd
 import rdflib
 
 from eds4jinja2.adapters.base_data_source import DataSource
-from eds4jinja2.adapters.substitution_template import SubstitutionTemplate
-
-# SPARQL 1.1 Query Results JSON structural keys and term types (no free strings).
-HEAD = "head"
-VARS = "vars"
-RESULTS = "results"
-BINDINGS = "bindings"
-TYPE = "type"
-VALUE = "value"
-DATATYPE = "datatype"
-XML_LANG = "xml:lang"
-URI = "uri"
-LITERAL = "literal"
-BNODE = "bnode"
-
-EMPTY_QUERY_ERROR = "The query is empty."
+from eds4jinja2.adapters.sparql_query import build_query, read_query_file, is_empty_query, EMPTY_QUERY_ERROR
+from eds4jinja2.adapters.sparql_results import SparqlResults, SparqlTerm
+# Re-exported for callers that import the SPARQL-JSON keys from this module.
+from eds4jinja2.adapters.sparql_results import (  # noqa: F401
+    HEAD, VARS, RESULTS, BINDINGS, TYPE, VALUE, DATATYPE, XML_LANG, URI, LITERAL, BNODE,
+)
 
 
 class InMemorySPARQLDataSource(DataSource):
@@ -68,37 +54,27 @@ class InMemorySPARQLDataSource(DataSource):
 
     def with_query(self, sparql_query: str, substitution_variables: dict = None,
                    prefixes: str = "") -> 'InMemorySPARQLDataSource':
-        """ Set the query text and return self for chaining. """
-        if substitution_variables:
-            sparql_query = SubstitutionTemplate(sparql_query).safe_substitute(substitution_variables)
-        self.__query = (prefixes + " " + sparql_query).strip()
+        self.__query = build_query(sparql_query, substitution_variables, prefixes)
         return self
 
     def with_query_from_file(self, sparql_query_file_path: str, substitution_variables: dict = None,
                              prefixes: str = "") -> 'InMemorySPARQLDataSource':
-        """ Read the query text from a file and return self for chaining. """
-        with open(Path(sparql_query_file_path).resolve(), 'r') as file:
-            query_from_file = file.read()
-        if substitution_variables:
-            query_from_file = SubstitutionTemplate(query_from_file).safe_substitute(substitution_variables)
-        self.__query = (prefixes + " " + query_from_file).strip()
+        self.__query = build_query(read_query_file(sparql_query_file_path), substitution_variables, prefixes)
         return self
 
     def _assert_query(self):
-        if not self.__query or self.__query.isspace():
+        if is_empty_query(self.__query):
             raise Exception(EMPTY_QUERY_ERROR)
 
     def _fetch_tabular(self):
         self._assert_query()
-        result = self.__query_fn(self.__query)
-        rows = [{str(var): str(term) for var, term in binding.items()}
-                for binding in _iter_bindings(result)]
+        rows = [{var: str(term) for var, term in binding.items()}
+                for binding in _iter_bindings(self.__query_fn(self.__query))]
         return pd.DataFrame(rows)
 
     def _fetch_tree(self):
         self._assert_query()
-        result = self.__query_fn(self.__query)
-        return _to_sparql_json(result)
+        return _to_results(self.__query_fn(self.__query)).to_sparql_json()
 
     def _can_be_tree(self) -> bool:
         return self.__can_be_tree
@@ -110,84 +86,71 @@ class InMemorySPARQLDataSource(DataSource):
         return f"from <in-memory graph> {str(self.__query)[:60]} ..."
 
 
+# --- engine-agnostic normalisation (rdflib Result OR pyoxigraph-shaped solutions) -------------
+
+def _variables(result) -> list:
+    if hasattr(result, "vars"):  # rdflib.query.Result
+        return [str(variable) for variable in (result.vars or [])]
+    return [str(variable).lstrip("?") for variable in getattr(result, "variables", [])]
+
+
 def _iter_bindings(result):
     """ Yield each solution as a {variable_name: term} mapping, engine-agnostically. """
     if hasattr(result, "bindings"):  # rdflib.query.Result
         for binding in result.bindings:
-            yield {str(var): term for var, term in binding.items()}
+            yield {str(variable): term for variable, term in binding.items()}
         return
-    # pyoxigraph-style QuerySolutions: iterable of QuerySolution indexable by name.
-    variables = [str(v).lstrip("?") for v in getattr(result, "variables", [])]
+    variables = _variables(result)  # pyoxigraph-style QuerySolutions
     for solution in result:
         row = {}
-        for var in variables:
+        for variable in variables:
             try:
-                term = solution[var]
+                term = solution[variable]
             except (KeyError, IndexError):
                 term = None
             if term is not None:
-                row[var] = term
+                row[variable] = term
         yield row
 
 
-def _to_sparql_json(result) -> dict:
-    """ Build the SPARQL 1.1 JSON results object from an rdflib or pyoxigraph result. """
-    if hasattr(result, "vars"):  # rdflib.query.Result
-        variables = [str(v) for v in (result.vars or [])]
-        bindings = [{str(var): _term_to_json(term) for var, term in binding.items()}
-                    for binding in result.bindings]
-        return {HEAD: {VARS: variables}, RESULTS: {BINDINGS: bindings}}
-    variables = [str(v).lstrip("?") for v in getattr(result, "variables", [])]
-    bindings = []
-    for solution in result:
-        row = {}
-        for var in variables:
-            try:
-                term = solution[var]
-            except (KeyError, IndexError):
-                term = None
-            if term is not None:
-                row[var] = _term_to_json(term)
-        bindings.append(row)
-    return {HEAD: {VARS: variables}, RESULTS: {BINDINGS: bindings}}
+def _to_results(result) -> SparqlResults:
+    return SparqlResults(
+        variables=_variables(result),
+        bindings=[{var: _term_to_model(term) for var, term in binding.items()}
+                  for binding in _iter_bindings(result)])
 
 
-def _term_to_json(term) -> dict:
-    """ Map a single RDF term (rdflib or pyoxigraph) to a SPARQL-JSON term object. """
-    entry = _rdflib_term_to_json(term)
-    return entry if entry is not None else _foreign_term_to_json(term)
+def _term_to_model(term) -> SparqlTerm:
+    model = _rdflib_term(term)
+    return model if model is not None else _foreign_term(term)
 
 
-def _rdflib_term_to_json(term):
-    """ SPARQL-JSON for an rdflib term, or None if it is not an rdflib term. """
+def _rdflib_term(term):
+    """ SparqlTerm for an rdflib term, or None if it is not an rdflib term. """
     if isinstance(term, rdflib.URIRef):
-        return {TYPE: URI, VALUE: str(term)}
+        return SparqlTerm.uri(str(term))
     if isinstance(term, rdflib.BNode):
-        return {TYPE: BNODE, VALUE: str(term)}
+        return SparqlTerm.bnode(str(term))
     if isinstance(term, rdflib.Literal):
-        entry = {TYPE: LITERAL, VALUE: str(term)}
         if term.language:
-            entry[XML_LANG] = term.language
-        elif term.datatype is not None:
-            entry[DATATYPE] = str(term.datatype)
-        return entry
+            return SparqlTerm.literal(str(term), language=term.language)
+        datatype = str(term.datatype) if term.datatype is not None else None
+        return SparqlTerm.literal(str(term), datatype=datatype)
     return None
 
 
-def _foreign_term_to_json(term) -> dict:
-    """ SPARQL-JSON for a pyoxigraph (or other) term, classified by class name without import. """
+def _foreign_term(term) -> SparqlTerm:
+    """ SparqlTerm for a pyoxigraph (or other) term, classified by class name without import. """
     class_name = type(term).__name__
     if class_name == "NamedNode":
-        return {TYPE: URI, VALUE: term.value}
+        return SparqlTerm.uri(term.value)
     if class_name == "BlankNode":
-        return {TYPE: BNODE, VALUE: term.value}
+        return SparqlTerm.bnode(term.value)
     if class_name == "Literal":
-        entry = {TYPE: LITERAL, VALUE: term.value}
         language = getattr(term, "language", None)
-        datatype = getattr(term, "datatype", None)
         if language:
-            entry[XML_LANG] = language
-        elif datatype is not None:
-            entry[DATATYPE] = getattr(datatype, "value", str(datatype))
-        return entry
-    return {TYPE: LITERAL, VALUE: str(term)}
+            return SparqlTerm.literal(term.value, language=language)
+        datatype = getattr(term, "datatype", None)
+        datatype_value = getattr(datatype, "value", str(datatype)) if datatype is not None else None
+        return SparqlTerm.literal(term.value, datatype=datatype_value)
+    return SparqlTerm.literal(str(term))

@@ -8,7 +8,6 @@
 
 import io
 import threading
-from pathlib import Path
 from typing import Optional
 
 from SPARQLWrapper import SPARQLWrapper, JSON, CSV
@@ -17,7 +16,7 @@ from py_singleton import singleton
 from eds4jinja2.adapters.base_data_source import DataSource
 import pandas as pd
 
-from eds4jinja2.adapters.substitution_template import SubstitutionTemplate
+from eds4jinja2.adapters.sparql_query import build_query, read_query_file
 
 DEFAULT_ENCODING = 'utf-8'
 
@@ -94,13 +93,7 @@ class RemoteSPARQLEndpointDataSource(DataSource):
             Set the query text and return the reference to self for chaining.
         :return:
         """
-        if substitution_variables:
-            template_query = SubstitutionTemplate(sparql_query)
-            sparql_query = template_query.safe_substitute(substitution_variables)
-
-        new_query = (sparql_prefixes + " " + sparql_query).strip()
-
-        self.endpoint.setQuery(new_query)
+        self.endpoint.setQuery(build_query(sparql_query, substitution_variables, sparql_prefixes))
         return self
 
     def with_query_from_file(self, sparql_query_file_path: str, substitution_variables: dict = None,
@@ -109,17 +102,8 @@ class RemoteSPARQLEndpointDataSource(DataSource):
             Set the query text and return the reference to self for chaining.
         :return:
         """
-
-        with open(Path(sparql_query_file_path).resolve(), 'r') as file:
-            query_from_file = file.read()
-
-        if substitution_variables:
-            template_query = SubstitutionTemplate(query_from_file)
-            query_from_file = template_query.safe_substitute(substitution_variables)
-
-        new_query = (prefixes + " " + query_from_file).strip()
-
-        self.endpoint.setQuery(new_query)
+        self.endpoint.setQuery(
+            build_query(read_query_file(sparql_query_file_path), substitution_variables, prefixes))
         return self
 
     def with_uri(self, uri: str, graph_uri: Optional[str] = None) -> 'RemoteSPARQLEndpointDataSource':

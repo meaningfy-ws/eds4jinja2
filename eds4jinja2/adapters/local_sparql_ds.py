@@ -4,15 +4,14 @@
 # Date:  07/08/2020
 # Author: Eugeniu Costetchi
 # Email: costezki.eugen@gmail.com
-from pathlib import Path
-
 import pandas as pd
 import rdflib
 
 from eds4jinja2.adapters.base_data_source import DataSource, UnsupportedRepresentation
-from eds4jinja2.adapters.substitution_template import SubstitutionTemplate
+from eds4jinja2.adapters.sparql_query import build_query, read_query_file, is_empty_query, EMPTY_QUERY_ERROR
 
 DEFAULT_ENCODING = 'utf-8'
+QUERY_ALREADY_SET_ERROR = "The query was already set."
 
 
 class RDFFileDataSource(DataSource):
@@ -36,35 +35,19 @@ class RDFFileDataSource(DataSource):
         :return:
         """
         if self.__query__ != "":
-            raise Exception("The query was already set.")
-
-        if substitution_variables:
-            template = SubstitutionTemplate(sparql_query)
-            self.__query__ = template.safe_substitute(substitution_variables)
-        else:
-            self.__query__ = sparql_query
-
-        self.__query__ = (prefixes + " " + self.__query__).strip()
-
+            raise Exception(QUERY_ALREADY_SET_ERROR)
+        self.__query__ = build_query(sparql_query, substitution_variables, prefixes)
         return self
 
-    def with_query_from_file(self, sparql_query_file_path: str, substitution_variables: dict = None, prefixes: str = "") -> 'RDFFileDataSource':
+    def with_query_from_file(self, sparql_query_file_path: str, substitution_variables: dict = None,
+                             prefixes: str = "") -> 'RDFFileDataSource':
         """
             Set the query text and return the reference to self for chaining.
         :return:
         """
         if self.__query__ != "":
-            raise Exception("The query was already set.")
-
-        with open(Path(sparql_query_file_path).resolve(), 'r') as file:
-            self.__query__ = file.read()
-
-        if substitution_variables:
-            template = SubstitutionTemplate(self.__query__)
-            self.__query__ = template.safe_substitute(substitution_variables)
-
-        self.__query__ = (prefixes + " " + self.__query__).strip()
-
+            raise Exception(QUERY_ALREADY_SET_ERROR)
+        self.__query__ = build_query(read_query_file(sparql_query_file_path), substitution_variables, prefixes)
         return self
 
     def with_file(self, file: str) -> 'RDFFileDataSource':
@@ -76,8 +59,8 @@ class RDFFileDataSource(DataSource):
         return self
 
     def _fetch_tabular(self):
-        if not self.__query__:
-            raise Exception("The query is empty.")
+        if is_empty_query(self.__query__):
+            raise Exception(EMPTY_QUERY_ERROR)
 
         self.__graph__.parse(self.__filename__)
         result = self.__graph__.query(self.__query__)

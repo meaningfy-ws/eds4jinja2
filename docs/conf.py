@@ -19,18 +19,14 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-# Find version. We have to do this because we can't import it in Python 3 until
-# its been automatically converted in the setup process.
+# The version is read from the single source of truth: eds4jinja2/VERSION.
 def find_version(filename):
-    _version_re = re.compile(r'__version__ = "(.*)"')
-    for line in open(filename):
-        version_match = _version_re.match(line)
-        if version_match:
-            return version_match.group(1)
+    with open(filename) as version_file:
+        return version_file.read().strip()
 
 
 # The full version, including alpha/beta/rc tags.
-release = find_version("../eds4jinja2/__init__.py")
+release = find_version("../eds4jinja2/VERSION")
 # The short X.Y version.
 version = re.sub("[0-9]+\\.[0-9]\\..*", "\1", release)
 

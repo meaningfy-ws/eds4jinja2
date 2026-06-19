@@ -7,10 +7,11 @@
 
 __docformat__ = "restructuredtext en"
 
-# The __version__ literal is read by pyproject.toml ([tool.setuptools.dynamic]) and by a
-# regex in /docs/conf.py — keep it a simple string assignment.
-__version__ = "0.4.0"
-__date__ = "2026-06-19"
+# Single source of truth for the version is the sibling VERSION file, also read by
+# pyproject.toml ([tool.setuptools.dynamic]) and docs/conf.py. Never hand-edit a literal here.
+import pathlib
+
+__version__ = (pathlib.Path(__file__).parent / "VERSION").read_text(encoding="utf-8").strip()
 
 import logging
 

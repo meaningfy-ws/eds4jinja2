@@ -214,6 +214,7 @@ def _invoke(real_ds, method):
 
 def _placeholder(method):
     import pandas as pd
+    from eds4jinja2.adapters.sparql_results import SparqlResults
     if method == TABULAR:
         return pd.DataFrame(), None
-    return {"head": {"vars": []}, "results": {"bindings": []}}, None
+    return SparqlResults.empty().to_sparql_json(), None
