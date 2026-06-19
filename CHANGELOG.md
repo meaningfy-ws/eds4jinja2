@@ -17,6 +17,9 @@ All notable changes to this project are documented in this file. The format is b
 ### Changed
 - Fail-safe data-source fetches now log handled failures (e.g. `UnsupportedRepresentation`, empty
   query) at **WARNING with the message** instead of ERROR with a full stack trace.
+- Docs/tests: README rewritten (why / what it solves / how to use, data-source table); the
+  `RDFFileDataSource` unit tests now assert on real query results and `make_document` is tested
+  offline (no live SPARQL endpoint in the default test gate).
 
 ## [1.0.0] - 2026-06-19
 
