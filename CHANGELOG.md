@@ -6,6 +6,17 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-06-19
+
+### Fixed
+- README: the PyPI version/status badges were stuck (cached on shields' CDN) showing `0.3.1` /
+  `alpha`; the badge URLs are cache-busted so they reflect the current release.
+
+### Changed
+- Test suite hardened against external volatility: the live DESCRIBE test no longer asserts an
+  exact (drifting) triple count, and the flaky `httpbin.org/status/500` example was removed from
+  the SPARQL-error feature. No library code change.
+
 ## [1.0.1] - 2026-06-19
 
 ### Fixed
@@ -73,7 +84,8 @@ only deep import paths moved (see **Migration**).
 ## [0.3.1] - 2026-06-18
 - Modernised packaging (pip + `pyproject.toml`, setuptools backend; Python 3.11/3.12) and CI.
 
-[Unreleased]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.1...HEAD
+[Unreleased]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.2...HEAD
+[1.0.2]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.1...1.0.2
 [1.0.1]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/meaningfy-ws/eds4jinja2/compare/0.3.1...1.0.0
 [0.3.1]: https://github.com/meaningfy-ws/eds4jinja2/releases/tag/0.3.1
