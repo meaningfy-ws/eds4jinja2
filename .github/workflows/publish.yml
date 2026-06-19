@@ -107,6 +107,7 @@ jobs:
       - name: Attach SBOM and signatures to the GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}   # this job has no checkout; tell gh which repo
           RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
           gh release upload "$RELEASE_TAG" \
