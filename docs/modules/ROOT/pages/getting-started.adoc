@@ -1,0 +1,80 @@
+= Getting Started
+:description: Install eds4jinja2 and render your first data-driven report.
+
+== Requirements
+
+eds4jinja2 requires *Python 3.11+*.
+
+== Installation
+
+[source,shell]
+----
+pip install eds4jinja2
+
+# optional fast in-memory SPARQL engine (oxigraph):
+pip install eds4jinja2[oxigraph]
+----
+
+The `oxigraph` extra pulls in `pyoxigraph` for a fast, GIL-releasing in-memory graph engine. The
+default `rdflib` engine needs no extra. See xref:in-memory-graphs.adoc[In-memory Graphs].
+
+== A. Render a template through the eds4jinja2 environment
+
+The lowest-level entry point is `build_eds_environment`, which returns a Jinja2 `Environment` with
+the data-source builders injected as globals. Render any template through it — the data is fetched
+_while_ rendering, so you pass no context:
+
+[source,python]
+----
+from jinja2 import DictLoader
+from eds4jinja2 import build_eds_environment
+
+env = build_eds_environment(loader=DictLoader({
+    "report.txt": "{% set rows, err = from_file('data.csv').fetch_tabular() %}"
+                  "Rows: {{ rows | length }}\n{{ rows.to_string() }}",
+}))
+
+print(env.get_template("report.txt").render())   # data is fetched while rendering
+----
+
+Any standard Jinja2 loader works (`PackageLoader`, `FileSystemLoader`, `DictLoader`, …):
+
+[source,python]
+----
+from jinja2 import PackageLoader
+from eds4jinja2 import build_eds_environment
+
+env = build_eds_environment(loader=PackageLoader("your_application", "templates"))
+rendered_text = env.get_template("mytemplate.txt").render()
+----
+
+== B. Drive a whole report folder with the `mkreport` CLI
+
+For a complete report — entry template, includes, static assets — use the `mkreport` command against
+a *report folder*:
+
+[source,shell]
+----
+mkreport --target ./report --output ./out
+----
+
+The target folder follows a small convention:
+
+[source,text]
+----
+report/
+├── config.json     # { "template": "main.html", "conf": { "default_endpoint": "...", ... } }
+├── templates/      # main.html and any includes
+└── static/         # css/js/images, copied into the output (tree preserved)
+----
+
+`config.json` names the entry template and carries a `conf` object of variables available to all
+templates. Set `"template_flavour_syntax": "latex"` for LaTeX templates.
+
+See xref:cli.adoc[CLI] for all arguments and xref:templating.adoc[Templating & Configuration] for the
+full `config.json` shape.
+
+== Next
+
+* xref:data-sources.adoc[Data Sources] — what each builder fetches and how errors surface.
+* xref:templating.adoc[Templating & Configuration] — `config.json`, HTML and LaTeX flavours.

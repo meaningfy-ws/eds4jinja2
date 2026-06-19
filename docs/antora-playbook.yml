@@ -1,0 +1,29 @@
+site:
+  title: eds4jinja2 Documentation
+  url: https://meaningfy-ws.github.io/eds4jinja2
+  start_page: eds4jinja2::index.adoc
+
+content:
+  sources:
+    - url: https://github.com/meaningfy-ws/eds4jinja2.git
+      start_path: docs
+      branches: [master]
+      tags: []
+      edit_url: false
+
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
+
+asciidoc:
+  attributes:
+    experimental: ''
+    idprefix: ''
+    idseparator: '-'
+    page-pagination: ''
+
+antora:
+  extensions:
+    - require: '@antora/lunr-extension'
+      snippet_length: 250

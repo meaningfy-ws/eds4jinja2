@@ -1,0 +1,114 @@
+= Data Sources
+:description: The data-source builders, the tabular/tree fetch methods, and the fail-safe contract.
+
+A *data source* knows how to fetch data for a template. eds4jinja2 exposes each one as a Jinja global
+*builder* function. You call a builder, optionally attach a query, then fetch.
+
+== The fail-safe `(content, error)` contract
+
+Every fetch returns a *two-tuple* `(content, error)`:
+
+* on success — `content` holds the data and `error` is `None`;
+* on failure — `content` is `None` (or empty) and `error` is a human-readable message.
+
+A failure is therefore surfaced _into_ the template rather than crashing the render. Always unpack
+both:
+
+[source,jinja]
+----
+{% set rows, error = from_endpoint(endpoint).with_query(q).fetch_tabular() %}
+{% if error %}
+  Could not load data: {{ error }}
+{% else %}
+  {{ rows.to_string() }}
+{% endif %}
+----
+
+== Two result shapes
+
+[%autowidth]
+|===
+| Method | Returns | Use for
+
+| `fetch_tabular()` | a pandas `DataFrame` | rows-and-columns data (SPARQL `SELECT`, CSV, Excel)
+| `fetch_tree()` | a nested `dict` | hierarchical data (JSON/YAML/TOML, SPARQL-JSON results)
+|===
+
+== Builders
+
+=== `from_file(path)`
+
+Reads tabular and tree-structured files. The path may be absolute or relative to the running script.
+
+* *tabular*: CSV, TSV, Excel (`.xls`, `.xlsx`) → `fetch_tabular()`.
+* *tree*: JSON, YAML, TOML → `fetch_tree()`.
+
+[source,jinja]
+----
+{% set config_content, error = from_file("path/to/config.json").fetch_tree() %}
+{% set table, error = from_file("data.csv").fetch_tabular() %}
+----
+
+=== `from_endpoint(url)`
+
+Queries a *remote SPARQL endpoint* through a `SELECT` query or a `DESCRIBE` request. Attach the query
+with `with_query(...)` (or `with_query_from_file(...)`), then fetch:
+
+[source,jinja]
+----
+{% set query_string = "select * where {?s ?p ?o} limit 10" %}
+{% set rows, error = from_endpoint(endpoint).with_query(query_string).fetch_tabular() %}
+----
+
+`with_query` also accepts a *substitution* mapping and a *prefix* string, so a single template query
+can be parameterised:
+
+[source,jinja]
+----
+{% set rows, error =
+   from_endpoint(endpoint).with_query("select * where {~a ~b ~c} limit 10",
+                                      {'a': '?s', 'b': '?p', 'c': '?o'}).fetch_tabular() %}
+----
+
+=== `from_graph(graph)` (alias `from_memory`)
+
+Queries an *in-process RDF graph* you already hold — an `rdflib.Graph`, a `pyoxigraph` store, or any
+object exposing a `query(sparql)` callable. No SPARQL server required. Both `fetch_tabular()` and
+`fetch_tree()` are supported. See xref:in-memory-graphs.adoc[In-memory Graphs].
+
+[source,jinja]
+----
+{% set rows, error = from_graph(my_graph).with_query("SELECT ?s WHERE { ?s a ex:Thing }").fetch_tabular() %}
+----
+
+=== `from_rdf(sources, engine="rdflib")`
+
+Loads one or more RDF *files or URLs* into an in-memory graph once (engine `"rdflib"` by default, or
+`"oxigraph"`) and queries it. Tabular *and* tree results.
+
+[source,jinja]
+----
+{% set rows, error =
+   from_rdf(["data.ttl", "http://example.org/more.ttl"], "oxigraph").with_query(q).fetch_tabular() %}
+----
+
+=== `from_rdf_file(path)`
+
+Queries a *single* RDF file with SPARQL (tabular only). *Legacy* — superseded by the more capable
+`from_rdf`; prefer `from_rdf` for new templates.
+
+== Summary
+
+[%autowidth]
+|===
+| Builder | Source | `fetch_tabular` | `fetch_tree`
+
+| `from_file(path)` | CSV/TSV/Excel and JSON/YAML/TOML files | ✅ | ✅
+| `from_endpoint(url)` | a remote SPARQL endpoint | ✅ | ✅
+| `from_graph(graph)` (alias `from_memory`) | an in-process `rdflib.Graph`, `pyoxigraph` store, or `query(sparql)` callable | ✅ | ✅
+| `from_rdf(sources, engine="rdflib")` | RDF file(s)/URL(s) loaded into an in-memory graph | ✅ | ✅
+| `from_rdf_file(path)` | a single RDF file (legacy) | ✅ | —
+|===
+
+NOTE: Need a source that is not listed — XML, a REST API, a relational or NoSQL database, a graph
+database? See xref:extending.adoc[Extending eds4jinja2] to add your own builder in a few lines.

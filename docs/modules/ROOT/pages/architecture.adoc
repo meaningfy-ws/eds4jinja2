@@ -1,0 +1,66 @@
+= Architecture & Development
+:description: The Cosmic-Python layers, the dev/CI workflow, and the version single-source-of-truth.
+
+== Cosmic-Python layers
+
+The package is organised into four layers with a strict, one-directional dependency rule, enforced by
+import-linter (`.importlinter`, `make check-architecture`):
+
+[source,text]
+----
+entrypoints  ->  services  ->  adapters  ->  models
+                                  \------------^
+
+models       pure domain (no I/O): sparql, data_source (+ Engine), transformations, collections
+adapters     I/O + integration: file / remote / local / in-memory SPARQL, graph_store, query_files
+services     use-case orchestration: jinja_builder, report_builder, parallel_executor, actions
+entrypoints  the `mkreport` CLI
+----
+
+* `models` imports nothing upward — pure domain.
+* `adapters` import only `models`.
+* `services` import `adapters` + `models`.
+* `entrypoints` import `services`.
+
+Crossing a boundary (for example a model importing an adapter) fails the import-linter contracts.
+
+== Tooling & developer workflow
+
+Tooling is *pip + tox + `pyproject.toml`* (setuptools backend; *not* Poetry). The `make` targets are
+the dev/CI interface:
+
+[source,bash]
+----
+make install-all          # install the project with the dev extra
+make test-unit            # unit tests (tox: py311, py312)
+make test-features        # BDD feature tests
+make test-all             # full suite (excludes live-network tests)
+make test-network         # live-network integration tests (need network)
+make check-architecture   # validate the layer boundaries (import-linter)
+make build                # build the wheel/sdist (PEP 517)
+----
+
+Target interpreters are *Python 3.11 and 3.12*. Tests live under `tests/unit/` (isomorphic to the
+layers: `models / adapters / services / meta`) and `tests/steps` + `tests/features` (BDD).
+
+== Building these docs
+
+The documentation is authored in *AsciiDoc* and built by *Antora* (Node-based):
+
+[source,bash]
+----
+make install-antora   # install Antora + extensions (npm)
+make build-docs       # build the site into docs/build/site
+make preview-docs      # build, then serve at http://localhost:8088
+make clean-docs        # remove docs/build
+----
+
+On every pull request a GitHub Actions workflow builds the site; on push to `master` it deploys to
+*GitHub Pages*. The same playbook also builds on *ReadTheDocs*, so both published sites are generated
+from the same AsciiDoc source.
+
+== Version single source of truth
+
+The package version lives in *one* file — `eds4jinja2/VERSION`. It is read at runtime by
+`eds4jinja2/__init__.py`, by `pyproject.toml` (`[tool.setuptools.dynamic]` `file=`), and by the
+release tooling. Never hand-edit a version literal anywhere else.
