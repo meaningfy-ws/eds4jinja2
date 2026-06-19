@@ -16,7 +16,7 @@ authors = [{ name = "Eugeniu Costetchi", email = "costezki.eugen@gmail.com" }]
 maintainers = [{ name = "Eugeniu Costetchi", email = "costezki.eugen@gmail.com" }]
 keywords = ["template", "jinja", "report", "report generation", "rdf", "sparql", "linked-data", "data-source", "dynamic-context"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
