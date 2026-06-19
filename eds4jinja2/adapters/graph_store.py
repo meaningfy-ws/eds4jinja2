@@ -18,11 +18,12 @@ so it stays an opt-in extra (``pip install eds4jinja2[oxigraph]``); the rdflib p
 no extra dependency.
 """
 from abc import ABC, abstractmethod
-from enum import Enum
 from pathlib import Path
 from typing import List, Optional, Union
 
 import rdflib
+
+from eds4jinja2.models.data_source import Engine
 
 DEFAULT_RDF_FORMAT = "application/n-triples"
 
@@ -46,12 +47,6 @@ OXIGRAPH_MISSING_MESSAGE = (
     "Install it with: pip install eds4jinja2[oxigraph]")
 
 Sources = Union[str, Path, List[Union[str, Path]]]
-
-
-class Engine(str, Enum):
-    """ Supported in-memory graph engines (no free strings at call sites). """
-    RDFLIB = "rdflib"
-    OXIGRAPH = "oxigraph"
 
 
 class GraphStorePort(ABC):

@@ -8,8 +8,8 @@ Email: costezki.eugen@gmail.com
 import pandas as pd
 import pytest
 
-from eds4jinja2.adapters import invert_dict
-from eds4jinja2.builders.jinja_builder import build_eds_environment, TABULAR_HELPERS, TREE_HELPERS
+from eds4jinja2.models.collections import invert_dict
+from eds4jinja2.services.jinja_builder import build_eds_environment, TABULAR_HELPERS, TREE_HELPERS
 from tests import FAKE_DATA_SOURCE_BUILDERS, RESPONSE_SPARQL_CSV_CORPORATE_BODY, RESPONSE_SPARQL_WITH_NUMBERS
 
 

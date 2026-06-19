@@ -7,8 +7,9 @@
 import pandas as pd
 import rdflib
 
-from eds4jinja2.adapters.base_data_source import DataSource, UnsupportedRepresentation
-from eds4jinja2.adapters.sparql_query import build_query, read_query_file, is_empty_query, EMPTY_QUERY_ERROR
+from eds4jinja2.models.data_source import DataSource, UnsupportedRepresentation
+from eds4jinja2.models.sparql import build_query, is_empty_query, EMPTY_QUERY_ERROR
+from eds4jinja2.adapters.query_files import read_query_file
 
 DEFAULT_ENCODING = 'utf-8'
 QUERY_ALREADY_SET_ERROR = "The query was already set."

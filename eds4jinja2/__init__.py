@@ -16,13 +16,14 @@ __version__ = (pathlib.Path(__file__).parent / "VERSION").read_text(encoding="ut
 import logging
 
 from eds4jinja2.adapters.file_ds import FileDataSource
-from eds4jinja2.adapters.graph_store import Engine, make_graph_store, RdflibGraphStore, OxigraphGraphStore
+from eds4jinja2.adapters.graph_store import make_graph_store, RdflibGraphStore, OxigraphGraphStore
+from eds4jinja2.models.data_source import Engine
 from eds4jinja2.adapters.in_memory_sparql_ds import InMemorySPARQLDataSource
 from eds4jinja2.adapters.local_sparql_ds import RDFFileDataSource
 from eds4jinja2.adapters.namespace_handler import NamespaceInventory
 from eds4jinja2.adapters.remote_sparql_ds import RemoteSPARQLEndpointDataSource
-from eds4jinja2.adapters.tabular_utils import add_relative_figures, replace_strings_in_tabular
-from eds4jinja2.builders.jinja_builder import build_eds_environment, inject_environment_globals
+from eds4jinja2.models.transformations import add_relative_figures, replace_strings_in_tabular
+from eds4jinja2.services.jinja_builder import build_eds_environment, inject_environment_globals
 
 # Making usage of this library more convenient
 __all__ = ["build_eds_environment",

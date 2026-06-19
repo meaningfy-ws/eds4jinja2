@@ -9,7 +9,7 @@
 
 import pytest
 
-from eds4jinja2.adapters import first_key, first_key_value, invert_dict
+from eds4jinja2.models.collections import first_key, first_key_value, invert_dict
 from eds4jinja2.adapters.namespace_handler import NamespaceInventory, simplify_uris_in_tabular
 from eds4jinja2.adapters.prefix_cc_fetcher import prefix_cc_lookup_prefix, prefix_cc_lookup_base_uri, prefix_cc_all
 

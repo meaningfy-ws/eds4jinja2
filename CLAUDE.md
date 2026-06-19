@@ -45,18 +45,22 @@ commits reference the change.
 
 ## Working conventions
 
-- **Real layers** (verified): `entrypoints → builders → adapters`. `adapters` is the innermost
-  layer (imports nothing upward); `builders` orchestrates adapters; `entrypoints` (CLI `mkreport`)
-  drives builders. This library keeps these real layer names.
+- **Cosmic-Python layers** (enforced by import-linter): `entrypoints → services → adapters →
+  models`. `models` is pure (no I/O, imports nothing upward); `adapters` does I/O and imports only
+  `models`; `services` orchestrates (`adapters` + `models`); `entrypoints` (CLI `mkreport`) drives
+  `services`. Boundaries are checked by `make check-architecture` (`.importlinter`). *(This
+  supersedes the earlier `adapters/builders/entrypoints` layout — see the archived
+  `cosmic-layer-restructure` change.)*
 - **Tooling is pip + tox + `pyproject.toml`** (setuptools backend; NOT Poetry): runtime and
   `test`/`docs`/`dev` dependencies are declared in `pyproject.toml` (no `setup.py`, no
   `requirements*.txt`). Build with `python -m build`; run tests via `tox` (envs `py311`, `py312`).
   The `make` targets are the dev/CI interface: `make install-all`, `make test-unit`,
-  `make test-features`, `make test-all`, `make build`.
+  `make test-features`, `make test-all`, `make check-architecture`, `make build`.
 - Target interpreters: **Python 3.11 and 3.12** (3.8 dropped — incompatible with the numpy/pandas
   versions needed for 3.12).
-- The package version is the single source of truth in `eds4jinja2/__init__.py:__version__`
-  (`pyproject.toml` reads it via `[tool.setuptools.dynamic]`; `docs/conf.py` reads it via regex).
+- The package version is the single source of truth in the `eds4jinja2/VERSION` file
+  (`eds4jinja2/__init__.py` reads it at runtime; `pyproject.toml` reads it via
+  `[tool.setuptools.dynamic]` `file=`; `docs/conf.py` reads the same file).
 - Tests: `tests/unit/` (unit) and `tests/steps/` + `tests/features/` (BDD). Some SPARQL tests hit
   live remote endpoints and need network; `test_describe_uri` asserts on remote data that can
   drift.
@@ -71,8 +75,10 @@ an **index, not authority** — if it disagrees with `openspec/specs/`, `specs/`
 
 - **Archetype:** library (pip-installable; published to PyPI; CLI entrypoint `mkreport`).
 - **Top-level package:** `eds4jinja2/` (no `/src`).
-- **Layers / modules:** `adapters` (data sources: file, local/remote SPARQL, namespaces, tabular),
-  `builders` (Jinja env + report builder + actions), `entrypoints` (CLI).
+- **Layers / modules:** `models` (pure domain: `sparql` query+results, `data_source` ABC+`Engine`,
+  `transformations` latex/tabular, `collections` dict utils), `adapters` (I/O data sources: file,
+  local/remote/in-memory SPARQL, graph store, namespaces, query files), `services` (Jinja env +
+  report builder + actions + parallel executor), `entrypoints` (CLI).
 - **Datastores / external systems:** SPARQL endpoints (remote + local rdflib), Fuseki for tests
   (`make start-fuseki`), tabular files (csv/tsv/xls/xlsx via pandas).
 - **Deployable?** No — it is a library.

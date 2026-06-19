@@ -10,7 +10,7 @@ import pytest
 from eds4jinja2 import RDFFileDataSource
 import unittest
 
-from eds4jinja2.adapters.base_data_source import UnsupportedRepresentation
+from eds4jinja2.models.data_source import UnsupportedRepresentation
 
 
 def test_load_local_sparql_fetch_tabular():

@@ -17,11 +17,12 @@ that ``RDFFileDataSource`` leaves open.
 import pandas as pd
 import rdflib
 
-from eds4jinja2.adapters.base_data_source import DataSource
-from eds4jinja2.adapters.sparql_query import build_query, read_query_file, is_empty_query, EMPTY_QUERY_ERROR
-from eds4jinja2.adapters.sparql_results import SparqlResults, SparqlTerm
+from eds4jinja2.models.data_source import DataSource
+from eds4jinja2.models.sparql import build_query, is_empty_query, EMPTY_QUERY_ERROR
+from eds4jinja2.adapters.query_files import read_query_file
+from eds4jinja2.models.sparql import SparqlResults, SparqlTerm
 # Re-exported for callers that import the SPARQL-JSON keys from this module.
-from eds4jinja2.adapters.sparql_results import (  # noqa: F401
+from eds4jinja2.models.sparql import (  # noqa: F401
     HEAD, VARS, RESULTS, BINDINGS, TYPE, VALUE, DATATYPE, XML_LANG, URI, LITERAL, BNODE,
 )
 

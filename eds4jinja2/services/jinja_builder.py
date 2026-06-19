@@ -7,15 +7,16 @@
 
 import jinja2
 
-from eds4jinja2.adapters import invert_dict
+from eds4jinja2.models.collections import invert_dict
+from eds4jinja2.models.data_source import Engine
+from eds4jinja2.models.transformations import (escape_latex, replace_strings_in_tabular,
+                                               add_relative_figures)
 from eds4jinja2.adapters.file_ds import FileDataSource
-from eds4jinja2.adapters.graph_store import Engine, make_graph_store
+from eds4jinja2.adapters.graph_store import make_graph_store
 from eds4jinja2.adapters.in_memory_sparql_ds import InMemorySPARQLDataSource
-from eds4jinja2.adapters.latex_utils import escape_latex
 from eds4jinja2.adapters.local_sparql_ds import RDFFileDataSource
 from eds4jinja2.adapters.namespace_handler import NamespaceInventory, simplify_uris_in_tabular
 from eds4jinja2.adapters.remote_sparql_ds import RemoteSPARQLEndpointDataSource
-from eds4jinja2.adapters.tabular_utils import replace_strings_in_tabular, add_relative_figures
 
 DATA_SOURCE_BUILDERS = {
     "from_endpoint": lambda endpoint: RemoteSPARQLEndpointDataSource(endpoint),

@@ -10,8 +10,8 @@ import shutil
 from unittest.mock import Mock
 
 import pytest
-from eds4jinja2.builders.report_builder import ReportBuilder
-from eds4jinja2.adapters import deep_update
+from eds4jinja2.services.report_builder import ReportBuilder
+from eds4jinja2.models.collections import deep_update
 from bs4 import BeautifulSoup
 
 

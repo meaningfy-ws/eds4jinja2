@@ -6,7 +6,7 @@
 # Email: costezki.eugen@gmail.com 
 
 """ """
-from eds4jinja2.adapters.latex_utils import escape_latex
+from eds4jinja2.models.transformations import escape_latex
 
 
 def test_escape_chars():

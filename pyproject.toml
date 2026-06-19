@@ -70,6 +70,7 @@ docs = [
 ]
 dev = [
     "eds4jinja2[test,docs]",
+    "import-linter~=2.0",
     "tox~=4.11.3",
     "tox-pytest-summary~=0.1.2",
     "build~=1.2",

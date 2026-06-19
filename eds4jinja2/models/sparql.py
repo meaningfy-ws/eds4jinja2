@@ -1,17 +1,25 @@
 #!/usr/bin/python3
 
-# sparql_results.py
-# Typed model of the SPARQL 1.1 Query Results JSON shape — the single home for its keys.
+# sparql.py
+# SPARQL domain model: query-string building, the `~` substitution template, and the
+# typed SPARQL-1.1 Query Results JSON model. Pure — no I/O, no frameworks beyond pydantic.
 
 """
-The SPARQL-1.1 Query Results JSON structure, modelled with Pydantic so its key names live in one
-place and are not duplicated as free strings across adapters. Use the model internally; serialise
-to the canonical dict at the boundary (templates and the remote source both speak that dict, so
-parity is preserved).
+Everything SPARQL that is pure domain lives here:
+
+- :class:`SubstitutionTemplate` — the ``~``-delimited template used to parameterise queries;
+- :func:`build_query` / :func:`is_empty_query` — query-string assembly (file reading is the
+  adapter's concern, see ``adapters/query_files.py``);
+- :class:`SparqlTerm` / :class:`SparqlResults` — the result model whose key names live here once
+  and which serialises to the canonical SPARQL-1.1 Results JSON dict at the boundary (templates
+  and the remote source both speak that dict, so parity is preserved).
 """
+from string import Template
 from typing import Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
+
+EMPTY_QUERY_ERROR = "The query is empty."
 
 # SPARQL 1.1 Query Results JSON structural keys and term types (defined ONCE, imported elsewhere).
 HEAD = "head"
@@ -25,6 +33,22 @@ XML_LANG = "xml:lang"
 URI = "uri"
 LITERAL = "literal"
 BNODE = "bnode"
+
+
+class SubstitutionTemplate(Template):
+    """ A ``string.Template`` whose placeholder delimiter is ``~`` (used to parameterise queries). """
+    delimiter = '~'
+
+
+def build_query(sparql_query: str, substitution_variables: dict = None, prefixes: str = "") -> str:
+    """ Apply ``~``-substitution and prepend prefixes, returning the final query string. """
+    if substitution_variables:
+        sparql_query = SubstitutionTemplate(sparql_query).safe_substitute(substitution_variables)
+    return (prefixes + " " + sparql_query).strip()
+
+
+def is_empty_query(query: str) -> bool:
+    return not query or query.isspace()
 
 
 class SparqlTerm(BaseModel):

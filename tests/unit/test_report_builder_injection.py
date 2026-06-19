@@ -9,7 +9,7 @@ import pathlib
 import pytest
 
 from eds4jinja2.adapters.in_memory_sparql_ds import InMemorySPARQLDataSource
-from eds4jinja2.builders.report_builder import ReportBuilder
+from eds4jinja2.services.report_builder import ReportBuilder
 
 
 @pytest.fixture

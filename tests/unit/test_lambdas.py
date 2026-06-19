@@ -11,7 +11,7 @@ import json
 import rdflib
 from rdflib.term import URIRef
 
-from eds4jinja2.adapters import deep_update
+from eds4jinja2.models.collections import deep_update
 
 
 def test_call_lambda():

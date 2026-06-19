@@ -10,7 +10,7 @@ import threading
 import pandas as pd
 import pytest
 
-from eds4jinja2.builders.parallel_executor import (
+from eds4jinja2.services.parallel_executor import (
     run_parallel, FetchCache, FetchCoordinator, CachingDataSource, Phase,
     wrap_builders, TABULAR, TREE,
 )

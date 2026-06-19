@@ -8,7 +8,7 @@
 import pandas as pd
 import pytest
 
-from eds4jinja2.adapters.tabular_utils import replace_strings_in_tabular, add_relative_figures
+from eds4jinja2.models.transformations import replace_strings_in_tabular, add_relative_figures
 
 pd.options.display.max_columns = None
 

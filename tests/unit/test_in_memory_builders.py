@@ -7,7 +7,7 @@ Tests for the in-memory data-source builders registered in DATA_SOURCE_BUILDERS:
 import rdflib
 
 from eds4jinja2.adapters.in_memory_sparql_ds import InMemorySPARQLDataSource
-from eds4jinja2.builders.jinja_builder import DATA_SOURCE_BUILDERS
+from eds4jinja2.services.jinja_builder import DATA_SOURCE_BUILDERS
 
 
 def test_from_graph_registered_and_builds_in_memory_source():

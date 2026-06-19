@@ -15,11 +15,11 @@ from typing import Union
 
 import jinja2
 
-from eds4jinja2.adapters import deep_update
-from eds4jinja2.builders.jinja_builder import (build_eds_environment, inject_environment_globals,
+from eds4jinja2.models.collections import deep_update
+from eds4jinja2.services.jinja_builder import (build_eds_environment, inject_environment_globals,
                                                DATA_SOURCE_BUILDERS, TABULAR_HELPERS, TREE_HELPERS,
                                                ADDITIONAL_FILTERS)
-from eds4jinja2.builders.parallel_executor import (FetchCoordinator, Phase, wrap_builders,
+from eds4jinja2.services.parallel_executor import (FetchCoordinator, Phase, wrap_builders,
                                                    PARALLELISM, DEFAULT_PARALLELISM)
 
 logger = logging.getLogger(__name__)

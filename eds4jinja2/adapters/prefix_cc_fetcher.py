@@ -11,7 +11,7 @@ from typing import Dict
 
 import requests
 
-from eds4jinja2.adapters import invert_dict
+from eds4jinja2.models.collections import invert_dict
 
 PREFIX_CC_ALL_JSON = "http://prefix.cc/popular/all.file.json"
 PREFIX_CC_LOOKUP_URL = "http://prefix.cc/"

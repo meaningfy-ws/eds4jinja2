@@ -1,17 +1,24 @@
 #!/usr/bin/python3
 
-# base_data_source.py
+# data_source.py
 # Date:  07/08/2020
 # Author: Eugeniu Costetchi
 # Email: costezki.eugen@gmail.com
 
-""" An abstract data source that is implemented by the specific ones. """
+""" An abstract data source that is implemented by the specific ones, plus the engine value object. """
 from abc import ABC, abstractmethod
+from enum import Enum
 from typing import Tuple, Optional
 
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+class Engine(str, Enum):
+    """ Supported in-memory graph engines (no free strings at call sites). """
+    RDFLIB = "rdflib"
+    OXIGRAPH = "oxigraph"
 
 
 class UnsupportedRepresentation(Exception):

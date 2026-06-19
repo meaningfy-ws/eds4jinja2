@@ -4,7 +4,7 @@ test_sparql_results.py
 Unit tests for the SPARQL-results Pydantic model and its serialisation to the canonical
 SPARQL-1.1 Query Results JSON dict (the shape templates and the remote source rely on).
 """
-from eds4jinja2.adapters.sparql_results import (
+from eds4jinja2.models.sparql import (
     SparqlTerm, SparqlResults, HEAD, VARS, RESULTS, BINDINGS, TYPE, VALUE, DATATYPE, XML_LANG,
     URI, LITERAL, BNODE,
 )

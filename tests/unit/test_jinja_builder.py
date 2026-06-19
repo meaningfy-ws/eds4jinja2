@@ -8,7 +8,7 @@ Email: costezki.eugen@gmail.com
 import pytest
 
 import tests
-from eds4jinja2.builders.jinja_builder import build_eds_environment
+from eds4jinja2.services.jinja_builder import build_eds_environment
 
 
 def test_dummy_template(eds_environment):

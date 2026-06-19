@@ -13,10 +13,11 @@ from typing import Optional
 from SPARQLWrapper import SPARQLWrapper, JSON, CSV
 from py_singleton import singleton
 
-from eds4jinja2.adapters.base_data_source import DataSource
+from eds4jinja2.models.data_source import DataSource
 import pandas as pd
 
-from eds4jinja2.adapters.sparql_query import build_query, read_query_file
+from eds4jinja2.models.sparql import build_query
+from eds4jinja2.adapters.query_files import read_query_file
 
 DEFAULT_ENCODING = 'utf-8'
 

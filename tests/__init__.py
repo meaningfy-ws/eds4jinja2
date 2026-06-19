@@ -8,7 +8,7 @@ from typing import Tuple, Optional
 
 import pandas as pd
 
-from eds4jinja2.adapters.base_data_source import UnsupportedRepresentation, DataSource
+from eds4jinja2.models.data_source import UnsupportedRepresentation, DataSource
 from eds4jinja2.adapters.file_ds import FileDataSource
 from eds4jinja2.adapters.remote_sparql_ds import RemoteSPARQLEndpointDataSource
 

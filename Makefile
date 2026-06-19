@@ -28,6 +28,11 @@ install:
 test: test-unit
 
 
+check-architecture:
+	@ echo -e "$(BUILD_PRINT)Checking layer boundaries (import-linter) ...$(END_BUILD_PRINT)"
+	@ lint-imports
+
+
 test-unit:
 	@ echo -e "$(BUILD_PRINT)Unit Testing ...$(END_BUILD_PRINT)"
 	@ tox -e unit

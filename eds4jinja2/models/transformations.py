@@ -1,30 +1,58 @@
 #!/usr/bin/python3
 
-# tabular_utils.py
-# Date:  17/08/2020
-# Author: Eugeniu Costetchi
-# Email: costezki.eugen@gmail.com 
+# transformations.py
+# Pure text/tabular transformations used as Jinja filters and helpers (no I/O, no frameworks).
 
-""" a set of helper functions to easily polish the tabular data (i.e Pandas DataFrame) """
-import re
-from typing import List, Dict
+"""
+Pure presentation/data transformations:
 
-import pandas as pd
-import numpy as np
+- :func:`escape_latex` — escape a string for LaTeX output (adapted from pappasam/latexbuild);
+- :func:`replace_strings_in_tabular` / :func:`add_relative_figures` — polish a pandas DataFrame.
+"""
 import logging
+import re
+from typing import Dict, List
 
+import numpy as np
+import pandas as pd
 from pandas.core.dtypes.common import is_numeric_dtype
 
 logger = logging.getLogger(__name__)
 
+# --- LaTeX escaping ---------------------------------------------------------------------------
+
+# All latex escape characters (EXCEPT "\", handled separately), escaping those that are special
+# in PERL regular expressions.
+ESCAPE_CHARS = [r'\&', '%', r'\$', '#', '_', r'\{', r'\}', '~', r'\^', ]
+
+REGEX_ESCAPE_CHARS = [
+    (re.compile(r"(?<!\\)" + i), r"\\" + i.replace('\\', ''))
+    for i in ESCAPE_CHARS
+]
+
+ESCAPE_CHARS_OR = r'[{}\\]'.format(''.join(ESCAPE_CHARS))
+
+REGEX_BACKSLASH = re.compile(r'(?<!\\)\\(?!{})'.format(ESCAPE_CHARS_OR))
+
+
+def escape_latex(value: str):
+    """ Escape a latex string. """
+    if not isinstance(value, str):
+        return value
+    for regex, replace_text in REGEX_ESCAPE_CHARS:
+        value = re.sub(regex, replace_text, value)
+    value = re.sub(REGEX_BACKSLASH, r'\\\\', value)
+    return value
+
+
+# --- tabular (pandas) transformations ---------------------------------------------------------
 
 def replace_strings_in_tabular(data_frame: pd.DataFrame, target_columns: List[str] = None,
                                value_mapping_dict: Dict = None,
                                mark_touched_rows: bool = False) -> List[str]:
     """
         Replaces the values from the target columns in a data frame according to the value-mapping dictionary.
-        If the inverted_mapping flag is true, then the inverted value_mapping_dict is considered.
-        If mark_touched_rows is true, then adds a boolean column _touched_ where
+        If mark_touched_rows is true, then adds a boolean column _touched_.
 
         >>> mapping_dict example = {"old value 1" : "new value 1", "old value 2":"new value 2"}
 
@@ -43,9 +71,8 @@ def replace_strings_in_tabular(data_frame: pd.DataFrame, target_columns: List[st
         if col not in data_frame.columns.values.tolist():
             raise ValueError("The target column not found in the data frame")
     # get all the string columns
-    obj_columns = data_frame.select_dtypes([object]).columns  # [1:]
-    # columns = self.target_columns if self.target_columns else self.data_frame.columns
-    # limit to columns indicated in the self.target_columns
+    obj_columns = data_frame.select_dtypes([object]).columns
+    # limit to columns indicated in the target_columns
     if target_columns:
         obj_columns = [column for column in obj_columns if column in target_columns]
 
@@ -58,7 +85,6 @@ def replace_strings_in_tabular(data_frame: pd.DataFrame, target_columns: List[st
             [data_frame[col].str.contains('(' + '|'.join(escaped_value_mapping_dict.keys()) + ')', na=False)
              for col in obj_columns])
         data_frame["_touched_"] = np.logical_or.reduce(mask, axis=1)
-        # data_frame["_found_"] = found_strings_column_stack
 
     # which (unique) strings are found in the dataframe?
     strings_found_column_stack = np.array(
@@ -68,27 +94,18 @@ def replace_strings_in_tabular(data_frame: pd.DataFrame, target_columns: List[st
     )
     strings_found = np.unique(np.concatenate(strings_found_column_stack.flatten()))
 
-    # create a nested dictionary that pandas replace understand
-    # For a DataFrame nested dictionaries, e.g., {'a': {'b': np.nan}}, are read as
-    # follows: look in column ‘a’ for the value ‘b’ and replace it with NaN. The
-    # optional value parameter should not be specified to use a nested dict in this
-    # way.
+    # nested dictionary that pandas replace understands: look in column for the value and replace it
     nested_dict = {column: escaped_value_mapping_dict for column in obj_columns}
 
-    # this is the way to do it for pandas >1.4.2, aligned with official docs
     data_frame.replace(to_replace=None, regex=nested_dict, inplace=True)
-    # this apparently also works but is not aligned with official docs
-    # data_frame.replace(to_replace=nested_dict, regex=True, inplace=True)
 
     return strings_found
 
 
-def add_relative_figures(data_frame: pd.DataFrame, target_columns: List[str], relativisers: List,
+def add_relative_figures(data_frame: pd.DataFrame, target_columns: List[str], relativisers: List,  # noqa: C901
                          percentage: bool = True):
     """
-        For each target_columns add a calculate column with relative values calculated
-        based on the provided relativisers.
-
+        For each target_columns add a calculated column with relative values based on the relativisers.
 
     :param percentage:
     :param data_frame:

@@ -4,7 +4,7 @@
 # Author: Eugeniu Costetchi
 # Email: costezki.eugen@gmail.com
 
-from eds4jinja2.adapters.base_data_source import DataSource
+from eds4jinja2.models.data_source import DataSource
 
 
 class HTTPDataSource(DataSource):
