@@ -160,3 +160,7 @@ junit_report.xml
 *.fdb_latexmk
 *.fls
 *.synctex.gz
+# Antora documentation build + Node deps
+docs/build/
+node_modules/
+package-lock.json

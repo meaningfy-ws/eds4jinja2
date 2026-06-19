@@ -1,0 +1,66 @@
+= Extending eds4jinja2
+:description: Add a new data source or in-memory engine, and inject builders without forking.
+
+== Add a new data source
+
+Subclass `DataSource` in the `adapters` layer and implement the four protected hooks; the base class
+wraps them in the fail-safe `fetch_tabular` / `fetch_tree` `(content, error)` methods for you:
+
+[source,python]
+----
+# eds4jinja2/adapters/my_source.py
+from eds4jinja2.models.data_source import DataSource
+
+class MyDataSource(DataSource):
+    def _can_be_tabular(self): return True
+    def _can_be_tree(self): return False
+    def _fetch_tabular(self): ...   # return a pandas DataFrame
+    def _fetch_tree(self): ...      # return a dict / raise UnsupportedRepresentation
+----
+
+Register it as a template builder in `services/jinja_builder.py`:
+
+[source,python]
+----
+DATA_SOURCE_BUILDERS = {
+    ...,
+    "from_my_source": lambda location: MyDataSource(location),
+}
+----
+
+Templates can then call `{{ from_my_source(...).fetch_tabular() }}`.
+
+== Inject a builder without editing the library
+
+You do not have to fork or edit eds4jinja2 to add or override a builder. Pass
+`external_data_source_builders` to `ReportBuilder` (or `build_eds_environment`) — it is merged _over_
+the defaults:
+
+[source,python]
+----
+ReportBuilder(
+    "report/",
+    external_data_source_builders={"from_my_source": lambda loc: MyDataSource(loc)},
+).make_document()
+----
+
+This is also how you run an existing endpoint report against an in-memory graph — override
+`from_endpoint` — see xref:in-memory-graphs.adoc[In-memory Graphs].
+
+== Add an in-memory engine
+
+The built-in graph store (`adapters/graph_store.py`) exposes a `GraphStorePort`. Add a new
+`...GraphStore` implementation, wire it into `make_graph_store` behind a new `Engine` value, and reuse
+`InMemorySPARQLDataSource` for tabular/tree parity.
+
+== Respect the layers
+
+eds4jinja2 follows xref:architecture.adoc[Cosmic-Python layers] enforced by import-linter:
+
+* pure domain logic goes in `models` (no I/O);
+* integration / I/O goes in `adapters`;
+* orchestration goes in `services`.
+
+Run `make check-architecture` — the import-linter contracts fail the build if a boundary is crossed
+(for example a model importing an adapter). Keep new data sources in `adapters`, depending only on
+`models`.

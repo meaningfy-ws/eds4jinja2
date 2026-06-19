@@ -1,0 +1,6 @@
+name: eds4jinja2
+title: eds4jinja2
+version: '~'
+start_page: ROOT:index.adoc
+nav:
+  - modules/ROOT/nav.adoc

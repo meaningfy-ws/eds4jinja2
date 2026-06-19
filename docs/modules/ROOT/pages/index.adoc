@@ -1,0 +1,89 @@
+= eds4jinja2
+:description: Embed data-source specifications directly in Jinja2 templates to drive dynamic report generation.
+:keywords: jinja2, sparql, rdf, reporting, templates, pandas, data sources
+
+[.lead]
+*Embed the data-source specification directly in your Jinja2 templates.* Declare _how_ to fetch the
+data inside the template, and eds4jinja2 resolves it at render time — so you build dynamic,
+data-driven reports (HTML, LaTeX/PDF, or any text format) from SPARQL endpoints, in-memory RDF
+graphs, and tabular/JSON files *without writing data-loading glue code*.
+
+== Why eds4jinja2?
+
+Generating a report usually tangles two jobs: *fetching the data* (Python that queries endpoints,
+reads files, shapes DataFrames and assembles a context dict) and *presenting it* (a template). Every
+change to _what the report shows_ forces a round-trip through the Python code.
+
+eds4jinja2 collapses that coupling: *the template itself declares its data sources.* Your Python code
+merely points the engine at a template and renders it — it stays agnostic of what data the report
+displays.
+
+This pays off when you:
+
+* iterate quickly on report content and queries — change the *template*, not the code;
+* want queries and their visualisation to live together and evolve together;
+* build many report variants over the same data;
+* need the same report to run against a *live SPARQL endpoint* _or_ an *in-process graph* with no
+  code change.
+
+.Problems it solves
+[%autowidth]
+|===
+| Without eds4jinja2 | With eds4jinja2
+
+| Bespoke context-building / data-plumbing code for every report
+| None — the template fetches its own data.
+
+| Queries in Python, layout in templates, drifting apart
+| Co-located in the template and easy to change together.
+
+| One source per report
+| One template, many heterogeneous sources (endpoint + file + graph).
+
+| "Needs a running SPARQL server"
+| Query an in-memory `rdflib`/`oxigraph` graph, server-less.
+
+| Slow, query-bound reports
+| Opt-in parallel pre-fetch.
+|===
+
+== How it works
+
+eds4jinja2 adds *data-source builders* as Jinja globals. In a template you call one, optionally set a
+query, and fetch. Every fetch returns a fail-safe `(content, error)` pair — a failure is surfaced
+_into_ the template rather than crashing the render:
+
+[source,jinja]
+----
+{% set rows, error = from_endpoint(endpoint).with_query("SELECT * WHERE { ?s ?p ?o } LIMIT 10").fetch_tabular() %}
+{% set tree, error = from_file("config.json").fetch_tree() %}
+----
+
+`fetch_tabular()` returns a pandas `DataFrame`; `fetch_tree()` returns a nested dict (JSON /
+SPARQL-JSON). The data context is generated _during_ rendering, so `template.render()` needs no
+pre-built context.
+
+== Data sources at a glance
+
+[%autowidth]
+|===
+| Builder | Source | `fetch_tabular` | `fetch_tree`
+
+| `from_file(path)` | CSV/TSV/Excel and JSON/YAML/TOML files | ✅ | ✅
+| `from_endpoint(url)` | a remote SPARQL endpoint | ✅ | ✅
+| `from_graph(graph)` (alias `from_memory`) | an in-process `rdflib.Graph`, `pyoxigraph` store, or `query(sparql)` callable | ✅ | ✅
+| `from_rdf(sources, engine="rdflib")` | RDF file(s)/URL(s) loaded into an in-memory graph | ✅ | ✅
+| `from_rdf_file(path)` | a single RDF file (legacy; superseded by `from_rdf`) | ✅ | —
+|===
+
+== Where to next
+
+* xref:getting-started.adoc[Getting Started] — install and render your first report.
+* xref:data-sources.adoc[Data Sources] — each builder and the `(content, error)` contract.
+* xref:in-memory-graphs.adoc[In-memory Graphs] — render against an `rdflib`/`oxigraph` graph.
+* xref:parallel-execution.adoc[Parallel Execution] — pre-fetch slow queries concurrently.
+* xref:templating.adoc[Templating & Configuration] — `config.json`, HTML and LaTeX flavours.
+* xref:cli.adoc[CLI] — drive a whole report folder with `mkreport`.
+* xref:api-reference.adoc[API Reference] — the public Python surface.
+* xref:extending.adoc[Extending] — add your own data source or engine.
+* xref:architecture.adoc[Architecture] — the Cosmic-Python layers and dev workflow.

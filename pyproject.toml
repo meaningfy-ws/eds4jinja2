@@ -63,13 +63,10 @@ test = [
     "pytest-subtests~=0.11.0",
     "flake8~=6.1.0",
 ]
-docs = [
-    "myst-parser~=2.0.0",
-    "Sphinx~=7.1.2",
-    "sphinxcontrib-apidoc~=0.4.0",
-]
+# Documentation is authored in AsciiDoc and built by Antora (Node) — see package.json,
+# .readthedocs.yml and the `make build-docs` target. There is no Python docs extra.
 dev = [
-    "eds4jinja2[test,docs]",
+    "eds4jinja2[test]",
     "import-linter~=2.0",
     "tox~=4.11.3",
     "tox-pytest-summary~=0.1.2",

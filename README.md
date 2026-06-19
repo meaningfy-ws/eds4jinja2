@@ -149,8 +149,13 @@ are GIL-bound (correct, limited speed-up).
 
 ## Documentation
 
-Full documentation (concepts, the `ReportBuilder` API, extending with new data sources):
-[eds4jinja2.readthedocs.io](https://eds4jinja2.readthedocs.io/en/latest/)
+Full documentation (concepts, getting started, every data source, the `ReportBuilder` API, extending
+with new data sources, architecture) is authored in AsciiDoc and built with Antora:
+
+- **GitHub Pages (canonical):** [meaningfy-ws.github.io/eds4jinja2](https://meaningfy-ws.github.io/eds4jinja2/)
+- **ReadTheDocs (mirror):** [eds4jinja2.readthedocs.io](https://eds4jinja2.readthedocs.io/en/latest/)
+
+Build and preview it locally with `make preview-docs` (needs Node.js).
 
 ## Contributing
 

@@ -1,0 +1,46 @@
+= Parallel Execution
+:description: Pre-fetch slow queries concurrently before rendering, opt-in via config.
+
+For large reports whose runtime is dominated by SPARQL query latency, eds4jinja2 can *pre-fetch all
+data concurrently before rendering*. It is *opt-in* and *off by default*.
+
+== Turning it on
+
+Set `parallelism` in the report `config.json`:
+
+[source,json]
+----
+{ "template": "report.html", "conf": {}, "parallelism": 16 }
+----
+
+With `parallelism` unset or `1`, behaviour is *exactly* the previous sequential render — byte for
+byte. The templates never change; parallelism is configuration only.
+
+== Semantics
+
+* *Pre-warm, then render.* eds4jinja2 discovers the report's data-fetch units, runs them
+  concurrently up to `parallelism` threads, stages the results, then renders — so each `fetch_*`
+  during the render reads an already-computed result instead of waiting on the network.
+* *Threads only.* The executor is a thread pool.
+* *All-or-nothing.* If any pre-fetch fails, the whole report is aborted — no partial output. There is
+  no retry, no resume, no checkpoint.
+* *Temp-folder cache.* Results are staged in a temporary folder keyed by query, then cleaned up after
+  rendering (on success and on failure). Identical queries are fetched only once per run.
+
+== When it actually helps
+
+Threaded speed-up is real when the work *releases the GIL*:
+
+[%autowidth]
+|===
+| Source | GIL released? | Speed-up
+
+| remote SPARQL endpoint (`from_endpoint`) | yes (network I/O) | significant
+| `oxigraph` in-memory graph | yes (native) | significant
+| `rdflib` in-memory graph | no (pure Python) | limited, but correct
+| in-template Python (no I/O) | no | none — parallelism targets _fetching_, not rendering
+|===
+
+NOTE: Jinja2 rendering is intrinsically sequential and is *not* parallelised — only data *fetching*
+is moved off the critical path. If your report is slow because of in-template Python rather than query
+latency, `parallelism` will not help.

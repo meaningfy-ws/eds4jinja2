@@ -1,0 +1,135 @@
+= API Reference
+:description: The public Python surface of eds4jinja2 — environment, report builder, data sources.
+
+This page documents the *public* surface — everything exported from the top-level `eds4jinja2`
+package (`eds4jinja2.__all__`) plus the `ReportBuilder` service. Internal, `_`-prefixed names are not
+part of the contract and may change between releases.
+
+== Top-level exports
+
+All of the following import directly from `eds4jinja2`:
+
+[source,python]
+----
+from eds4jinja2 import (
+    build_eds_environment, inject_environment_globals,
+    FileDataSource, RemoteSPARQLEndpointDataSource, RDFFileDataSource,
+    InMemorySPARQLDataSource,
+    make_graph_store, RdflibGraphStore, OxigraphGraphStore, Engine,
+    add_relative_figures, replace_strings_in_tabular,
+    NamespaceInventory,
+)
+----
+
+== `build_eds_environment(...)`
+
+[source,python]
+----
+build_eds_environment(external_data_source_builders=..., external_filters=..., **kwargs) -> jinja2.Environment
+----
+
+Builds a Jinja2 `Environment` with the data-source builders and helper filters injected as globals.
+Pass a loader (e.g. `loader=PackageLoader(...)`) and any other Jinja2 `Environment` keyword via
+`**kwargs`.
+
+* `external_data_source_builders` — a mapping of builder name → factory, merged _over_ the framework
+  defaults (`from_endpoint`, `from_file`, `from_graph`/`from_memory`, `from_rdf`, `from_rdf_file`) plus
+  the tabular/tree helpers. Override a default (e.g. `from_endpoint`) or add a new builder.
+* `external_filters` — a mapping of extra/overriding Jinja filters, merged over the defaults.
+
+== `inject_environment_globals(env, globals)`
+
+Injects additional globals into an existing Jinja2 `Environment` (the lower-level primitive used by
+`build_eds_environment`). Use it when you already hold an environment and want to add builders.
+
+== `ReportBuilder`
+
+[source,python]
+----
+from eds4jinja2.services.report_builder import ReportBuilder
+
+ReportBuilder(
+    target_path,                       # required: folder holding config + templates + static
+    config_file="config.json",         # configuration file name
+    output_path=None,                  # output folder; defaults to <target>/output
+    additional_config={},              # deep-merged over the project config.json
+    external_data_source_builders=None,# extra/overriding builders (merged over defaults)
+    external_filters=None,             # extra/overriding Jinja filters
+)
+----
+
+[%autowidth]
+|===
+| Parameter | Meaning
+
+| `target_path` (required) | the folder where the required resources are found
+| `config_file` | the configuration file name (default `config.json`)
+| `output_path` | output folder for the rendered result; defaults to `<target_path>/output`
+| `additional_config` | extra config parameters, deep-merged _over_ the project `config.json`
+| `external_data_source_builders` | extra/overriding data-source builders, merged over the defaults — e.g. override `from_endpoint` to serve an in-memory graph (see xref:in-memory-graphs.adoc[In-memory Graphs]). Empty/`None` reproduces the default behaviour exactly.
+| `external_filters` | extra/overriding Jinja filters, merged over the defaults
+|===
+
+.`make_document()`
+Renders the entry template to the output folder, fetching every data source as it goes (or
+pre-fetching concurrently when `parallelism` is set — see xref:parallel-execution.adoc[Parallel Execution]).
+
+[source,python]
+----
+ReportBuilder(
+    target_path="some/path/for/template",
+    config_file="other.json",
+    output_path="some/other/path",
+    additional_config={"default_endpoint": "http://localhost:9999"},
+).make_document()
+----
+
+== Data sources
+
+The classes behind the template builders. Each subclasses the `DataSource` ABC and exposes the
+fail-safe fetch methods (see xref:data-sources.adoc[Data Sources]):
+
+[%autowidth]
+|===
+| Class | Template builder | Notes
+
+| `FileDataSource` | `from_file` | tabular + tree files
+| `RemoteSPARQLEndpointDataSource` | `from_endpoint` | remote SPARQL endpoint
+| `InMemorySPARQLDataSource` | `from_graph` / `from_memory` / `from_rdf` | in-process graph (engine-agnostic)
+| `RDFFileDataSource` | `from_rdf_file` | single RDF file (legacy)
+|===
+
+== The `DataSource` contract
+
+[source,python]
+----
+from eds4jinja2.models.data_source import DataSource
+----
+
+`fetch_tabular()` and `fetch_tree()` are fail-safe wrappers that always return `(content, error)`:
+`content` is a pandas `DataFrame` (tabular) or a `dict` (tree) on success with `error = None`; on
+failure `content` is empty/`None` and `error` is a message. Subclasses implement the four protected
+hooks `_can_be_tabular`, `_can_be_tree`, `_fetch_tabular`, `_fetch_tree` — see
+xref:extending.adoc[Extending eds4jinja2].
+
+== In-memory graph store
+
+[source,python]
+----
+from eds4jinja2 import make_graph_store, RdflibGraphStore, OxigraphGraphStore, Engine
+----
+
+* `Engine` — an enum of the supported in-memory engines (`rdflib`, `oxigraph`).
+* `make_graph_store(engine, ...)` — factory returning a graph store for the chosen `Engine`.
+* `RdflibGraphStore` / `OxigraphGraphStore` — the concrete stores behind `from_rdf`.
+
+== Tabular transformation helpers
+
+* `add_relative_figures(...)` — add relative-figure columns to a tabular result.
+* `replace_strings_in_tabular(...)` — string substitution across a tabular result.
+
+These are also registered as Jinja filters by `build_eds_environment`.
+
+== Namespace handling
+
+* `NamespaceInventory` — manage and resolve RDF namespace prefixes used when building/querying graphs.

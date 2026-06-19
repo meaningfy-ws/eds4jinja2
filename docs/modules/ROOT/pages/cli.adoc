@@ -1,0 +1,43 @@
+= Command Line Interface
+:description: Drive a whole report folder with the mkreport command.
+
+The `mkreport` command renders a complete *report folder* — entry template, includes and static
+assets — to an output directory.
+
+== Usage
+
+[source,shell]
+----
+mkreport --target=template --output=report_location --config=report_config.json
+----
+
+[%autowidth]
+|===
+| Argument | Required | Meaning
+
+| `--target` | optional | the directory eds4jinja2 loads content from (must follow the layout below)
+| `--output` | optional | where the rendered output is written; defaults to an `output/` subdirectory inside `--target`
+| `--config` | optional | the configuration file name; defaults to `config.json`
+|===
+
+== Target directory layout
+
+By convention the target directory *must* contain:
+
+[source,text]
+----
+report/
+├── config.json     # entry template + conf variables (see Templating & Configuration)
+├── templates/      # the main template and any includes
+└── static/         # optional css/js/images, copied to the output (tree preserved)
+----
+
+. a *configuration file* (JSON) that specifies the main template to start with (it may refer to other
+  templates) and a list of variables passed to the template(s) — see
+  xref:templating.adoc[Templating & Configuration];
+. a `templates/` directory holding all of your templates;
+. an optional `static/` directory; its contents are copied into the output folder with the tree
+  structure preserved.
+
+The same rendering is available programmatically via `ReportBuilder` — see
+xref:api-reference.adoc[API Reference].

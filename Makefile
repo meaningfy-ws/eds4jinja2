@@ -1,4 +1,4 @@
-.PHONY: test install install-all install-dev build publish-pipy test-unit test-features test-all test-network generate-tests-from-features
+.PHONY: test install install-all install-dev build publish-pipy test-unit test-features test-all test-network generate-tests-from-features install-antora build-docs clean-docs serve-docs preview-docs
 
 include .env-dev
 
@@ -110,6 +110,38 @@ publish-pipy: build
 	@ twine check dist/*
 	@ echo "$(BUILD_PRINT)Uploading the distribution"
 	@ twine upload --skip-existing dist/*
+
+#-----------------------------------------------------------------------------
+# Documentation (AsciiDoc + Antora, Node-based)
+#-----------------------------------------------------------------------------
+
+NODE ?= $(shell command -v node)
+NPM ?= $(shell command -v npm)
+DOC_BUILD_DIR = docs/build
+ANTORA_PLAYBOOK = docs/antora-playbook.local.yml
+
+check-node:
+ifeq ($(NODE),)
+	@ echo -e "$(BUILD_PRINT)Node.js is not installed. Install Node.js 18+ first." && exit 1
+endif
+
+install-antora: check-node
+	@ echo -e "$(BUILD_PRINT)Installing Antora and extensions (npm)$(END_BUILD_PRINT)"
+	@ npm install
+
+build-docs: install-antora
+	@ echo -e "$(BUILD_PRINT)Building the documentation site with Antora$(END_BUILD_PRINT)"
+	@ npx antora --fetch $(ANTORA_PLAYBOOK)
+
+clean-docs:
+	@ echo -e "$(BUILD_PRINT)Cleaning the Antora build$(END_BUILD_PRINT)"
+	@ rm -rf $(DOC_BUILD_DIR)
+
+serve-docs:
+	@ echo -e "$(BUILD_PRINT)Serving docs at http://localhost:8088$(END_BUILD_PRINT)"
+	@ python3 -m http.server 8088 --directory $(DOC_BUILD_DIR)/site
+
+preview-docs: build-docs serve-docs
 
 #-----------------------------------------------------------------------------
 # Default

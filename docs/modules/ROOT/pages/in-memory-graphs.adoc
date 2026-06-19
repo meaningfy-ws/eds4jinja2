@@ -1,0 +1,71 @@
+= In-memory Graphs
+:description: Render reports against an in-process RDF graph — no SPARQL server required.
+
+Render reports against an *in-process RDF graph* — no Fuseki/SPARQL server required. Two builders
+cover the common cases, and a builder-injection seam lets you run an _existing_ endpoint-based report
+against a graph with the templates unchanged.
+
+== `from_graph` — query a graph you already hold
+
+`from_graph(graph)` (alias `from_memory`) queries an object you already have in memory:
+
+* an `rdflib.Graph`,
+* a `pyoxigraph` store, or
+* any object exposing a `query(sparql)` callable.
+
+[source,jinja]
+----
+{% set rows, error = from_graph(my_graph).with_query("SELECT ?s WHERE { ?s a ex:Thing }").fetch_tabular() %}
+----
+
+Your code owns loading and manipulating the graph; eds4jinja2 only queries it.
+
+== `from_rdf` — load files/URLs into a graph and query it
+
+`from_rdf(sources, engine="rdflib")` loads one or more RDF files/URLs into an in-memory graph *once*
+and queries it. Both `fetch_tabular()` and `fetch_tree()` are supported:
+
+[source,jinja]
+----
+{% set rows, error =
+   from_rdf(["data.ttl", "http://example.org/more.ttl"], "oxigraph").with_query(q).fetch_tabular() %}
+----
+
+== Engines: `rdflib` vs `oxigraph`
+
+[%autowidth]
+|===
+| Engine | Dependency | Notes
+
+| `rdflib` (default) | none (already a runtime dep) | pure-Python; correct everywhere; GIL-bound
+| `oxigraph` | `pip install eds4jinja2[oxigraph]` | fast, native; releases the GIL (good for xref:parallel-execution.adoc[parallel execution])
+|===
+
+== Run an existing endpoint report against a graph — templates unchanged
+
+The templates of an existing report already call `from_endpoint(...)`. To make that report read from
+an in-memory graph *without editing a single template*, inject a builder that *overrides*
+`from_endpoint` when constructing the `ReportBuilder`:
+
+[source,python]
+----
+import rdflib
+from eds4jinja2 import InMemorySPARQLDataSource
+from eds4jinja2.services.report_builder import ReportBuilder
+
+graph = rdflib.Graph().parse("dataset.ttl")  # the consumer owns loading / manipulation
+
+ReportBuilder(
+    "report/",
+    external_data_source_builders={
+        "from_endpoint": lambda _endpoint: InMemorySPARQLDataSource(graph),
+    },
+).make_document()
+----
+
+`external_data_source_builders` is merged _over_ the framework defaults, so any builder you do not
+override keeps its default behaviour. The same seam adds brand-new builders — see
+xref:extending.adoc[Extending eds4jinja2].
+
+TIP: This is the recommended way to test endpoint-driven reports offline: point `from_endpoint` at a
+small in-memory fixture graph and the report renders with no network.

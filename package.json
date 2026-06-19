@@ -1,0 +1,14 @@
+{
+  "name": "eds4jinja2-docs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Antora documentation build for eds4jinja2",
+  "scripts": {
+    "build": "antora docs/antora-playbook.local.yml"
+  },
+  "devDependencies": {
+    "@antora/cli": "^3.1.0",
+    "@antora/site-generator": "^3.1.0",
+    "@antora/lunr-extension": "^1.0.0-alpha.13"
+  }
+}

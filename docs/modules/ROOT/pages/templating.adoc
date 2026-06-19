@@ -1,0 +1,102 @@
+= Templating & Configuration
+:description: The config.json shape, conf variables, and the HTML and LaTeX template flavours.
+
+== The `config.json` file
+
+A report folder's `config.json` names the entry template and carries a `conf` object of variables
+made available to every template:
+
+[source,json]
+----
+{
+    "template": "main.html",
+    "template_flavour_syntax": "html",
+    "conf": {
+        "default_endpoint": "http://example.com/path/sparqlendpoint",
+        "title": "Pretty printed relevant information",
+        "type": "report",
+        "author": "Your name here",
+        "nested_properties": {
+            "graph": "http://publications.europa.eu/resources/authority/lam/DocumentProperty"
+        }
+    }
+}
+----
+
+[%autowidth]
+|===
+| Key | Meaning
+
+| `template` | the entry template (may include other templates)
+| `template_flavour_syntax` | `"html"` (default) or `"latex"` — selects the delimiter set
+| `conf` | a free-form object; every key is available as a variable inside the templates
+| `parallelism` | optional integer; see xref:parallel-execution.adoc[Parallel Execution]
+|===
+
+Anything you put under `conf` is yours to use in the templates. Values can be overridden at runtime
+via `ReportBuilder(..., additional_config=...)` (a deep merge) — see xref:api-reference.adoc[API Reference].
+
+== HTML / XML templates
+
+The default flavour uses standard Jinja2 delimiters (`{{ ... }}`, `{% ... %}`). Combine the
+xref:data-sources.adoc[data sources] with normal Jinja2:
+
+[source,jinja]
+----
+{% set config_content, error = from_file("path/to/config.json").fetch_tree() %}
+The configuration content: {{ config_content }}
+
+{% set query_string = "select * where {?s ?p ?o} limit 10" %}
+{% set rows, error = from_endpoint(endpoint).with_query(query_string).fetch_tabular() %}
+{{ rows.to_html() }}
+----
+
+== LaTeX templates
+
+LaTeX uses `{`, `}`, `%` and `\` for its own syntax, so eds4jinja2 switches to a LaTeX-safe delimiter
+set when you declare the flavour:
+
+[source,json]
+----
+{ "template": "main.tex", "template_flavour_syntax": "latex", "conf": { "title": "..." } }
+----
+
+.LaTeX-flavour delimiters
+[%autowidth]
+|===
+| Construct | Syntax
+
+| Block | `+\BLOCK{block block_name}+` … `+\BLOCK{endblock}+`
+| Line statement | `+%- line instruction+`
+| Variable | `+\VAR{variable_name}+`
+| Comment (long form) | `+\#{This is a long-form Jinja comment}+`
+| Comment (short form) | `+%# This is a short-form Jinja comment+`
+|===
+
+Example `jinja-test.tex`:
+
+[source,latex]
+----
+\documentclass{article}
+\begin{document}
+\section{Example}
+An example document using \LaTeX, Python, and Jinja.
+
+% This is a regular LaTeX comment
+\section{\VAR{section1}}
+\#{This is a long-form Jinja comment}
+\begin{itemize}
+\BLOCK{ for x in range(0, 3) }
+  \item Counting: \VAR{x}
+\BLOCK{ endfor }
+\end{itemize}
+
+\section{\VAR{section2}}
+%# This is a short-form Jinja comment
+\begin{itemize}
+%- for x in range(0, 3)
+  \item Counting: \VAR{x}
+%- endfor
+\end{itemize}
+\end{document}
+----
