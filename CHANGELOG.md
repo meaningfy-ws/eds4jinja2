@@ -6,6 +6,18 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-06-20
+
+### Added
+- **Mermaid diagrams** in the explanatory documentation pages (render-time data-fetch sequence, the
+  Cosmic-Python layer dependencies, the parallel pre-warm pipeline, and the builder-injection seam)
+  via the Antora Mermaid extension.
+
+### Removed
+- **Dropped ReadTheDocs.** The documentation is now published to **GitHub Pages only**
+  (https://meaningfy-ws.github.io/eds4jinja2/). The RTD build had been dead since 2022, so
+  `.readthedocs.yml` is removed and the README/badge point at GitHub Pages. No package code change.
+
 ## [1.0.3] - 2026-06-19
 
 ### Changed
@@ -100,7 +112,8 @@ only deep import paths moved (see **Migration**).
 ## [0.3.1] - 2026-06-18
 - Modernised packaging (pip + `pyproject.toml`, setuptools backend; Python 3.11/3.12) and CI.
 
-[Unreleased]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.3...HEAD
+[Unreleased]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.4...HEAD
+[1.0.4]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.3...1.0.4
 [1.0.3]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.2...1.0.3
 [1.0.2]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.1...1.0.2
 [1.0.1]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.0...1.0.1

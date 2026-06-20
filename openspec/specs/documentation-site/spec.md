@@ -63,13 +63,8 @@ on push to `master`, deploy the built site to GitHub Pages.
 - **WHEN** a commit is pushed to `master`
 - **THEN** the workflow builds the site and deploys it to GitHub Pages at the project Pages URL
 
-### Requirement: ReadTheDocs builds the same AsciiDoc source
-
-ReadTheDocs SHALL build the documentation from the same Antora playbook so the existing
-`readthedocs.io` URL continues to work, without requiring Sphinx.
-
-#### Scenario: ReadTheDocs builds via Antora
-- **WHEN** ReadTheDocs runs the build defined in `.readthedocs.yml`
-- **THEN** it installs Antora and builds the HTML site from `docs/antora-playbook.yml` into the
-  ReadTheDocs HTML output directory, with no Sphinx step
+#### Scenario: GitHub Pages is the sole published site
+- **WHEN** the documentation is published
+- **THEN** GitHub Pages is the only published target and there is no ReadTheDocs/`.readthedocs.yml`
+  configuration in the repository
 

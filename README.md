@@ -7,7 +7,7 @@ graphs, and tabular/JSON files **without writing data-loading glue code**.
 
 [![test](https://github.com/meaningfy-ws/eds4jinja2/actions/workflows/main.yml/badge.svg)](https://github.com/meaningfy-ws/eds4jinja2/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/meaningfy-ws/eds4jinja2/branch/master/graph/badge.svg)](https://codecov.io/gh/meaningfy-ws/eds4jinja2)
-[![Documentation Status](https://readthedocs.org/projects/eds4jinja2/badge/?version=latest)](https://eds4jinja2.readthedocs.io/en/latest/?badge=latest)
+[![docs](https://github.com/meaningfy-ws/eds4jinja2/actions/workflows/docs.yml/badge.svg)](https://meaningfy-ws.github.io/eds4jinja2/)
 
 ![PyPI](https://img.shields.io/pypi/v/eds4jinja2?color=teal&label=version&cacheSeconds=3600)
 ![PyPI - Status](https://img.shields.io/pypi/status/eds4jinja2?cacheSeconds=3600)
@@ -150,10 +150,8 @@ are GIL-bound (correct, limited speed-up).
 ## Documentation
 
 Full documentation (concepts, getting started, every data source, the `ReportBuilder` API, extending
-with new data sources, architecture) is authored in AsciiDoc and built with Antora:
-
-- **GitHub Pages (canonical):** [meaningfy-ws.github.io/eds4jinja2](https://meaningfy-ws.github.io/eds4jinja2/)
-- **ReadTheDocs (mirror):** [eds4jinja2.readthedocs.io](https://eds4jinja2.readthedocs.io/en/latest/)
+with new data sources, architecture) is authored in AsciiDoc, built with Antora and published to
+GitHub Pages: **https://meaningfy-ws.github.io/eds4jinja2/**
 
 Build and preview it locally with `make preview-docs` (needs Node.js).
 
