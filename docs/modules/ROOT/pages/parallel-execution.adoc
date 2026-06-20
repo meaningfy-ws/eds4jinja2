@@ -27,6 +27,21 @@ byte. The templates never change; parallelism is configuration only.
 * *Temp-folder cache.* Results are staged in a temporary folder keyed by query, then cleaned up after
   rendering (on success and on failure). Identical queries are fetched only once per run.
 
+[mermaid, align=center]
+----
+flowchart TD
+    D["Discover fetch units<br/><small>scan the template's fetch_* calls</small>"]
+    P["Fetch in parallel<br/><small>up to 'parallelism' threads</small>"]
+    Q{"Any fetch<br/>failed?"}
+    X["Abort the report<br/><small>no output file</small>"]
+    C["Stage results in temp-folder cache<br/><small>keyed by query — dedup</small>"]
+    R["Render<br/><small>each fetch_* reads its cached result</small>"]
+    K["Clean up temp folder"]
+    D --> P --> Q
+    Q -- yes --> X
+    Q -- no --> C --> R --> K
+----
+
 == When it actually helps
 
 Threaded speed-up is real when the work *releases the GIL*:

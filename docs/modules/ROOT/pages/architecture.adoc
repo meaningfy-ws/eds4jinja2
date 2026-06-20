@@ -4,17 +4,20 @@
 == Cosmic-Python layers
 
 The package is organised into four layers with a strict, one-directional dependency rule, enforced by
-import-linter (`.importlinter`, `make check-architecture`):
+import-linter (`.importlinter`, `make check-architecture`). Dependencies only ever point _downward_,
+towards the pure domain:
 
-[source,text]
+[mermaid, align=center]
 ----
-entrypoints  ->  services  ->  adapters  ->  models
-                                  \------------^
-
-models       pure domain (no I/O): sparql, data_source (+ Engine), transformations, collections
-adapters     I/O + integration: file / remote / local / in-memory SPARQL, graph_store, query_files
-services     use-case orchestration: jinja_builder, report_builder, parallel_executor, actions
-entrypoints  the `mkreport` CLI
+flowchart TD
+    E["entrypoints<br/><small>the mkreport CLI</small>"]
+    S["services<br/><small>jinja_builder, report_builder,<br/>parallel_executor, actions</small>"]
+    A["adapters<br/><small>file / remote / local / in-memory SPARQL,<br/>graph_store, query_files</small>"]
+    M["models<br/><small>sparql, data_source (+ Engine),<br/>transformations, collections — pure, no I/O</small>"]
+    E --> S
+    S --> A
+    S --> M
+    A --> M
 ----
 
 * `models` imports nothing upward — pure domain.
@@ -56,8 +59,7 @@ make clean-docs        # remove docs/build
 ----
 
 On every pull request a GitHub Actions workflow builds the site; on push to `master` it deploys to
-*GitHub Pages*. The same playbook also builds on *ReadTheDocs*, so both published sites are generated
-from the same AsciiDoc source.
+*GitHub Pages* at https://meaningfy-ws.github.io/eds4jinja2/.
 
 == Version single source of truth
 

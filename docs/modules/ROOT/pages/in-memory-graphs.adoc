@@ -67,5 +67,23 @@ ReportBuilder(
 override keeps its default behaviour. The same seam adds brand-new builders — see
 xref:extending.adoc[Extending eds4jinja2].
 
+[mermaid, align=center]
+----
+flowchart LR
+    T["Template<br/><small>calls from_endpoint(...)</small>"]
+    subgraph default [default]
+      R1["RemoteSPARQLEndpointDataSource"]
+      EP[("remote SPARQL<br/>endpoint")]
+      R1 --> EP
+    end
+    subgraph injected [with builder injection]
+      R2["InMemorySPARQLDataSource"]
+      G[("in-process<br/>RDF graph")]
+      R2 --> G
+    end
+    T -. "default builder" .-> R1
+    T == "overridden builder<br/>(templates unchanged)" ==> R2
+----
+
 TIP: This is the recommended way to test endpoint-driven reports offline: point `from_endpoint` at a
 small in-memory fixture graph and the report renders with no network.

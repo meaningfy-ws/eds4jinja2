@@ -64,7 +64,7 @@ test = [
     "flake8~=6.1.0",
 ]
 # Documentation is authored in AsciiDoc and built by Antora (Node) — see package.json,
-# .readthedocs.yml and the `make build-docs` target. There is no Python docs extra.
+# the `make build-docs` target and .github/workflows/docs.yml. There is no Python docs extra.
 dev = [
     "eds4jinja2[test]",
     "import-linter~=2.0",

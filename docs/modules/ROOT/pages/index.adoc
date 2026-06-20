@@ -63,6 +63,22 @@ _into_ the template rather than crashing the render:
 SPARQL-JSON). The data context is generated _during_ rendering, so `template.render()` needs no
 pre-built context.
 
+[mermaid, align=center]
+----
+sequenceDiagram
+    participant App as Your Python code
+    participant Env as eds4jinja2 environment
+    participant Tpl as Jinja2 template
+    participant DS as Data source
+    App->>Env: render(template)
+    Note over App,Env: no pre-built context
+    Env->>Tpl: stream / render
+    Tpl->>DS: from_endpoint(...).with_query(q).fetch_tabular()
+    DS-->>Tpl: (content, error)
+    Note over Tpl,DS: a failure surfaces into the template,<br/>it does not crash the render
+    Tpl-->>App: rendered report
+----
+
 == Data sources at a glance
 
 [%autowidth]

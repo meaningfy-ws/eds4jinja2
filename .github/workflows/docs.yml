@@ -1,7 +1,7 @@
 name: docs
 
 # Build the AsciiDoc/Antora site on every PR (validation), and deploy it to GitHub Pages
-# on merge to master. ReadTheDocs builds the same playbook independently (.readthedocs.yml).
+# on merge to master. GitHub Pages is the sole published site.
 on:
   push:
     branches: [ master ]

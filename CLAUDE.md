@@ -86,4 +86,4 @@ an **index, not authority** — if it disagrees with `openspec/specs/`, `specs/`
 Documentation lives in `docs/` as **AsciiDoc, built by Antora** (not Sphinx). Build/preview locally
 with `make build-docs` / `make preview-docs` (needs Node.js); a GitHub Actions workflow
 (`.github/workflows/docs.yml`) builds on every PR and deploys to **GitHub Pages**
-(https://meaningfy-ws.github.io/eds4jinja2/), and ReadTheDocs builds the same Antora playbook.
+(https://meaningfy-ws.github.io/eds4jinja2/). ReadTheDocs is not used.
