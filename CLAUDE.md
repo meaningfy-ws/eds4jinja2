@@ -60,7 +60,7 @@ commits reference the change.
   versions needed for 3.12).
 - The package version is the single source of truth in the `eds4jinja2/VERSION` file
   (`eds4jinja2/__init__.py` reads it at runtime; `pyproject.toml` reads it via
-  `[tool.setuptools.dynamic]` `file=`; `docs/conf.py` reads the same file).
+  `[tool.setuptools.dynamic]` `file=`).
 - Tests: `tests/unit/` (unit) and `tests/steps/` + `tests/features/` (BDD). Some SPARQL tests hit
   live remote endpoints and need network; `test_describe_uri` asserts on remote data that can
   drift.
@@ -83,4 +83,7 @@ an **index, not authority** — if it disagrees with `openspec/specs/`, `specs/`
   (`make start-fuseki`), tabular files (csv/tsv/xls/xlsx via pandas).
 - **Deployable?** No — it is a library.
 
-See `docs/` (Sphinx) for the existing methodology and API documentation.
+Documentation lives in `docs/` as **AsciiDoc, built by Antora** (not Sphinx). Build/preview locally
+with `make build-docs` / `make preview-docs` (needs Node.js); a GitHub Actions workflow
+(`.github/workflows/docs.yml`) builds on every PR and deploys to **GitHub Pages**
+(https://meaningfy-ws.github.io/eds4jinja2/), and ReadTheDocs builds the same Antora playbook.
