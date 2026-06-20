@@ -44,7 +44,7 @@
 
 ## 6. Ship
 
-- [ ] 6.1 Branch, commit (Conventional Commits), push, open PR against `master`
-- [ ] 6.2 PR CI green (docs build job + existing test jobs) → merge
-- [ ] 6.3 Verify deployment: `deploy` job succeeds and the Pages URL serves the new site (HTTP 200, title + nav present)
-- [ ] 6.4 Bump patch version + CHANGELOG entry; cut the GitHub Release; confirm publish workflow green
+- [x] 6.1 Branch, commit (Conventional Commits), push, open PR against `master`
+- [x] 6.2 PR CI green (docs build job + existing test jobs) → merge
+- [x] 6.3 Verify deployment: `deploy` job succeeds and the Pages URL serves the new site (HTTP 200, title + nav present)
+- [x] 6.4 Bump patch version + CHANGELOG entry; cut the GitHub Release; confirm publish workflow green

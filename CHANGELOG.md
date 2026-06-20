@@ -6,6 +6,22 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-06-19
+
+### Changed
+- **Documentation migrated from Sphinx to AsciiDoc + Antora** (the Meaningfy house standard). The
+  single `index.rst` page is restructured into a navigable, searchable multi-page site (getting
+  started, every data source, in-memory graphs, parallel execution, templating, CLI, a curated
+  public-API reference, extending, architecture). The build is now a first-class local + CI concern:
+  `make build-docs` / `preview-docs`, a GitHub Actions workflow that builds on every PR and deploys
+  to **GitHub Pages** (`https://meaningfy-ws.github.io/eds4jinja2/`), and ReadTheDocs building the
+  same Antora playbook so the existing `readthedocs.io` URL keeps working.
+
+### Removed
+- The Sphinx stack (`docs/conf.py`, `docs/index.rst`, `docs/srcdocs/`, `docs/Makefile`,
+  `docs/make.bat`) and the Python `docs` extra (`Sphinx`, `myst-parser`, `sphinxcontrib-apidoc`).
+  No change to the `eds4jinja2` package code, public API, or behaviour.
+
 ## [1.0.2] - 2026-06-19
 
 ### Fixed
@@ -84,7 +100,8 @@ only deep import paths moved (see **Migration**).
 ## [0.3.1] - 2026-06-18
 - Modernised packaging (pip + `pyproject.toml`, setuptools backend; Python 3.11/3.12) and CI.
 
-[Unreleased]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.2...HEAD
+[Unreleased]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.3...HEAD
+[1.0.3]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.2...1.0.3
 [1.0.2]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.1...1.0.2
 [1.0.1]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/meaningfy-ws/eds4jinja2/compare/0.3.1...1.0.0
