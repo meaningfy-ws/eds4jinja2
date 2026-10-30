@@ -1,6 +1,6 @@
 SHELL = /bin/bash -o pipefail
 
-.PHONY: help install install-poetry lock build publish-pypi check-version lint format lint-fix typecheck \
+.PHONY: help install install-poetry lock build check-version lint format lint-fix typecheck \
 	check-architecture check-spec test test-unit test-features test-network check-quality check-all \
 	generate-tests-from-features install-antora build-docs clean-docs serve-docs preview-docs
 
@@ -30,7 +30,7 @@ install-poetry: ## Install Poetry if not present
 
 install: install-poetry ## Install the package with all dependency groups
 	@ echo -e "$(BUILD_PRINT)Installing dependencies$(END_BUILD_PRINT)"
-	@ poetry install --with test,lint,dev --all-extras
+	@ poetry install --with test,lint --all-extras
 
 lock: ## Update poetry.lock
 	@ poetry lock
@@ -39,10 +39,6 @@ build: check-version ## Build the sdist and wheel into dist/
 	@ echo -e "$(BUILD_PRINT)Building the distribution$(END_BUILD_PRINT)"
 	@ rm -rf dist
 	@ poetry build
-
-publish-pypi: build ## Check and upload dist/ to PyPI (CI uses Trusted Publishing instead)
-	@ poetry run twine check dist/*
-	@ poetry run twine upload --skip-existing dist/*
 
 #-----------------------------------------------------------------------------
 # Quality gates — `make check-all` is the gate CI runs

@@ -56,20 +56,17 @@ Documentation = "https://meaningfy-ws.github.io/eds4jinja2/"
 mkreport = "eds4jinja2.entrypoints.cli.main:build_report"
 
 [dependency-groups]
-# PEP 735 groups, installed via `poetry install --with test,lint,dev`.
+# PEP 735 groups, installed via `poetry install --with test,lint`. Exact pins (design D-1).
 test = [
-    "beautifulsoup4~=4.12.2",
-    "pytest~=7.4.2",
-    "pytest-bdd~=7.0.0",
-    "pytest-cov~=4.1.0",
+    "beautifulsoup4==4.15.0",
+    "pytest==9.1.1",  # shortcut: pytest-bdd 9.0.0 breaks on pytest 9.2 (FixtureManager._arg2fixturedefs); bump with the next pytest-bdd
+    "pytest-bdd==9.0.0",
+    "pytest-cov==7.1.0",
 ]
 lint = [
-    "ruff",
-    "mypy",
-    "import-linter~=2.0",
-]
-dev = [
-    "twine~=6.2",
+    "ruff==0.17.3",
+    "mypy==2.4.1",
+    "import-linter==2.15",
 ]
 
 [tool.poetry]

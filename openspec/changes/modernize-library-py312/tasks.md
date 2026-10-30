@@ -25,7 +25,7 @@
 - [x] 3.3 Bump numpy + pandas (+ xlrd, openpyxl) to latest majors; fix breakage
 - [x] 3.4 Bump rdflib, SPARQLWrapper, pyoxigraph; fix breakage
 - [x] 3.5 Bump pydantic, Jinja2, click, PyYAML, requests; fix breakage
-- [ ] 3.6 Bump pytest, pytest-bdd, pytest-cov, import-linter, ruff, mypy; fix step definitions/paths
+- [x] 3.6 Bump pytest, pytest-bdd, pytest-cov, import-linter, ruff, mypy; fix step definitions/paths
 - [ ] 3.7 Ruff `UP` autofix pass for 3.12 syntax; `make check-all` green on 3.12, 3.13, 3.14
 
 ## 4. Release 2.0.0 (PR 3, final commits)
