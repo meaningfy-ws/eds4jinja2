@@ -131,7 +131,7 @@ def simplify_uris_in_tabular(
         if col not in data_frame.columns.values.tolist():
             raise ValueError("The target column not found in the data frame")
     # get all the string columns
-    obj_columns = data_frame.select_dtypes([object]).columns
+    obj_columns = data_frame.select_dtypes([object, "str"]).columns
     # limit to columns indicated in the self.target_columns
     obj_columns = filter(lambda x: x in target_columns, obj_columns) if target_columns else obj_columns
 

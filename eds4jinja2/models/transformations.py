@@ -60,7 +60,7 @@ def replace_strings_in_tabular(
     target_columns: list[str] | None = None,
     value_mapping_dict: dict | None = None,
     mark_touched_rows: bool = False,
-) -> list[str]:
+) -> np.ndarray:
     """
     Replaces the values from the target columns in a data frame according to the value-mapping dictionary.
     If mark_touched_rows is true, then adds a boolean column _touched_.
@@ -82,7 +82,7 @@ def replace_strings_in_tabular(
         if col not in data_frame.columns.values.tolist():
             raise ValueError("The target column not found in the data frame")
     # get all the string columns
-    obj_columns = data_frame.select_dtypes([object]).columns
+    obj_columns = data_frame.select_dtypes([object, "str"]).columns
     # limit to columns indicated in the target_columns
     if target_columns:
         obj_columns = [column for column in obj_columns if column in target_columns]

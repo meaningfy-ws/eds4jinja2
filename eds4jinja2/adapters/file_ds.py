@@ -82,7 +82,7 @@ class FileDataSource(DataSource):
         ]:
             return pd.read_csv(self.file_path)
         elif self._file_extension in [".xlsx", ".xls", ".odf", ".ods"]:
-            return pd.read_excel(self.file_path, sheet_name=0)
+            return pd.read_excel(self.file_path, sheet_name=0, engine="calamine")
         elif self._file_extension in [
             ".tsv",
         ]:
