@@ -5,6 +5,7 @@ The remote SPARQL pool must not share one mutable SPARQLWrapper across threads â
 queries to the same endpoint would clobber each other's query string. The pool is per-thread:
 reused within a thread (single-threaded behaviour unchanged), isolated across threads.
 """
+
 import threading
 from concurrent.futures import ThreadPoolExecutor
 
@@ -29,7 +30,10 @@ def test_distinct_wrappers_across_threads():
 
     t1 = threading.Thread(target=grab, args=("t1",))
     t2 = threading.Thread(target=grab, args=("t2",))
-    t1.start(); t2.start(); t1.join(); t2.join()
+    t1.start()
+    t2.start()
+    t1.join()
+    t2.join()
 
     assert wrappers["t1"] is not wrappers["t2"]
 

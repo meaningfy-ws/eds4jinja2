@@ -5,18 +5,26 @@ Unit tests for the opt-in parallel pre-warm executor: all-or-nothing fan-out, th
 content-addressed temp cache, the record/render phases, memoisation, and the
 collision-safe cache key.
 """
+
 import threading
 
 import pandas as pd
 import pytest
 
 from eds4jinja2.services.parallel_executor import (
-    run_parallel, FetchCache, FetchCoordinator, CachingDataSource, Phase,
-    wrap_builders, TABULAR, TREE,
+    run_parallel,
+    FetchCache,
+    FetchCoordinator,
+    CachingDataSource,
+    Phase,
+    wrap_builders,
+    TABULAR,
+    TREE,
 )
 
 
 # --- run_parallel -----------------------------------------------------------
+
 
 def test_run_parallel_preserves_order_and_runs_concurrently():
     barrier = threading.Barrier(4)
@@ -39,6 +47,7 @@ def test_run_parallel_all_or_nothing_reraises():
 
 # --- FetchCache -------------------------------------------------------------
 
+
 def test_fetch_cache_roundtrip_and_cleanup():
     cache = FetchCache()
     payload = (pd.DataFrame({"a": [1, 2]}), None)
@@ -53,6 +62,7 @@ def test_fetch_cache_roundtrip_and_cleanup():
 
 
 # --- Fake data source -------------------------------------------------------
+
 
 class _FakeDS:
     def __init__(self):
@@ -77,13 +87,14 @@ class _FakeDS:
 
 # --- record / prewarm / render ---------------------------------------------
 
+
 def test_record_returns_placeholder_without_executing():
     coordinator = FetchCoordinator()
     ds = _FakeDS()
     proxy = CachingDataSource(ds, coordinator, source_id=("from_x", (), ()))
     df, error = proxy.with_query("Q1").fetch_tabular()
-    assert error is None and df.empty   # placeholder, not real result
-    assert ds.calls == 0                # real fetch never invoked during record
+    assert error is None and df.empty  # placeholder, not real result
+    assert ds.calls == 0  # real fetch never invoked during record
     coordinator.cache.cleanup()
 
 
@@ -91,12 +102,12 @@ def test_prewarm_then_render_serves_from_cache():
     coordinator = FetchCoordinator()
     ds = _FakeDS()
     proxy = CachingDataSource(ds, coordinator, source_id=("from_x", (), ()))
-    proxy.with_query("Q1").fetch_tabular()      # record
-    coordinator.prewarm(max_workers=2)          # executes once
+    proxy.with_query("Q1").fetch_tabular()  # record
+    coordinator.prewarm(max_workers=2)  # executes once
     coordinator.set_phase(Phase.RENDER)
     df, error = CachingDataSource(ds, coordinator, ("from_x", (), ())).with_query("Q1").fetch_tabular()
-    assert error is None and df["q"].tolist() == ["Q1"]   # real result, from cache
-    assert ds.calls == 1                                   # executed exactly once (memoised)
+    assert error is None and df["q"].tolist() == ["Q1"]  # real result, from cache
+    assert ds.calls == 1  # executed exactly once (memoised)
     coordinator.cache.cleanup()
 
 
@@ -143,6 +154,7 @@ def test_prewarm_aborts_on_fetch_error():
 
 
 # --- wrap_builders ----------------------------------------------------------
+
 
 def test_wrap_builders_only_wraps_named_data_sources():
     coordinator = FetchCoordinator()

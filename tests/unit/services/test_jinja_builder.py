@@ -2,7 +2,7 @@
 test_jinja_builder.py
 Date:  11/08/2020
 Author: Eugeniu Costetchi
-Email: costezki.eugen@gmail.com 
+Email: costezki.eugen@gmail.com
 """
 
 import pytest
@@ -28,7 +28,7 @@ def test_sparql_fetch_tabular_successful(eds_environment):
 def test_sparql_fetch_tree_successful(eds_environment):
     template = eds_environment.from_string(tests.TEMPLATE_SPARQL_FETCH_TREE)
     rendered_text = template.render()
-    assert 'http://publications.europa.eu/resource/authority/corporate-body/SPC' in rendered_text
+    assert "http://publications.europa.eu/resource/authority/corporate-body/SPC" in rendered_text
     assert "['s', 'p', 'o']" in rendered_text
     assert "error: None"
 
@@ -36,7 +36,7 @@ def test_sparql_fetch_tree_successful(eds_environment):
 def test_file_fetch_tree_successful(eds_environment):
     template = eds_environment.from_string(tests.TEMPLATE_FILE_FETCH_TREE)
     rendered_text = template.render()
-    assert 'http://publications.europa.eu/resource/authority/corporate-body/SPC' in rendered_text
+    assert "http://publications.europa.eu/resource/authority/corporate-body/SPC" in rendered_text
     assert "['s', 'p', 'o']" in rendered_text
     assert "error: None"
 

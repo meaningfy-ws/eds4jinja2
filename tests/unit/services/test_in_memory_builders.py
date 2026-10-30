@@ -4,6 +4,7 @@ test_in_memory_builders.py
 Tests for the in-memory data-source builders registered in DATA_SOURCE_BUILDERS:
 `from_graph` (alias `from_memory`).
 """
+
 import rdflib
 
 from eds4jinja2.adapters.in_memory_sparql_ds import InMemorySPARQLDataSource

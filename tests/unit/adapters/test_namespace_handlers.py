@@ -3,7 +3,7 @@
 # test_namespace_handlers.py
 # Date:  25/02/2021
 # Author: Eugeniu Costetchi
-# Email: costezki.eugen@gmail.com 
+# Email: costezki.eugen@gmail.com
 
 """ """
 
@@ -99,27 +99,22 @@ def test_simplify_uri_to_qname_close(dummy_df):
     assert "ns2" in ns_inv
 
 
-
 def test_new_namespace_inventory(dummy_prefixes):
     ni = NamespaceInventory(dummy_prefixes)
-    assert ni.uri_to_qname(
-        "http://publications.europa.eu/resource/authority/corporate-body/COB1") == "corporate-body:COB1"
-    assert ni.uri_to_qname(
-        "http://publications.e67u/resource/authority/corporate-body/cmdfg34") == "ns1:cmdfg34"
+    assert ni.uri_to_qname("http://publications.europa.eu/resource/authority/corporate-body/COB1") == "corporate-body:COB1"
+    assert ni.uri_to_qname("http://publications.e67u/resource/authority/corporate-body/cmdfg34") == "ns1:cmdfg34"
     assert ni.uri_to_qname("http://www.w3.org/2004/02/skos/core#Concept") == "skos:Concept"
 
 
 def test_qname_to_uri(dummy_prefixes):
     ni = NamespaceInventory(dummy_prefixes)
     assert ni.qname_to_uri(qname_string="dct:date", error_fail=False) == "http://purl.org/dc/terms/date"
-    assert ni.qname_to_uri(qname_string="rdf:type",
-                           error_fail=False) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-    assert ni.qname_to_uri(qname_string="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-                           error_fail=False) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+    assert ni.qname_to_uri(qname_string="rdf:type", error_fail=False) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+    assert (
+        ni.qname_to_uri(qname_string="http://www.w3.org/1999/02/22-rdf-syntax-ns#type", error_fail=False)
+        == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+    )
     assert ni.qname_to_uri(qname_string="bowlik", error_fail=False) == "bowlik"
 
     with pytest.raises(ValueError):
         assert ni.qname_to_uri(qname_string="bowlik", error_fail=True) == "bowlik"
-
-
-

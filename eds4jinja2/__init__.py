@@ -26,20 +26,21 @@ from eds4jinja2.models.transformations import add_relative_figures, replace_stri
 from eds4jinja2.services.jinja_builder import build_eds_environment, inject_environment_globals
 
 # Making usage of this library more convenient
-__all__ = ["build_eds_environment",
-           "inject_environment_globals",
-           "FileDataSource",
-           "RemoteSPARQLEndpointDataSource",
-           "RDFFileDataSource",
-           "InMemorySPARQLDataSource",
-           "make_graph_store",
-           "RdflibGraphStore",
-           "OxigraphGraphStore",
-           "Engine",
-           "add_relative_figures",
-           "replace_strings_in_tabular",
-           "NamespaceInventory"
-           ]
+__all__ = [
+    "build_eds_environment",
+    "inject_environment_globals",
+    "FileDataSource",
+    "RemoteSPARQLEndpointDataSource",
+    "RDFFileDataSource",
+    "InMemorySPARQLDataSource",
+    "make_graph_store",
+    "RdflibGraphStore",
+    "OxigraphGraphStore",
+    "Engine",
+    "add_relative_figures",
+    "replace_strings_in_tabular",
+    "NamespaceInventory",
+]
 
 # Library logging: attach only a NullHandler so importing eds4jinja2 never configures the root
 # logger, adds an emitting handler, or forces a level on consumers. The application (and the

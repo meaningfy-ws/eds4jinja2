@@ -4,6 +4,7 @@ test_version_source.py
 The package version has a single source of truth: the eds4jinja2/VERSION file. __version__ must
 read from it (no hand-edited literal in code).
 """
+
 import pathlib
 
 import eds4jinja2

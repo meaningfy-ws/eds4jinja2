@@ -24,6 +24,7 @@ real speed-up; rdflib in-memory queries are GIL-bound (correct, limited speed-up
 This is entirely opt-in: with ``parallelism`` unset or ``1`` the report builder never touches any
 of this and behaves exactly as before.
 """
+
 import hashlib
 import pickle
 import shutil
@@ -50,10 +51,10 @@ class Phase(Enum):
 
 def run_parallel(thunks, max_workers):
     """
-        Run all thunks concurrently and return their results in input order.
+    Run all thunks concurrently and return their results in input order.
 
-        All-or-nothing: the first thunk to raise re-raises here (after the pool drains), so the
-        caller can abort the whole report without using any partial result.
+    All-or-nothing: the first thunk to raise re-raises here (after the pool drains), so the
+    caller can abort the whole report without using any partial result.
     """
     thunks = list(thunks)
     results = [None] * len(thunks)
@@ -65,7 +66,7 @@ def run_parallel(thunks, max_workers):
 
 
 class FetchCache:
-    """ A temp-folder-backed, content-addressed cache of (content, error) fetch results.
+    """A temp-folder-backed, content-addressed cache of (content, error) fetch results.
 
     Values are pickled because they mix pandas DataFrames with SPARQL-JSON dicts. This is
     SAFE: the cache only ever loads data this same process wrote, into a temp dir it created
@@ -99,8 +100,8 @@ class FetchCache:
 
 class FetchCoordinator:
     """
-        Drives the record -> pre-warm -> render phases and owns the result cache.
-        One coordinator per report build.
+    Drives the record -> pre-warm -> render phases and owns the result cache.
+    One coordinator per report build.
     """
 
     def __init__(self, cache: FetchCache = None):
@@ -141,9 +142,9 @@ class FetchCoordinator:
 
 class CachingDataSource:
     """
-        A transparent proxy over a real DataSource. It captures the query arguments (so the cache
-        key is exact, never the truncated ``__str__``), keeps the fluent chaining intact, and
-        routes ``fetch_*`` through the coordinator.
+    A transparent proxy over a real DataSource. It captures the query arguments (so the cache
+    key is exact, never the truncated ``__str__``), keeps the fluent chaining intact, and
+    routes ``fetch_*`` through the coordinator.
     """
 
     def __init__(self, real, coordinator: FetchCoordinator, source_id):
@@ -180,8 +181,8 @@ class CachingDataSource:
 
 def wrap_builders(builders: dict, builder_names, coordinator: FetchCoordinator) -> dict:
     """
-        Return a copy of ``builders`` where each data-source builder (by name) yields a
-        CachingDataSource. Non-data-source helpers are passed through untouched.
+    Return a copy of ``builders`` where each data-source builder (by name) yields a
+    CachingDataSource. Non-data-source helpers are passed through untouched.
     """
     wrapped = dict(builders)
     for name in builder_names:
@@ -197,6 +198,7 @@ def _make_wrapping_builder(name, original, coordinator):
         real = original(*args, **kwargs)
         source_id = (name, args, _sorted_kwargs(kwargs))
         return CachingDataSource(real, coordinator, source_id)
+
     return builder
 
 
@@ -215,6 +217,7 @@ def _invoke(real_ds, method):
 def _placeholder(method):
     import pandas as pd
     from eds4jinja2.models.sparql import SparqlResults
+
     if method == TABULAR:
         return pd.DataFrame(), None
     return SparqlResults.empty().to_sparql_json(), None

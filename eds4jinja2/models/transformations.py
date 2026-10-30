@@ -9,6 +9,7 @@ Pure presentation/data transformations:
 - :func:`escape_latex` — escape a string for LaTeX output (adapted from pappasam/latexbuild);
 - :func:`replace_strings_in_tabular` / :func:`add_relative_figures` — polish a pandas DataFrame.
 """
+
 import logging
 import re
 from typing import Dict, List
@@ -23,44 +24,55 @@ logger = logging.getLogger(__name__)
 
 # All latex escape characters (EXCEPT "\", handled separately), escaping those that are special
 # in PERL regular expressions.
-ESCAPE_CHARS = [r'\&', '%', r'\$', '#', '_', r'\{', r'\}', '~', r'\^', ]
-
-REGEX_ESCAPE_CHARS = [
-    (re.compile(r"(?<!\\)" + i), r"\\" + i.replace('\\', ''))
-    for i in ESCAPE_CHARS
+ESCAPE_CHARS = [
+    r"\&",
+    "%",
+    r"\$",
+    "#",
+    "_",
+    r"\{",
+    r"\}",
+    "~",
+    r"\^",
 ]
 
-ESCAPE_CHARS_OR = r'[{}\\]'.format(''.join(ESCAPE_CHARS))
+REGEX_ESCAPE_CHARS = [(re.compile(r"(?<!\\)" + i), r"\\" + i.replace("\\", "")) for i in ESCAPE_CHARS]
 
-REGEX_BACKSLASH = re.compile(r'(?<!\\)\\(?!{})'.format(ESCAPE_CHARS_OR))
+ESCAPE_CHARS_OR = r"[{}\\]".format("".join(ESCAPE_CHARS))
+
+REGEX_BACKSLASH = re.compile(r"(?<!\\)\\(?!{})".format(ESCAPE_CHARS_OR))
 
 
 def escape_latex(value: str):
-    """ Escape a latex string. """
+    """Escape a latex string."""
     if not isinstance(value, str):
         return value
     for regex, replace_text in REGEX_ESCAPE_CHARS:
         value = re.sub(regex, replace_text, value)
-    value = re.sub(REGEX_BACKSLASH, r'\\\\', value)
+    value = re.sub(REGEX_BACKSLASH, r"\\\\", value)
     return value
 
 
 # --- tabular (pandas) transformations ---------------------------------------------------------
 
-def replace_strings_in_tabular(data_frame: pd.DataFrame, target_columns: List[str] = None,
-                               value_mapping_dict: Dict = None,
-                               mark_touched_rows: bool = False) -> List[str]:
+
+def replace_strings_in_tabular(
+    data_frame: pd.DataFrame,
+    target_columns: List[str] = None,
+    value_mapping_dict: Dict = None,
+    mark_touched_rows: bool = False,
+) -> List[str]:
     """
-        Replaces the values from the target columns in a data frame according to the value-mapping dictionary.
-        If mark_touched_rows is true, then adds a boolean column _touched_.
+    Replaces the values from the target columns in a data frame according to the value-mapping dictionary.
+    If mark_touched_rows is true, then adds a boolean column _touched_.
 
-        >>> mapping_dict example = {"old value 1" : "new value 1", "old value 2":"new value 2"}
+    >>> mapping_dict example = {"old value 1" : "new value 1", "old value 2":"new value 2"}
 
-        :param mark_touched_rows: add a new boolean column _touched_ indicating which rows were updated
-        :param value_mapping_dict: the string substitution mapping
-        :param target_columns: a list of column names otehrwise leave empty if substitution applies to all columns
-        :param data_frame: the data frame
-        :return the list of unique strings found in the dataframe
+    :param mark_touched_rows: add a new boolean column _touched_ indicating which rows were updated
+    :param value_mapping_dict: the string substitution mapping
+    :param target_columns: a list of column names otehrwise leave empty if substitution applies to all columns
+    :param data_frame: the data frame
+    :return the list of unique strings found in the dataframe
     """
     if not target_columns:
         target_columns = []
@@ -82,15 +94,19 @@ def replace_strings_in_tabular(data_frame: pd.DataFrame, target_columns: List[st
     # add a column flagging touched rows
     if mark_touched_rows:
         mask = np.column_stack(
-            [data_frame[col].str.contains('(' + '|'.join(escaped_value_mapping_dict.keys()) + ')', na=False)
-             for col in obj_columns])
+            [
+                data_frame[col].str.contains("(" + "|".join(escaped_value_mapping_dict.keys()) + ")", na=False)
+                for col in obj_columns
+            ]
+        )
         data_frame["_touched_"] = np.logical_or.reduce(mask, axis=1)
 
     # which (unique) strings are found in the dataframe?
     strings_found_column_stack = np.array(
-        [data_frame[col].str.findall('(' + '|'.join(escaped_value_mapping_dict.keys()) + ')',
-                                     flags=re.IGNORECASE).values
-         for col in obj_columns]
+        [
+            data_frame[col].str.findall("(" + "|".join(escaped_value_mapping_dict.keys()) + ")", flags=re.IGNORECASE).values
+            for col in obj_columns
+        ]
     )
     strings_found = np.unique(np.concatenate(strings_found_column_stack.flatten()))
 
@@ -102,8 +118,12 @@ def replace_strings_in_tabular(data_frame: pd.DataFrame, target_columns: List[st
     return strings_found
 
 
-def add_relative_figures(data_frame: pd.DataFrame, target_columns: List[str], relativisers: List,  # noqa: C901
-                         percentage: bool = True):
+def add_relative_figures(
+    data_frame: pd.DataFrame,
+    target_columns: List[str],
+    relativisers: List,  # noqa: C901
+    percentage: bool = True,
+):
     """
         For each target_columns add a calculated column with relative values based on the relativisers.
 
@@ -134,10 +154,11 @@ def add_relative_figures(data_frame: pd.DataFrame, target_columns: List[str], re
             raise ValueError("The target column is not of numeric type")
     # End of sanity checkers
 
-    new_columns = [c + "_relative" if not isinstance(r, str) else c + "_relative_to_" + r for c, r in
-                   zip(target_columns, relativisers)]
+    new_columns = [
+        c + "_relative" if not isinstance(r, str) else c + "_relative_to_" + r for c, r in zip(target_columns, relativisers)
+    ]
 
-    for (new_col, old_col, relativiser) in zip(new_columns, target_columns, relativisers):
+    for new_col, old_col, relativiser in zip(new_columns, target_columns, relativisers):
         if not relativiser:
             relativiser = data_frame[old_col].sum()
         elif isinstance(relativiser, str):

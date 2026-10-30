@@ -4,14 +4,22 @@ test_graph_store.py
 Unit tests for the built-in graph store: load RDF file(s) into an in-memory graph
 (rdflib by default, oxigraph opt-in) once, and query it.
 """
+
 import importlib.util
 
 import pytest
 import rdflib
 
 from eds4jinja2.adapters.graph_store import (
-    Engine, RdflibGraphStore, GraphStorePort, make_graph_store, OXIGRAPH_MISSING_MESSAGE,
-    _is_url, _media_type_for, _as_source_list, DEFAULT_RDF_FORMAT,
+    Engine,
+    RdflibGraphStore,
+    GraphStorePort,
+    make_graph_store,
+    OXIGRAPH_MISSING_MESSAGE,
+    _is_url,
+    _media_type_for,
+    _as_source_list,
+    DEFAULT_RDF_FORMAT,
 )
 from eds4jinja2.adapters.in_memory_sparql_ds import InMemorySPARQLDataSource
 

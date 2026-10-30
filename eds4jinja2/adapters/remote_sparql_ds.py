@@ -19,23 +19,24 @@ import pandas as pd
 from eds4jinja2.models.sparql import build_query
 from eds4jinja2.adapters.query_files import read_query_file
 
-DEFAULT_ENCODING = 'utf-8'
+DEFAULT_ENCODING = "utf-8"
 
 
 @singleton
 class SPARQLClientPool(object):
     """
-        A singleton connection pool, that hosts a dictionary of endpoint_urls and
-        a corresponding SPARQLWrapper object connecting to it.
+    A singleton connection pool, that hosts a dictionary of endpoint_urls and
+    a corresponding SPARQLWrapper object connecting to it.
 
-        The rationale of this connection pool is to reuse connection objects and save time.
+    The rationale of this connection pool is to reuse connection objects and save time.
 
-        The pool is **per-thread**: a SPARQLWrapper holds a mutable query string (``setQuery``),
-        so sharing one wrapper across threads would let concurrent queries to the same endpoint
-        clobber each other. Each thread therefore gets its own wrapper per endpoint — reused
-        within the thread (single-threaded behaviour unchanged), isolated across threads. This
-        makes the parallel report executor safe.
+    The pool is **per-thread**: a SPARQLWrapper holds a mutable query string (``setQuery``),
+    so sharing one wrapper across threads would let concurrent queries to the same endpoint
+    clobber each other. Each thread therefore gets its own wrapper per endpoint — reused
+    within the thread (single-threaded behaviour unchanged), isolated across threads. This
+    makes the parallel report executor safe.
     """
+
     _local = threading.local()
 
     @staticmethod
@@ -60,27 +61,27 @@ SPARQLClientPool.instance()
 
 class RemoteSPARQLEndpointDataSource(DataSource):
     """
-        Fetches data from SPARQL endpoint. Can be used either with a SPARQL query or a URI to be described.
+    Fetches data from SPARQL endpoint. Can be used either with a SPARQL query or a URI to be described.
 
-        To query a SPARQL endpoint and get the results as *dict* object
+    To query a SPARQL endpoint and get the results as *dict* object
 
-        >>> ds = RemoteSPARQLEndpointDataSource(sparql_endpoint_url)
-        >>> dict_object = ds.with_query(sparql_query_text)._fetch_tree()
+    >>> ds = RemoteSPARQLEndpointDataSource(sparql_endpoint_url)
+    >>> dict_object = ds.with_query(sparql_query_text)._fetch_tree()
 
-        unpack the content and error for a fail safe fetching
-        >>> dict_object, error_string = ds.with_query(sparql_query_text).fetch_tree()
+    unpack the content and error for a fail safe fetching
+    >>> dict_object, error_string = ds.with_query(sparql_query_text).fetch_tree()
 
-        To describe an URI and get the results as a pandas DataFrame
+    To describe an URI and get the results as a pandas DataFrame
 
-        >>> pd_dataframe = ds.with_uri(existent_uri)._fetch_tree()
+    >>> pd_dataframe = ds.with_uri(existent_uri)._fetch_tree()
 
-        unpack the content and error for a fail safe fetching
+    unpack the content and error for a fail safe fetching
 
-        >>> pd_dataframe, error_string = ds.with_uri(existent_uri).fetch_tree()
+    >>> pd_dataframe, error_string = ds.with_uri(existent_uri).fetch_tree()
 
-        In case you want to target URI description from a Named Graph
+    In case you want to target URI description from a Named Graph
 
-        >>> pd_dataframe, error_string = ds.with_uri(existent_uri,named_graph).fetch_tree()
+    >>> pd_dataframe, error_string = ds.with_uri(existent_uri,named_graph).fetch_tree()
     """
 
     def __init__(self, endpoint_url):
@@ -88,8 +89,9 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         self.__can_be_tree = True
         self.__can_be_tabular = True
 
-    def with_query(self, sparql_query: str, substitution_variables: dict = None,
-                   sparql_prefixes: str = "") -> 'RemoteSPARQLEndpointDataSource':
+    def with_query(
+        self, sparql_query: str, substitution_variables: dict = None, sparql_prefixes: str = ""
+    ) -> "RemoteSPARQLEndpointDataSource":
         """
             Set the query text and return the reference to self for chaining.
         :return:
@@ -97,17 +99,17 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         self.endpoint.setQuery(build_query(sparql_query, substitution_variables, sparql_prefixes))
         return self
 
-    def with_query_from_file(self, sparql_query_file_path: str, substitution_variables: dict = None,
-                             prefixes: str = "") -> 'RemoteSPARQLEndpointDataSource':
+    def with_query_from_file(
+        self, sparql_query_file_path: str, substitution_variables: dict = None, prefixes: str = ""
+    ) -> "RemoteSPARQLEndpointDataSource":
         """
             Set the query text and return the reference to self for chaining.
         :return:
         """
-        self.endpoint.setQuery(
-            build_query(read_query_file(sparql_query_file_path), substitution_variables, prefixes))
+        self.endpoint.setQuery(build_query(read_query_file(sparql_query_file_path), substitution_variables, prefixes))
         return self
 
-    def with_uri(self, uri: str, graph_uri: Optional[str] = None) -> 'RemoteSPARQLEndpointDataSource':
+    def with_uri(self, uri: str, graph_uri: Optional[str] = None) -> "RemoteSPARQLEndpointDataSource":
         """
             Set the query text and return the reference to self for chaining.
         :return:

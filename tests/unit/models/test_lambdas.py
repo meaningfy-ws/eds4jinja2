@@ -3,9 +3,10 @@
 # test_lambdas.py
 # Date:  24/02/2021
 # Author: Eugeniu Costetchi
-# Email: costezki.eugen@gmail.com 
+# Email: costezki.eugen@gmail.com
 
 """ """
+
 import json
 
 import rdflib
@@ -25,7 +26,7 @@ def test_call_lambda():
 
 
 def test_dict_filtering_and_list_extension_in_template(eds_environment):
-    DUMMY1 = '''
+    DUMMY1 = """
     - First we create a global_list
     {% set global_list = [] %}
     - Then we extend whenever we need its content with additional values (but this method leaves a `None` string)
@@ -56,7 +57,7 @@ def test_dict_filtering_and_list_extension_in_template(eds_environment):
     It may search for 
      (a) bare URI notation: http://op.europa.eu/resources/authority/country/ROU
      (b) Turtle URI notation (between angular brakets): <http://op.europa.eu/resources/authority/country/ROU>
-    '''
+    """
 
     template = eds_environment.from_string(DUMMY1)
     rendered_text = template.render()
@@ -71,27 +72,27 @@ def test_uri_ref():
 
 
 def test_deep_update():
-    source = {'hello1': 1}
-    overrides = {'hello2': 2}
+    source = {"hello1": 1}
+    overrides = {"hello2": 2}
     deep_update(source, overrides)
-    assert source == {'hello1': 1, 'hello2': 2}
+    assert source == {"hello1": 1, "hello2": 2}
 
-    source = {'hello': 'to_override'}
-    overrides = {'hello': 'over'}
+    source = {"hello": "to_override"}
+    overrides = {"hello": "over"}
     deep_update(source, overrides)
-    assert source == {'hello': 'over'}
+    assert source == {"hello": "over"}
 
-    source = {'hello': {'value': 'to_override', 'no_change': 1}}
-    overrides = {'hello': {'value': 'over'}}
+    source = {"hello": {"value": "to_override", "no_change": 1}}
+    overrides = {"hello": {"value": "over"}}
     deep_update(source, overrides)
-    assert source == {'hello': {'value': 'over', 'no_change': 1}}
+    assert source == {"hello": {"value": "over", "no_change": 1}}
 
-    source = {'hello': {'value': 'to_override', 'no_change': 1}}
-    overrides = {'hello': {'value': {}}}
+    source = {"hello": {"value": "to_override", "no_change": 1}}
+    overrides = {"hello": {"value": {}}}
     deep_update(source, overrides)
-    assert source == {'hello': {'value': {}, 'no_change': 1}}
+    assert source == {"hello": {"value": {}, "no_change": 1}}
 
-    source = {'hello': {'value': {}, 'no_change': 1}}
-    overrides = {'hello': {'value': 2}}
+    source = {"hello": {"value": {}, "no_change": 1}}
+    overrides = {"hello": {"value": 2}}
     deep_update(source, overrides)
-    assert source == {'hello': {'value': 2, 'no_change': 1}}
+    assert source == {"hello": {"value": 2, "no_change": 1}}

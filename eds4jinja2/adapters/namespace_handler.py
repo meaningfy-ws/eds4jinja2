@@ -3,14 +3,14 @@
 # namespace_handler.py
 # Date:  25/02/2021
 # Author: Eugeniu Costetchi
-# Email: costezki.eugen@gmail.com 
+# Email: costezki.eugen@gmail.com
 
 """
-    This module deals with namespace management over Pandas DataFrames.
-    - Discovery of prefixes and namespaces in a DataFrame
-    - prefix.cc lookup
-    - Maintenance of a namespace inventory
-    - Shortening of URIs to their QName forms
+This module deals with namespace management over Pandas DataFrames.
+- Discovery of prefixes and namespaces in a DataFrame
+- prefix.cc lookup
+- Maintenance of a namespace inventory
+- Shortening of URIs to their QName forms
 """
 
 import logging
@@ -27,7 +27,6 @@ logger = logging.getLogger(__name__)
 
 
 class NamespaceInventory(rdflib.namespace.NamespaceManager):
-
     def __init__(self, namespace_definition_dict=None):
         super().__init__(rdflib.Graph())
 
@@ -82,8 +81,8 @@ class NamespaceInventory(rdflib.namespace.NamespaceManager):
         """
         try:
             if not re.search(r"^[\w\d.\-_]+:[\w\d.\-_]+$", qname_string):
-                raise ValueError('Not a QName for the form prefix:localname string: ' + qname_string)
-            s = qname_string.split(':')
+                raise ValueError("Not a QName for the form prefix:localname string: " + qname_string)
+            s = qname_string.split(":")
             prefix, local_name = s[0], s[1]
 
             if prefix not in self.namespaces_as_dict():
@@ -94,9 +93,9 @@ class NamespaceInventory(rdflib.namespace.NamespaceManager):
                             self.bind(prefix=prefix, namespace=namespace, override=True, replace=True)
                         self.reset()
                     else:
-                        raise ValueError('Unknown prefix: ' + prefix)
+                        raise ValueError("Unknown prefix: " + prefix)
                 else:
-                    raise ValueError('Unknown prefix: ' + prefix)
+                    raise ValueError("Unknown prefix: " + prefix)
             return self.namespaces_as_dict()[prefix] + local_name
         except Exception as e:
             logger.warning(f"Could not transform the QName <{qname_string}> to its absolute URI form.")
@@ -105,9 +104,14 @@ class NamespaceInventory(rdflib.namespace.NamespaceManager):
             return qname_string
 
 
-def simplify_uris_in_tabular(data_frame: DataFrame, namespace_inventory: NamespaceInventory,
-                             target_columns: List = None,
-                             prefix_cc_lookup=True, inplace=True, error_fail=True) -> DataFrame:
+def simplify_uris_in_tabular(
+    data_frame: DataFrame,
+    namespace_inventory: NamespaceInventory,
+    target_columns: List = None,
+    prefix_cc_lookup=True,
+    inplace=True,
+    error_fail=True,
+) -> DataFrame:
     """
         Replace the full URIs by their qname counterparts. Discover the namespaces
         in the process, if the namespaces are not defined.
@@ -136,5 +140,6 @@ def simplify_uris_in_tabular(data_frame: DataFrame, namespace_inventory: Namespa
     result_frame = data_frame if inplace else data_frame.copy(deep=True)
     for column in obj_columns:
         result_frame[column] = result_frame[column].apply(
-            lambda x: namespace_inventory.uri_to_qname(x, prefix_cc_lookup=prefix_cc_lookup, error_fail=error_fail))
+            lambda x: namespace_inventory.uri_to_qname(x, prefix_cc_lookup=prefix_cc_lookup, error_fail=error_fail)
+        )
     return result_frame

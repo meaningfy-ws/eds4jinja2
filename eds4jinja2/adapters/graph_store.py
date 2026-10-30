@@ -17,6 +17,7 @@ Sources are parsed exactly once at construction, fixing the per-query re-parse s
 so it stays an opt-in extra (``pip install eds4jinja2[oxigraph]``); the rdflib path needs
 no extra dependency.
 """
+
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import List, Optional, Union
@@ -43,27 +44,27 @@ _EXTENSION_TO_MEDIA_TYPE = {
 }
 
 OXIGRAPH_MISSING_MESSAGE = (
-    "The 'oxigraph' engine requires pyoxigraph, which is not installed. "
-    "Install it with: pip install eds4jinja2[oxigraph]")
+    "The 'oxigraph' engine requires pyoxigraph, which is not installed. Install it with: pip install eds4jinja2[oxigraph]"
+)
 
 Sources = Union[str, Path, List[Union[str, Path]]]
 
 
 class GraphStorePort(ABC):
-    """ A minimal port: load RDF sources into the held graph, and run SPARQL queries. """
+    """A minimal port: load RDF sources into the held graph, and run SPARQL queries."""
 
     @abstractmethod
     def load(self, source: str) -> None:
-        """ Parse a single RDF source (file path or URL) into the in-memory graph. """
+        """Parse a single RDF source (file path or URL) into the in-memory graph."""
 
     @abstractmethod
     def query(self, sparql: str):
-        """ Run a SPARQL query, returning an engine-native result object that
-        :class:`InMemorySPARQLDataSource` can normalise. """
+        """Run a SPARQL query, returning an engine-native result object that
+        :class:`InMemorySPARQLDataSource` can normalise."""
 
 
 class RdflibGraphStore(GraphStorePort):
-    """ In-memory store backed by an ``rdflib.Graph`` (the default engine). """
+    """In-memory store backed by an ``rdflib.Graph`` (the default engine)."""
 
     def __init__(self, graph: Optional[rdflib.Graph] = None):
         self._graph = graph if graph is not None else rdflib.Graph()
@@ -81,7 +82,7 @@ class RdflibGraphStore(GraphStorePort):
 
 
 class OxigraphGraphStore(GraphStorePort):
-    """ In-memory store backed by a pyoxigraph ``Store`` (opt-in, lazily imported). """
+    """In-memory store backed by a pyoxigraph ``Store`` (opt-in, lazily imported)."""
 
     def __init__(self, store=None):
         pyoxigraph = _import_pyoxigraph()
@@ -92,6 +93,7 @@ class OxigraphGraphStore(GraphStorePort):
         media_type = _media_type_for(source)
         if _is_url(source):
             import requests
+
             response = requests.get(source)
             response.raise_for_status()
             self._store.load(response.content, media_type)
@@ -106,8 +108,7 @@ class OxigraphGraphStore(GraphStorePort):
         return self._store
 
 
-def make_graph_store(engine: Engine = Engine.RDFLIB, sources: Sources = None,
-                     graph=None) -> GraphStorePort:
+def make_graph_store(engine: Engine = Engine.RDFLIB, sources: Sources = None, graph=None) -> GraphStorePort:
     """
         Build a graph store for the given engine and load each source exactly once.
 
@@ -116,8 +117,7 @@ def make_graph_store(engine: Engine = Engine.RDFLIB, sources: Sources = None,
     :param graph: an existing native graph/store to wrap instead of creating a fresh one
     """
     engine = Engine(engine)
-    store: GraphStorePort = (RdflibGraphStore(graph) if engine == Engine.RDFLIB
-                             else OxigraphGraphStore(graph))
+    store: GraphStorePort = RdflibGraphStore(graph) if engine == Engine.RDFLIB else OxigraphGraphStore(graph)
     for source in _as_source_list(sources):
         store.load(str(source))
     return store
@@ -142,6 +142,7 @@ def _media_type_for(source: str) -> str:
 def _import_pyoxigraph():
     try:
         import pyoxigraph
+
         return pyoxigraph
     except ImportError as error:
         raise ImportError(OXIGRAPH_MISSING_MESSAGE) from error

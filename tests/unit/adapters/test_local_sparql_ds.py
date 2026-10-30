@@ -5,6 +5,7 @@ Tests for RDFFileDataSource (query a local RDF file with SPARQL). Paths are anch
 shared `test_data_dir` fixture so the tests actually load the fixture graph regardless of the
 working directory, and the tabular fetches assert on the real query result.
 """
+
 import pytest
 
 from eds4jinja2 import RDFFileDataSource
@@ -39,7 +40,8 @@ def test_load_local_sparql_fetch_tabular_without_query(shapes_ttl):
 
 def test_load_local_sparql_substitution(shapes_ttl):
     local_rdf_ds = RDFFileDataSource(shapes_ttl).with_query(
-        "SELECT * WHERE { ~a ~b ~c } LIMIT 10", {'a': '?s', 'b': '?p', 'c': '?o'})
+        "SELECT * WHERE { ~a ~b ~c } LIMIT 10", {"a": "?s", "b": "?p", "c": "?o"}
+    )
     assert local_rdf_ds.__query__ == "SELECT * WHERE { ?s ?p ?o } LIMIT 10"
 
 
@@ -62,9 +64,10 @@ def test_load_local_query_and_prefixes(shapes_ttl):
 
 def test_load_local_query_from_file_substitution(shapes_ttl, spo_query_file):
     local_rdf_ds = RDFFileDataSource(shapes_ttl).with_query_from_file(
-        spo_query_file, {'substitution_placeholder': 'after_substitution'})
-    assert 'after_substitution' in local_rdf_ds.__query__
-    assert '~substitution_placeholder' not in local_rdf_ds.__query__
+        spo_query_file, {"substitution_placeholder": "after_substitution"}
+    )
+    assert "after_substitution" in local_rdf_ds.__query__
+    assert "~substitution_placeholder" not in local_rdf_ds.__query__
 
 
 def test_setting_query_twice_raises(shapes_ttl, spo_query_file):

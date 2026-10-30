@@ -8,6 +8,7 @@
 """
 this module implements the report generation functionality.
 """
+
 import json
 import logging
 import pathlib
@@ -16,24 +17,30 @@ from typing import Union
 import jinja2
 
 from eds4jinja2.models.collections import deep_update
-from eds4jinja2.services.jinja_builder import (build_eds_environment, inject_environment_globals,
-                                               DATA_SOURCE_BUILDERS, TABULAR_HELPERS, TREE_HELPERS,
-                                               ADDITIONAL_FILTERS)
-from eds4jinja2.services.parallel_executor import (FetchCoordinator, Phase, wrap_builders,
-                                                   PARALLELISM, DEFAULT_PARALLELISM)
+from eds4jinja2.services.jinja_builder import (
+    build_eds_environment,
+    inject_environment_globals,
+    DATA_SOURCE_BUILDERS,
+    TABULAR_HELPERS,
+    TREE_HELPERS,
+    ADDITIONAL_FILTERS,
+)
+from eds4jinja2.services.parallel_executor import FetchCoordinator, Phase, wrap_builders, PARALLELISM, DEFAULT_PARALLELISM
 
 logger = logging.getLogger(__name__)
 
 # aims to be close to the J2 default env syntax definition, but explicitly specified
-HTML_TEMPLATE_SYNTAX = {'block_start_string': '{%',
-                        'block_end_string': '%}',
-                        'variable_start_string': '{{',
-                        'variable_end_string': '}}',
-                        'comment_start_string': '{#',
-                        'comment_end_string': '#}',
-                        'line_statement_prefix': '#',
-                        'line_comment_prefix': '##',
-                        'trim_blocks': False, }
+HTML_TEMPLATE_SYNTAX = {
+    "block_start_string": "{%",
+    "block_end_string": "%}",
+    "variable_start_string": "{{",
+    "variable_end_string": "}}",
+    "comment_start_string": "{#",
+    "comment_end_string": "#}",
+    "line_statement_prefix": "#",
+    "line_comment_prefix": "##",
+    "trim_blocks": False,
+}
 
 # do not change anything
 DEFAULT_TEMPLATE_SYNTAX = {}
@@ -43,27 +50,36 @@ DEFAULT_TEMPLATE_SYNTAX = {}
 #   Constant borrowed from Marc Brinkmann's latex repository (mbr/latex on github)
 #   Reused also by Samuel Roeca's in his latex repository (pappasam/latexbuild on github)
 ######################################################################
-LATEX_TEMPLATE_SYNTAX = {'block_start_string': r'\BLOCK{',
-                         'block_end_string': '}',
-                         'variable_start_string': r'\VAR{',
-                         'variable_end_string': '}',
-                         'comment_start_string': r'\#{',
-                         'comment_end_string': '}',
-                         'line_statement_prefix': '%-',
-                         'line_comment_prefix': '%#',
-                         'trim_blocks': True,
-                         'autoescape': False, }
+LATEX_TEMPLATE_SYNTAX = {
+    "block_start_string": r"\BLOCK{",
+    "block_end_string": "}",
+    "variable_start_string": r"\VAR{",
+    "variable_end_string": "}",
+    "comment_start_string": r"\#{",
+    "comment_end_string": "}",
+    "line_statement_prefix": "%-",
+    "line_comment_prefix": "%#",
+    "trim_blocks": True,
+    "autoescape": False,
+}
 
 
 class ReportBuilder:
     """
-        generic report builder that takes templates and configuration as input and produces an output report
+    generic report builder that takes templates and configuration as input and produces an output report
     """
+
     configuration_context: dict = {}
 
-    def __init__(self, target_path: Union[str, pathlib.Path], config_file: str = "config.json",
-                 output_path: str = None, additional_config: dict = {},
-                 external_data_source_builders: dict = None, external_filters: dict = None):
+    def __init__(
+        self,
+        target_path: Union[str, pathlib.Path],
+        config_file: str = "config.json",
+        output_path: str = None,
+        additional_config: dict = {},
+        external_data_source_builders: dict = None,
+        external_filters: dict = None,
+    ):
         """
             Instantiates builders form a template providing an optional configuration context.
 
@@ -79,7 +95,7 @@ class ReportBuilder:
         :param external_filters: additional/overriding Jinja filters, merged over the defaults.
         """
 
-        with open(pathlib.Path(target_path) / config_file, encoding='utf-8') as configFile:
+        with open(pathlib.Path(target_path) / config_file, encoding="utf-8") as configFile:
             self.configuration_context = json.loads(configFile.read())
         deep_update(self.configuration_context, additional_config)
 
@@ -116,31 +132,40 @@ class ReportBuilder:
         # *replaces* its registries with whatever it receives, so forwarding a partial dict would
         # silently drop the default helpers (from_file, invert_dict, escape_latex, ...). Merging
         # preserves them while letting an injected entry (e.g. from_endpoint) override its default.
-        data_source_builders = {**DATA_SOURCE_BUILDERS, **TABULAR_HELPERS, **TREE_HELPERS,
-                                **(external_data_source_builders or {})}
+        data_source_builders = {
+            **DATA_SOURCE_BUILDERS,
+            **TABULAR_HELPERS,
+            **TREE_HELPERS,
+            **(external_data_source_builders or {}),
+        }
         filters = {**ADDITIONAL_FILTERS, **(external_filters or {})}
 
         template_loader = jinja2.FileSystemLoader(searchpath=template_path)
-        self.template_env = build_eds_environment(loader=template_loader,
-                                                  external_data_source_builders=data_source_builders,
-                                                  external_filters=filters,
-                                                  **self.template_flavour_syntax_spec)
-        inject_environment_globals(self.template_env, {'conf': self.configuration_context["conf"]},
-                                   False if self.configuration_context is None else True)
+        self.template_env = build_eds_environment(
+            loader=template_loader,
+            external_data_source_builders=data_source_builders,
+            external_filters=filters,
+            **self.template_flavour_syntax_spec,
+        )
+        inject_environment_globals(
+            self.template_env,
+            {"conf": self.configuration_context["conf"]},
+            False if self.configuration_context is None else True,
+        )
 
         self.__before_rendering_listeners = []
         self.__after_rendering_listeners = []
 
     def add_before_rendering_listener(self, listener):
         """
-            At the moment there is no use for this.
+        At the moment there is no use for this.
         """
         self.__before_rendering_listeners.append(listener)
 
     def add_after_rendering_listener(self, listener):
         """
-            At the moment, this is used just to copy static files to the output directory.
-            For example, CSS, JavaScript and other static resources.
+        At the moment, this is used just to copy static files to the output directory.
+        For example, CSS, JavaScript and other static resources.
         """
         self.__after_rendering_listeners.append(listener)
 
@@ -157,9 +182,9 @@ class ReportBuilder:
 
     def make_document(self):
         """
-            Render the report. Sequential by default; when the config sets ``parallelism`` > 1
-            the data fetches are pre-warmed in parallel (see ``parallel_executor``). With
-            ``parallelism`` unset or 1 the behaviour is byte-for-byte the previous sequential path.
+        Render the report. Sequential by default; when the config sets ``parallelism`` > 1
+        the data fetches are pre-warmed in parallel (see ``parallel_executor``). With
+        ``parallelism`` unset or 1 the behaviour is byte-for-byte the previous sequential path.
         """
         parallelism = int(self.configuration_context.get(PARALLELISM, DEFAULT_PARALLELISM) or DEFAULT_PARALLELISM)
         if parallelism > 1:
@@ -183,8 +208,7 @@ class ReportBuilder:
         coordinator = FetchCoordinator()
         original_globals = dict(self.template_env.globals)
         try:
-            self.template_env.globals.update(
-                wrap_builders(self.template_env.globals, set(DATA_SOURCE_BUILDERS), coordinator))
+            self.template_env.globals.update(wrap_builders(self.template_env.globals, set(DATA_SOURCE_BUILDERS), coordinator))
 
             # Record pass: discover the fetch units. If it fails (e.g. a data-dependent template
             # chokes on placeholder results) we fall back to a normal sequential render.

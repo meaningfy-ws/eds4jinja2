@@ -2,8 +2,9 @@
 test_file_ds.py
 Date:  11/08/2020
 Author: Eugeniu Costetchi
-Email: costezki.eugen@gmail.com 
+Email: costezki.eugen@gmail.com
 """
+
 import pathlib
 
 import pytest
@@ -56,7 +57,7 @@ def test_open_tabular_file_failure(file_name):
 
 @pytest.mark.parametrize("file_name", TREE_FILE_NAME_EXAMPLES)
 def test_open_tree_file_success(file_name):
-    print (TEST_DATA_FOLDER / file_name)
+    print(TEST_DATA_FOLDER / file_name)
     fds = FileDataSource(file_path=TEST_DATA_FOLDER / file_name)
     content, error = fds.fetch_tree()
     assert content is not None

@@ -13,26 +13,31 @@ import pandas as pd
 
 from eds4jinja2.models.data_source import DataSource, UnsupportedRepresentation
 
-TABULAR_EXTENSIONS = [".csv", ".tsv", ".xlsx", ".xls", ]
+TABULAR_EXTENSIONS = [
+    ".csv",
+    ".tsv",
+    ".xlsx",
+    ".xls",
+]
 TREE_EXTENSIONS = [".json", ".yaml", ".yml", ".toml", ".json-ld", ".jsonld"]
 
 
 class FileDataSource(DataSource):
     """
-        Fetches data from a file. Automatically determines the file type.
+    Fetches data from a file. Automatically determines the file type.
 
-        * *Supported tabular file types:* ".csv", ".tsv", ".xlsx", ".xls"
-        * *Supported tree file types:* ".json", ".yaml", ".yml", ".toml", ".json-ld", ".jsonld"
+    * *Supported tabular file types:* ".csv", ".tsv", ".xlsx", ".xls"
+    * *Supported tree file types:* ".json", ".yaml", ".yml", ".toml", ".json-ld", ".jsonld"
 
-        To read a CVS
+    To read a CVS
 
-        >>> ds = FileDataSource("path/to/the/file.csv")
-        >>> pd_data_frame, error = ds.fetch_tabular()
+    >>> ds = FileDataSource("path/to/the/file.csv")
+    >>> pd_data_frame, error = ds.fetch_tabular()
 
-        To read a JSON
+    To read a JSON
 
-        >>> ds = FileDataSource("path/to/the/file.json")
-        >>> pd_data_frame, error = ds.fetch_tree()
+    >>> ds = FileDataSource("path/to/the/file.json")
+    >>> pd_data_frame, error = ds.fetch_tree()
     """
 
     def __init__(self, file_path):
@@ -71,11 +76,15 @@ class FileDataSource(DataSource):
         raise UnsupportedRepresentation(f"Unsupported tree file type: {self._file_extension}")
 
     def _fetch_tabular(self):
-        if self._file_extension in [".csv", ]:
+        if self._file_extension in [
+            ".csv",
+        ]:
             return pd.read_csv(self.file_path)
         elif self._file_extension in [".xlsx", ".xls", ".odf", ".ods"]:
             return pd.read_excel(self.file_path, sheet_name=0)
-        elif self._file_extension in [".tsv", ]:
+        elif self._file_extension in [
+            ".tsv",
+        ]:
             return pd.read_table(self.file_path)
         raise UnsupportedRepresentation(f"Unsupported tabular file type: {self._file_extension}")
 

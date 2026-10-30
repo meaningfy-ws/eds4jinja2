@@ -9,16 +9,23 @@ logger = logging.getLogger(__name__)
 
 @click.command()
 @click.option("--target", default=".", required=False, type=str, help="The folder containing the config.json")
-@click.option("--config", default="config.json", type=str,
-              help="The configuration file if named other than config.json")
+@click.option("--config", default="config.json", type=str, help="The configuration file if named other than config.json")
 @click.option("--output", required=False, type=str, help="The output folder")
-@click.option("--latex", is_flag=True, help="If this parameter is specified, after the templates are compiled, "
-                                            "the resulting output  compiled using LaTeX engine "
-                                            "to generate the PDF output")
-@click.option("--xelatex", is_flag=True, help="If this parameter is specified, after the templates are compiled, "
-                                              "the resulting output  compiled using XeLaTeX engine "
-                                              "to generate the PDF output. Either XeLaTex or LaTex shall be used, "
-                                              "but not both.")
+@click.option(
+    "--latex",
+    is_flag=True,
+    help="If this parameter is specified, after the templates are compiled, "
+    "the resulting output  compiled using LaTeX engine "
+    "to generate the PDF output",
+)
+@click.option(
+    "--xelatex",
+    is_flag=True,
+    help="If this parameter is specified, after the templates are compiled, "
+    "the resulting output  compiled using XeLaTeX engine "
+    "to generate the PDF output. Either XeLaTex or LaTex shall be used, "
+    "but not both.",
+)
 def build_report(target, config, output, latex, xelatex):
     # The entrypoint owns logging configuration (the library only attaches a NullHandler).
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)-8s %(message)s")

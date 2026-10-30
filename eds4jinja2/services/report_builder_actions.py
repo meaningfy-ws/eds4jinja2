@@ -13,6 +13,7 @@ folder (for example, in case of a more complex rendered HTML, you will need this
 the input directory structure is preserved to the output folder during copying
 
 """
+
 import logging
 import pathlib
 from shutil import copytree
@@ -36,14 +37,20 @@ def make_pdf_from_latex(configuration_context: dict = {}) -> None:
     engine = configuration_context["latex_engine"] if "latex_engine" in configuration_context else "pdflatex"
     logger.info(f"Using {configuration_context['latex_engine']} to compile LaTex sources")
 
-    cmd_args = [engine, "-file-line-error", "-interaction=nonstopmode", "-synctex=1",
-                "-output-format=pdf", "-output-directory=.", str(input_file_name)]
+    cmd_args = [
+        engine,
+        "-file-line-error",
+        "-interaction=nonstopmode",
+        "-synctex=1",
+        "-output-format=pdf",
+        "-output-directory=.",
+        str(input_file_name),
+    ]
 
     output = "LaTex engine logs"
     for _pass in range(LATEX_RUNS):
         logger.info(f"Running pass {_pass} in a multi-pass LaTex build")
-        process = Popen(args=cmd_args, stdout=PIPE,
-                        cwd=str(output_folder))
+        process = Popen(args=cmd_args, stdout=PIPE, cwd=str(output_folder))
         try:
             output, errs = process.communicate(timeout=120)
         except TimeoutExpired:
@@ -51,13 +58,13 @@ def make_pdf_from_latex(configuration_context: dict = {}) -> None:
             output, errs = process.communicate()
 
         if process.returncode != 0:
-            logger.fatal('pdflatex execution failed.')
+            logger.fatal("pdflatex execution failed.")
             logger.fatal(output)
             raise RuntimeError(output)
 
-        logger.info('LaTex subprocess finished successfully.')
+        logger.info("LaTex subprocess finished successfully.")
 
-    logger.info('LaTex multi-pass build finished successfully.')
+    logger.info("LaTex multi-pass build finished successfully.")
     logger.info(output)
 
     # deleting all the source and auxiliary files
@@ -78,7 +85,6 @@ def copy_static_content(configuration_context: dict) -> None:
     if pathlib.Path(configuration_context["static_folder"]).is_dir():
         # shutil.copytree with dirs_exist_ok merges into an existing output folder,
         # matching the old distutils.dir_util.copy_tree behaviour (distutils removed in 3.12).
-        copytree(configuration_context["static_folder"], configuration_context["output_folder"],
-                 dirs_exist_ok=True)
+        copytree(configuration_context["static_folder"], configuration_context["output_folder"], dirs_exist_ok=True)
     else:
         logger.warning(configuration_context["static_folder"] + " is not a directory !")

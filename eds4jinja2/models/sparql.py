@@ -14,6 +14,7 @@ Everything SPARQL that is pure domain lives here:
   and which serialises to the canonical SPARQL-1.1 Results JSON dict at the boundary (templates
   and the remote source both speak that dict, so parity is preserved).
 """
+
 from string import Template
 from typing import Dict, List, Optional
 
@@ -36,12 +37,13 @@ BNODE = "bnode"
 
 
 class SubstitutionTemplate(Template):
-    """ A ``string.Template`` whose placeholder delimiter is ``~`` (used to parameterise queries). """
-    delimiter = '~'
+    """A ``string.Template`` whose placeholder delimiter is ``~`` (used to parameterise queries)."""
+
+    delimiter = "~"
 
 
 def build_query(sparql_query: str, substitution_variables: dict = None, prefixes: str = "") -> str:
-    """ Apply ``~``-substitution and prepend prefixes, returning the final query string. """
+    """Apply ``~``-substitution and prepend prefixes, returning the final query string."""
     if substitution_variables:
         sparql_query = SubstitutionTemplate(sparql_query).safe_substitute(substitution_variables)
     return (prefixes + " " + sparql_query).strip()
@@ -52,7 +54,8 @@ def is_empty_query(query: str) -> bool:
 
 
 class SparqlTerm(BaseModel):
-    """ One bound RDF term: ``{"type", "value"[, "datatype" | "xml:lang"]}``. """
+    """One bound RDF term: ``{"type", "value"[, "datatype" | "xml:lang"]}``."""
+
     model_config = ConfigDict(populate_by_name=True)
 
     type: str
@@ -77,7 +80,8 @@ class SparqlTerm(BaseModel):
 
 
 class SparqlResults(BaseModel):
-    """ The SPARQL-1.1 Query Results JSON object; ``to_sparql_json`` emits the canonical dict. """
+    """The SPARQL-1.1 Query Results JSON object; ``to_sparql_json`` emits the canonical dict."""
+
     variables: List[str] = Field(default_factory=list)
     bindings: List[Dict[str, SparqlTerm]] = Field(default_factory=list)
 
@@ -88,6 +92,5 @@ class SparqlResults(BaseModel):
     def to_sparql_json(self) -> dict:
         return {
             HEAD: {VARS: list(self.variables)},
-            RESULTS: {BINDINGS: [{var: term.to_json() for var, term in row.items()}
-                                 for row in self.bindings]},
+            RESULTS: {BINDINGS: [{var: term.to_json() for var, term in row.items()} for row in self.bindings]},
         }
