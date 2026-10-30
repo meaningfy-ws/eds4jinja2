@@ -65,9 +65,9 @@ template error.
 
 ### Requirement: Degraded parallel runs are reported
 
-When parallelism is enabled and the run is not fully accelerated — discovery stopped at the wave
-cap, or the real render fetched any unit live — the library SHALL log a WARNING that names the
-cause and the number of live fetches. A degraded run SHALL NOT fail the report.
+The library SHALL log a WARNING naming the cause and the number of live fetches whenever a
+parallel run is not fully accelerated — discovery stopped at the wave cap, or the real render
+fetched any unit live. A degraded run SHALL NOT fail the report.
 
 #### Scenario: Live fetches during the real render are reported
 - **WHEN** the real render fetches one or more units live
