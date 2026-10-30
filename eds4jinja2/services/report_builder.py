@@ -42,7 +42,7 @@ HTML_TEMPLATE_SYNTAX = {
 }
 
 # do not change anything
-DEFAULT_TEMPLATE_SYNTAX = {}
+DEFAULT_TEMPLATE_SYNTAX: dict = {}
 
 ######################################################################
 # Jinja2 Environment ARGS
@@ -74,10 +74,10 @@ class ReportBuilder:
         self,
         target_path: str | pathlib.Path,
         config_file: str = "config.json",
-        output_path: str = None,
+        output_path: str | None = None,
         additional_config: dict | None = None,
-        external_data_source_builders: dict = None,
-        external_filters: dict = None,
+        external_data_source_builders: dict | None = None,
+        external_filters: dict | None = None,
     ):
         """
             Instantiates builders form a template providing an optional configuration context.
@@ -152,8 +152,8 @@ class ReportBuilder:
             False if self.configuration_context is None else True,
         )
 
-        self.__before_rendering_listeners = []
-        self.__after_rendering_listeners = []
+        self.__before_rendering_listeners: list = []
+        self.__after_rendering_listeners: list = []
 
     def add_before_rendering_listener(self, listener):
         """

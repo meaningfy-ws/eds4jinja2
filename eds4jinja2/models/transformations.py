@@ -57,8 +57,8 @@ def escape_latex(value: str):
 
 def replace_strings_in_tabular(
     data_frame: pd.DataFrame,
-    target_columns: list[str] = None,
-    value_mapping_dict: dict = None,
+    target_columns: list[str] | None = None,
+    value_mapping_dict: dict | None = None,
     mark_touched_rows: bool = False,
 ) -> list[str]:
     """

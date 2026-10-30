@@ -30,7 +30,9 @@ class RDFFileDataSource(DataSource):
     def __reduce_bound_triple_to_string_format(self, dict_of_bound_variables: dict):
         return {str(k): str(v) for k, v in dict_of_bound_variables.items()}
 
-    def with_query(self, sparql_query: str, substitution_variables: dict = None, prefixes: str = "") -> "RDFFileDataSource":
+    def with_query(
+        self, sparql_query: str, substitution_variables: dict | None = None, prefixes: str = ""
+    ) -> "RDFFileDataSource":
         """
             Set the query text and return the reference to self for chaining.
         :return:
@@ -41,7 +43,7 @@ class RDFFileDataSource(DataSource):
         return self
 
     def with_query_from_file(
-        self, sparql_query_file_path: str, substitution_variables: dict = None, prefixes: str = ""
+        self, sparql_query_file_path: str, substitution_variables: dict | None = None, prefixes: str = ""
     ) -> "RDFFileDataSource":
         """
             Set the query text and return the reference to self for chaining.

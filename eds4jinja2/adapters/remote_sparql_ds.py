@@ -10,7 +10,6 @@ import io
 import threading
 
 import pandas as pd
-from py_singleton import singleton
 from SPARQLWrapper import CSV, JSON, SPARQLWrapper
 
 from eds4jinja2.adapters.query_files import read_query_file
@@ -20,10 +19,9 @@ from eds4jinja2.models.sparql import build_query
 DEFAULT_ENCODING = "utf-8"
 
 
-@singleton
 class SPARQLClientPool:
     """
-    A singleton connection pool, that hosts a dictionary of endpoint_urls and
+    A process-wide connection pool (class-level state, no instances needed), that hosts a dictionary of endpoint_urls and
     a corresponding SPARQLWrapper object connecting to it.
 
     The rationale of this connection pool is to reuse connection objects and save time.
@@ -54,7 +52,6 @@ class SPARQLClientPool:
 
 
 # safe instantiation
-SPARQLClientPool.instance()
 
 
 class RemoteSPARQLEndpointDataSource(DataSource):
@@ -88,7 +85,7 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         self.__can_be_tabular = True
 
     def with_query(
-        self, sparql_query: str, substitution_variables: dict = None, sparql_prefixes: str = ""
+        self, sparql_query: str, substitution_variables: dict | None = None, sparql_prefixes: str = ""
     ) -> "RemoteSPARQLEndpointDataSource":
         """
             Set the query text and return the reference to self for chaining.
@@ -98,7 +95,7 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         return self
 
     def with_query_from_file(
-        self, sparql_query_file_path: str, substitution_variables: dict = None, prefixes: str = ""
+        self, sparql_query_file_path: str, substitution_variables: dict | None = None, prefixes: str = ""
     ) -> "RemoteSPARQLEndpointDataSource":
         """
             Set the query text and return the reference to self for chaining.

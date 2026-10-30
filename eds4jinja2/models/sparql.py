@@ -41,7 +41,7 @@ class SubstitutionTemplate(Template):
     delimiter = "~"
 
 
-def build_query(sparql_query: str, substitution_variables: dict = None, prefixes: str = "") -> str:
+def build_query(sparql_query: str, substitution_variables: dict | None = None, prefixes: str = "") -> str:
     """Apply ``~``-substitution and prepend prefixes, returning the final query string."""
     if substitution_variables:
         sparql_query = SubstitutionTemplate(sparql_query).safe_substitute(substitution_variables)
@@ -71,7 +71,7 @@ class SparqlTerm(BaseModel):
         return cls(type=BNODE, value=value)
 
     @classmethod
-    def literal(cls, value: str, datatype: str = None, language: str = None) -> "SparqlTerm":
+    def literal(cls, value: str, datatype: str | None = None, language: str | None = None) -> "SparqlTerm":
         return cls(type=LITERAL, value=value, datatype=datatype, language=language)
 
     def to_json(self) -> dict:

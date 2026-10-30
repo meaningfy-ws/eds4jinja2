@@ -17,7 +17,7 @@ from eds4jinja2.models.collections import invert_dict
 from eds4jinja2.models.data_source import Engine
 from eds4jinja2.models.transformations import add_relative_figures, escape_latex, replace_strings_in_tabular
 
-DATA_SOURCE_BUILDERS = {
+DATA_SOURCE_BUILDERS: dict = {
     "from_endpoint": lambda endpoint: RemoteSPARQLEndpointDataSource(endpoint),
     "from_file": lambda file_path: FileDataSource(file_path),
     "from_rdf_file": lambda from_rdf_file: RDFFileDataSource(from_rdf_file),
@@ -51,7 +51,7 @@ TABULAR_HELPERS = {
     "simplify_uri_columns_in_tabular": _simplify_uri_columns_in_tabular,
 }
 
-TREE_HELPERS = {}
+TREE_HELPERS: dict = {}
 
 ADDITIONAL_FILTERS = {
     "escape_latex": lambda value: escape_latex(value),

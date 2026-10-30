@@ -18,7 +18,7 @@ PREFIX_CC_LOOKUP_URL = "http://prefix.cc/"
 PREFIX_CC_REVERSE_LOOKUP_URL = "http://prefix.cc/reverse"
 
 
-def prefix_cc_lookup_prefix(prefix: str) -> dict:
+def prefix_cc_lookup_prefix(prefix: str) -> dict | None:
     """
     Lookup a prefix at prefix.cc API and return the base namespace.
     """
@@ -26,7 +26,7 @@ def prefix_cc_lookup_prefix(prefix: str) -> dict:
     return json.loads(response.content) if response.content else None
 
 
-def prefix_cc_lookup_base_uri(base_uri: str) -> dict:
+def prefix_cc_lookup_base_uri(base_uri: str) -> dict | None:
     """
     Lookup a base namespace on prefix.cc API and return the first prefix (shortest and first in an ordered list).
     If the base_uri is not in the namespace definitions then return None.
@@ -36,9 +36,10 @@ def prefix_cc_lookup_base_uri(base_uri: str) -> dict:
     if response.ok:
         namespaces = json.loads(response.content)
         return namespaces if base_uri in invert_dict(namespaces) else None
+    return None
 
 
-def prefix_cc_all() -> dict:
+def prefix_cc_all() -> dict | None:
     """
     Return all definitions from the prefix.cc
     """

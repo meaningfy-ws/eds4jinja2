@@ -106,7 +106,7 @@ class NamespaceInventory(rdflib.namespace.NamespaceManager):
 def simplify_uris_in_tabular(
     data_frame: DataFrame,
     namespace_inventory: NamespaceInventory,
-    target_columns: list = None,
+    target_columns: list | None = None,
     prefix_cc_lookup=True,
     inplace=True,
     error_fail=True,

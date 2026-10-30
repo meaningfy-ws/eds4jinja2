@@ -1823,17 +1823,6 @@ files = [
 ]
 
 [[package]]
-name = "py-singleton"
-version = "1.0.0"
-description = "singleton pattern for python 2 and 3"
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "py-singleton-1.0.0.tar.gz", hash = "sha256:9922a69f6e6b9390e5c1b3d2b39e119d5fcffa92d9c3145de3b8533a93077fb7"},
-]
-
-[[package]]
 name = "pycparser"
 version = "3.12"
 description = "C parser in Python"
@@ -2666,4 +2655,4 @@ oxigraph = ["pyoxigraph"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4.0"
-content-hash = "9416c6a9665da78d9098d7bff2734e639a12809823cb372aefd8df0ade32344f"
+content-hash = "41c189807000f51470d69cfb896879d492b89e3f6ab39e73b8ac891a19831ffc"

@@ -16,14 +16,14 @@ def sort_by_size_and_alphabet(values: list) -> list:
     return sorted(values, key=lambda x: (len(x), x))
 
 
-def first_key(d: (dict, None)) -> object:
+def first_key(d: dict | None) -> object:
     """
     Return the first dict key that from all the keys ordered first by their length and then alphabetically.
     """
     return sort_by_size_and_alphabet(list(d.keys()))[0] if d else None
 
 
-def first_key_value(d: (dict, None)) -> object:
+def first_key_value(d: dict | None) -> object:
     """
     Return the dict value for the first key in the dict;
     The first key is determined using `first_key` function.
@@ -50,7 +50,7 @@ def invert_dict(mapping_dict: dict, reduce_values: bool = True):
                             the values are list of possibly multiple items.
     :type mapping_dict: a dictionary to be inverted
     """
-    inv_map = {}
+    inv_map: dict = {}
     for k, v in mapping_dict.items():
         inv_map[v] = inv_map.get(v, [])
         inv_map[v].append(k)

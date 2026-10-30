@@ -107,7 +107,7 @@ class OxigraphGraphStore(GraphStorePort):
         return self._store
 
 
-def make_graph_store(engine: Engine = Engine.RDFLIB, sources: Sources = None, graph=None) -> GraphStorePort:
+def make_graph_store(engine: Engine = Engine.RDFLIB, sources: Sources | None = None, graph=None) -> GraphStorePort:
     """
         Build a graph store for the given engine and load each source exactly once.
 
@@ -122,7 +122,7 @@ def make_graph_store(engine: Engine = Engine.RDFLIB, sources: Sources = None, gr
     return store
 
 
-def _as_source_list(sources: Sources) -> list[str | Path]:
+def _as_source_list(sources: Sources | None) -> list[str | Path]:
     if not sources:
         return []
     if isinstance(sources, (str, Path)):

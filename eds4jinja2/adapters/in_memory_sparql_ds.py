@@ -67,13 +67,13 @@ class InMemorySPARQLDataSource(DataSource):
         self.__can_be_tree = True
 
     def with_query(
-        self, sparql_query: str, substitution_variables: dict = None, prefixes: str = ""
+        self, sparql_query: str, substitution_variables: dict | None = None, prefixes: str = ""
     ) -> "InMemorySPARQLDataSource":
         self.__query = build_query(sparql_query, substitution_variables, prefixes)
         return self
 
     def with_query_from_file(
-        self, sparql_query_file_path: str, substitution_variables: dict = None, prefixes: str = ""
+        self, sparql_query_file_path: str, substitution_variables: dict | None = None, prefixes: str = ""
     ) -> "InMemorySPARQLDataSource":
         self.__query = build_query(read_query_file(sparql_query_file_path), substitution_variables, prefixes)
         return self

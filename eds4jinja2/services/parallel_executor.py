@@ -104,10 +104,10 @@ class FetchCoordinator:
     One coordinator per report build.
     """
 
-    def __init__(self, cache: FetchCache = None):
+    def __init__(self, cache: FetchCache | None = None):
         self._cache = cache if cache is not None else FetchCache()
         self._phase = Phase.RECORD
-        self._registry = {}  # key -> (real_ds, method); dict dedupes identical fetches (memoisation)
+        self._registry: dict = {}  # key -> (real_ds, method); dict dedupes identical fetches (memoisation)
 
     @property
     def cache(self) -> FetchCache:
