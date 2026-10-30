@@ -6,19 +6,19 @@ SPARQL-1.1 Query Results JSON dict (the shape templates and the remote source re
 """
 
 from eds4jinja2.models.sparql import (
-    SparqlTerm,
-    SparqlResults,
-    HEAD,
-    VARS,
-    RESULTS,
     BINDINGS,
-    TYPE,
-    VALUE,
-    DATATYPE,
-    XML_LANG,
-    URI,
-    LITERAL,
     BNODE,
+    DATATYPE,
+    HEAD,
+    LITERAL,
+    RESULTS,
+    TYPE,
+    URI,
+    VALUE,
+    VARS,
+    XML_LANG,
+    SparqlResults,
+    SparqlTerm,
 )
 
 

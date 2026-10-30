@@ -11,7 +11,7 @@
 
 - [x] 2.1 Migrate to Poetry at current dependency versions; delete `tox.ini`; Makefile targets use `poetry run` (library-packaging: Poetry build with a committed lock file)
 - [x] 2.2 Move pytest/coverage config to `pytest.ini` and `.coveragerc`; drop flake8 config
-- [ ] 2.3 Add `ruff.toml` + `make lint`; fix lint debt in its own commit
+- [x] 2.3 Add `ruff.toml` + `make lint`; fix lint debt in its own commit
 - [ ] 2.4 Add `mypy.ini` + `make typecheck`; fix or override per design D-4
 - [x] 2.5 ~~Coverage floor~~ — deferred to a follow-up change (DEC-10)
 - [ ] 2.6 Tighten `.importlinter` with the external-package contracts (quality-gates: Layer contracts enforced on every pull request)

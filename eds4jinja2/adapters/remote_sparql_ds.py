@@ -8,22 +8,20 @@
 
 import io
 import threading
-from typing import Optional
 
-from SPARQLWrapper import SPARQLWrapper, JSON, CSV
-from py_singleton import singleton
-
-from eds4jinja2.models.data_source import DataSource
 import pandas as pd
+from py_singleton import singleton
+from SPARQLWrapper import CSV, JSON, SPARQLWrapper
 
-from eds4jinja2.models.sparql import build_query
 from eds4jinja2.adapters.query_files import read_query_file
+from eds4jinja2.models.data_source import DataSource
+from eds4jinja2.models.sparql import build_query
 
 DEFAULT_ENCODING = "utf-8"
 
 
 @singleton
-class SPARQLClientPool(object):
+class SPARQLClientPool:
     """
     A singleton connection pool, that hosts a dictionary of endpoint_urls and
     a corresponding SPARQLWrapper object connecting to it.
@@ -109,7 +107,7 @@ class RemoteSPARQLEndpointDataSource(DataSource):
         self.endpoint.setQuery(build_query(read_query_file(sparql_query_file_path), substitution_variables, prefixes))
         return self
 
-    def with_uri(self, uri: str, graph_uri: Optional[str] = None) -> "RemoteSPARQLEndpointDataSource":
+    def with_uri(self, uri: str, graph_uri: str | None = None) -> "RemoteSPARQLEndpointDataSource":
         """
             Set the query text and return the reference to self for chaining.
         :return:

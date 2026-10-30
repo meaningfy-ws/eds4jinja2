@@ -1,16 +1,16 @@
-# coding=utf-8
 """File fetcher feature tests."""
 
 import os
+
 from pytest_bdd import (
     given,
+    parsers,
     scenario,
     then,
     when,
-    parsers,
 )
 
-from tests.steps.conftest import file_fetch_tree, file_fetch_tabular
+from tests.steps.conftest import file_fetch_tabular, file_fetch_tree
 
 
 @scenario("../features/file_ds.feature", "Content of file requested as tabular structure")

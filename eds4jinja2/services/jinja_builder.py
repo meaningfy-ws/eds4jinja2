@@ -7,15 +7,15 @@
 
 import jinja2
 
-from eds4jinja2.models.collections import invert_dict
-from eds4jinja2.models.data_source import Engine
-from eds4jinja2.models.transformations import escape_latex, replace_strings_in_tabular, add_relative_figures
 from eds4jinja2.adapters.file_ds import FileDataSource
 from eds4jinja2.adapters.graph_store import make_graph_store
 from eds4jinja2.adapters.in_memory_sparql_ds import InMemorySPARQLDataSource
 from eds4jinja2.adapters.local_sparql_ds import RDFFileDataSource
 from eds4jinja2.adapters.namespace_handler import NamespaceInventory, simplify_uris_in_tabular
 from eds4jinja2.adapters.remote_sparql_ds import RemoteSPARQLEndpointDataSource
+from eds4jinja2.models.collections import invert_dict
+from eds4jinja2.models.data_source import Engine
+from eds4jinja2.models.transformations import add_relative_figures, escape_latex, replace_strings_in_tabular
 
 DATA_SOURCE_BUILDERS = {
     "from_endpoint": lambda endpoint: RemoteSPARQLEndpointDataSource(endpoint),
@@ -30,6 +30,13 @@ DATA_SOURCE_BUILDERS = {
     ),
 }
 
+
+def _simplify_uri_columns_in_tabular(
+    data_frame, namespace_inventory, target_columns=None, prefix_cc_lookup=True, inplace=True, error_fail=True
+):
+    return simplify_uris_in_tabular(data_frame, namespace_inventory, target_columns, prefix_cc_lookup, inplace, error_fail)
+
+
 TABULAR_HELPERS = {
     "invert_dict": lambda mapping_dict, reduce_values=True: invert_dict(mapping_dict, reduce_values),
     "replace_strings_in_tabular": lambda data_frame, target_columns, value_mapping_dict, mark_touched_rows=False: (
@@ -41,9 +48,7 @@ TABULAR_HELPERS = {
     "namespace_inventory": lambda namespace_definition_dict: NamespaceInventory(
         namespace_definition_dict=namespace_definition_dict
     ),
-    "simplify_uri_columns_in_tabular": lambda data_frame, namespace_inventory, target_columns=None, prefix_cc_lookup=True, inplace=True, error_fail=True: (
-        simplify_uris_in_tabular(data_frame, namespace_inventory, target_columns, prefix_cc_lookup, inplace, error_fail)
-    ),
+    "simplify_uri_columns_in_tabular": _simplify_uri_columns_in_tabular,
 }
 
 TREE_HELPERS = {}
@@ -54,8 +59,8 @@ ADDITIONAL_FILTERS = {
 
 
 def build_eds_environment(
-    external_data_source_builders={**DATA_SOURCE_BUILDERS, **TABULAR_HELPERS, **TREE_HELPERS},
-    external_filters=ADDITIONAL_FILTERS,
+    external_data_source_builders: dict | None = None,
+    external_filters: dict | None = None,
     **kwargs,
 ):
     """
@@ -65,6 +70,10 @@ def build_eds_environment(
     :param kwargs:
     :return:
     """
+    if external_data_source_builders is None:
+        external_data_source_builders = {**DATA_SOURCE_BUILDERS, **TABULAR_HELPERS, **TREE_HELPERS}
+    if external_filters is None:
+        external_filters = ADDITIONAL_FILTERS
     template_env = jinja2.Environment(**kwargs)
     inject_environment_globals(template_env, external_data_source_builders)
     inject_environment_filters(template_env, external_filters)

@@ -15,13 +15,12 @@ This module deals with namespace management over Pandas DataFrames.
 
 import logging
 import re
-from typing import List
 
 import rdflib
 from pandas import DataFrame
 
-from eds4jinja2.models.collections import invert_dict
 from eds4jinja2.adapters.prefix_cc_fetcher import prefix_cc_lookup_base_uri, prefix_cc_lookup_prefix
+from eds4jinja2.models.collections import invert_dict
 
 logger = logging.getLogger(__name__)
 
@@ -107,7 +106,7 @@ class NamespaceInventory(rdflib.namespace.NamespaceManager):
 def simplify_uris_in_tabular(
     data_frame: DataFrame,
     namespace_inventory: NamespaceInventory,
-    target_columns: List = None,
+    target_columns: list = None,
     prefix_cc_lookup=True,
     inplace=True,
     error_fail=True,

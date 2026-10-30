@@ -17,12 +17,12 @@ the input directory structure is preserved to the output folder during copying
 import logging
 import pathlib
 from shutil import copytree
-from subprocess import Popen, PIPE, TimeoutExpired
+from subprocess import PIPE, Popen, TimeoutExpired
 
 logger = logging.getLogger(__name__)
 
 
-def make_pdf_from_latex(configuration_context: dict = {}) -> None:
+def make_pdf_from_latex(configuration_context: dict | None = None) -> None:
     """
     :rtype: None :param configuration_context: the configuration context of the renderer; in this method it is used
     to construct the output PDF file name
@@ -31,6 +31,7 @@ def make_pdf_from_latex(configuration_context: dict = {}) -> None:
     """
     LATEX_RUNS = 4  # LaTex will have to run 4 times to ensure proper output results
 
+    configuration_context = configuration_context or {}
     output_folder = pathlib.Path(configuration_context["output_folder"])
     input_file_name = pathlib.Path(configuration_context["template"])
 

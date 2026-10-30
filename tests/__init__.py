@@ -5,13 +5,11 @@ Author: Eugeniu Costetchi
 Email: costezki.eugen@gmail.com
 """
 
-from typing import Tuple, Optional
-
 import pandas as pd
 
-from eds4jinja2.models.data_source import UnsupportedRepresentation, DataSource
 from eds4jinja2.adapters.file_ds import FileDataSource
 from eds4jinja2.adapters.remote_sparql_ds import RemoteSPARQLEndpointDataSource
+from eds4jinja2.models.data_source import DataSource, UnsupportedRepresentation
 
 SPO_LIMIT_10 = "select * where {?s ?p ?o} limit 10"
 DUMMY_DESCRIBE_URI = "http://publications.europa.eu/resource/authority/corporate-body/SPC"
@@ -796,10 +794,10 @@ class DummyDataSource(DataSource):
     def __init__(self, value=None):
         self.value = value
 
-    def _fetch_tree(self) -> Tuple[object, Optional[str]]:
+    def _fetch_tree(self) -> tuple[object, str | None]:
         return {"value": self.value}, None
 
-    def _fetch_tabular(self) -> Tuple[object, Optional[str]]:
+    def _fetch_tabular(self) -> tuple[object, str | None]:
         if isinstance(self.value, (str, int)):
             return pd.Dataframe({"values": [self.value]}), None
         elif isinstance(self.value, (list, tuple, set)):
@@ -819,7 +817,7 @@ class FakeRemoteSPARQLEndpointDataSource(RemoteSPARQLEndpointDataSource):
     def with_query(self, sparql_query: str):
         return self
 
-    def with_uri(self, uri: str, graph_uri: Optional[str] = None):
+    def with_uri(self, uri: str, graph_uri: str | None = None):
         return self
 
     def _fetch_tree(self):

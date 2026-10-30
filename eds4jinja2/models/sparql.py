@@ -16,7 +16,6 @@ Everything SPARQL that is pure domain lives here:
 """
 
 from string import Template
-from typing import Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -60,8 +59,8 @@ class SparqlTerm(BaseModel):
 
     type: str
     value: str
-    datatype: Optional[str] = None
-    language: Optional[str] = Field(default=None, alias=XML_LANG)
+    datatype: str | None = None
+    language: str | None = Field(default=None, alias=XML_LANG)
 
     @classmethod
     def uri(cls, value: str) -> "SparqlTerm":
@@ -82,8 +81,8 @@ class SparqlTerm(BaseModel):
 class SparqlResults(BaseModel):
     """The SPARQL-1.1 Query Results JSON object; ``to_sparql_json`` emits the canonical dict."""
 
-    variables: List[str] = Field(default_factory=list)
-    bindings: List[Dict[str, SparqlTerm]] = Field(default_factory=list)
+    variables: list[str] = Field(default_factory=list)
+    bindings: list[dict[str, SparqlTerm]] = Field(default_factory=list)
 
     @classmethod
     def empty(cls) -> "SparqlResults":

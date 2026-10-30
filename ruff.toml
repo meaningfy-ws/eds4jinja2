@@ -15,3 +15,7 @@ select = [
 [format]
 quote-style = "double"
 indent-style = "space"
+
+[lint.per-file-ignores]
+# Engine(str, Enum) -> StrEnum would change str(Engine.X) for callers; not a forced break (DEC-6).
+"eds4jinja2/models/data_source.py" = ["UP042"]

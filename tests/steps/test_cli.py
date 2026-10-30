@@ -1,4 +1,3 @@
-# coding=utf-8
 """CLI for report builder feature tests."""
 
 import pathlib
@@ -7,7 +6,7 @@ import shutil
 import pytest
 from bs4 import BeautifulSoup
 from click.testing import CliRunner
-from pytest_bdd import given, scenario, then, when, parsers
+from pytest_bdd import given, parsers, scenario, then, when
 
 from eds4jinja2.entrypoints.cli.main import build_report
 
@@ -47,7 +46,7 @@ def output_path_contains_the_file(scenarioContext, sample_data_path, output, fil
 
 @then(parsers.parse("Then file contains the {content}"))
 def then_file_contains_the_content(scenarioContext, content):
-    with open(pathlib.Path(scenarioContext["outputFile"]), "r") as htmlFile:
+    with open(pathlib.Path(scenarioContext["outputFile"])) as htmlFile:
         parsed_html = BeautifulSoup(htmlFile.read())
         assert content in parsed_html.find("h1").text
 

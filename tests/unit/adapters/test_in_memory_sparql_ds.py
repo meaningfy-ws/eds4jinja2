@@ -11,18 +11,18 @@ import pytest
 import rdflib
 
 from eds4jinja2.adapters.in_memory_sparql_ds import (
-    InMemorySPARQLDataSource,
-    HEAD,
-    VARS,
-    RESULTS,
     BINDINGS,
-    TYPE,
-    VALUE,
-    DATATYPE,
-    XML_LANG,
-    URI,
-    LITERAL,
     BNODE,
+    DATATYPE,
+    HEAD,
+    LITERAL,
+    RESULTS,
+    TYPE,
+    URI,
+    VALUE,
+    VARS,
+    XML_LANG,
+    InMemorySPARQLDataSource,
 )
 
 TTL = """

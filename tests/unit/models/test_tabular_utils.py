@@ -8,7 +8,7 @@
 import pandas as pd
 import pytest
 
-from eds4jinja2.models.transformations import replace_strings_in_tabular, add_relative_figures
+from eds4jinja2.models.transformations import add_relative_figures, replace_strings_in_tabular
 
 pd.options.display.max_columns = None
 
@@ -51,7 +51,7 @@ def test_make_relative(dummy_df_numbers):
     assert round(dummy_df_numbers.loc[0, "pattern_cnt_relative"], ndigits=3) == round(0.00387832 * 100, ndigits=3)
 
 
-def test_make_relative(dummy_df_numbers):
+def test_make_relative_rejects_invalid_relativisers(dummy_df_numbers):
     with pytest.raises(ValueError):
         add_relative_figures(
             dummy_df_numbers, target_columns=["subject_cnt", "pattern_cnt"], relativisers=[100, None, None], percentage=True

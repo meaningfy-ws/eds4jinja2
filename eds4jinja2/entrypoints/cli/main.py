@@ -1,4 +1,5 @@
 import logging
+
 import click
 
 from eds4jinja2.services.report_builder import ReportBuilder

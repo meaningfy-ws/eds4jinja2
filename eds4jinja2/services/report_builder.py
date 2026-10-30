@@ -12,20 +12,19 @@ this module implements the report generation functionality.
 import json
 import logging
 import pathlib
-from typing import Union
 
 import jinja2
 
 from eds4jinja2.models.collections import deep_update
 from eds4jinja2.services.jinja_builder import (
-    build_eds_environment,
-    inject_environment_globals,
+    ADDITIONAL_FILTERS,
     DATA_SOURCE_BUILDERS,
     TABULAR_HELPERS,
     TREE_HELPERS,
-    ADDITIONAL_FILTERS,
+    build_eds_environment,
+    inject_environment_globals,
 )
-from eds4jinja2.services.parallel_executor import FetchCoordinator, Phase, wrap_builders, PARALLELISM, DEFAULT_PARALLELISM
+from eds4jinja2.services.parallel_executor import DEFAULT_PARALLELISM, PARALLELISM, FetchCoordinator, Phase, wrap_builders
 
 logger = logging.getLogger(__name__)
 
@@ -73,10 +72,10 @@ class ReportBuilder:
 
     def __init__(
         self,
-        target_path: Union[str, pathlib.Path],
+        target_path: str | pathlib.Path,
         config_file: str = "config.json",
         output_path: str = None,
-        additional_config: dict = {},
+        additional_config: dict | None = None,
         external_data_source_builders: dict = None,
         external_filters: dict = None,
     ):
@@ -97,7 +96,7 @@ class ReportBuilder:
 
         with open(pathlib.Path(target_path) / config_file, encoding="utf-8") as configFile:
             self.configuration_context = json.loads(configFile.read())
-        deep_update(self.configuration_context, additional_config)
+        deep_update(self.configuration_context, additional_config or {})
 
         template_path = str(pathlib.Path(target_path) / "templates")
         static_folder = pathlib.Path(target_path) / "static"

@@ -12,16 +12,13 @@ import pandas as pd
 import pytest
 
 from eds4jinja2.services.parallel_executor import (
-    run_parallel,
+    CachingDataSource,
     FetchCache,
     FetchCoordinator,
-    CachingDataSource,
     Phase,
+    run_parallel,
     wrap_builders,
-    TABULAR,
-    TREE,
 )
-
 
 # --- run_parallel -----------------------------------------------------------
 

@@ -9,6 +9,7 @@ working directory, and the tabular fetches assert on the real query result.
 import pytest
 
 from eds4jinja2 import RDFFileDataSource
+from eds4jinja2.adapters.local_sparql_ds import QUERY_ALREADY_SET_ERROR
 from eds4jinja2.models.data_source import UnsupportedRepresentation
 
 SPO_QUERY = "SELECT * WHERE { ?s ?p ?o } LIMIT 10"
@@ -72,7 +73,7 @@ def test_load_local_query_from_file_substitution(shapes_ttl, spo_query_file):
 
 def test_setting_query_twice_raises(shapes_ttl, spo_query_file):
     local_rdf_ds = RDFFileDataSource(shapes_ttl).with_query_from_file(spo_query_file)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception, match=QUERY_ALREADY_SET_ERROR):
         local_rdf_ds.with_query(SPO_QUERY)
     # the originally-set query still resolves
     data_frame, error = local_rdf_ds.fetch_tabular()

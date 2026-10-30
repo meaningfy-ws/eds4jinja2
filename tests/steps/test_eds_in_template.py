@@ -1,4 +1,3 @@
-# coding=utf-8
 """Data fetching from template feature tests."""
 
 import os
@@ -6,11 +5,12 @@ import os
 import pytest
 from pytest_bdd import (
     given,
+    parsers,
     scenario,
     then,
     when,
-    parsers,
 )
+
 from tests.steps.conftest import file_fetch_tabular, file_fetch_tree, sparql_fetch_tabular
 
 

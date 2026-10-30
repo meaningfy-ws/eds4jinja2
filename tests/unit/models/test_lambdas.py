@@ -9,9 +9,6 @@
 
 import json
 
-import rdflib
-from rdflib.term import URIRef
-
 from eds4jinja2.models.collections import deep_update
 
 
@@ -20,9 +17,12 @@ def test_call_lambda():
         testing that the json.dumps can be passed **kwargs arguments
     :return:
     """
-    dummy_lambda = lambda obj, **kwargs: json.dumps(obj, **kwargs)
+
+    def dummy(obj, **kwargs):
+        return json.dumps(obj, **kwargs)
+
     obj = {"z": 5, "a": 1, "b": 2, "c": 3}
-    print(dummy_lambda(obj, indent=4, sort_keys=True))
+    assert dummy(obj, sort_keys=True) == '{"a": 1, "b": 2, "c": 3, "z": 5}'
 
 
 def test_dict_filtering_and_list_extension_in_template(eds_environment):
@@ -33,28 +33,28 @@ def test_dict_filtering_and_list_extension_in_template(eds_environment):
     {{ global_list.extend(["z","c","p"]) }}
     {% set global_list = global_list + ["_q","_w","_d"] %}
     List content after two extensions: {{  global_list}}
-    
+
     - We have a dictionary
     {% set content = {"z": 5, "a": 1, "b": 2, "c": 3} %} \n
     content:  {{ content }} \n
-    
-    - The dictionary can be filtered based on the content of the global_list 
+
+    - The dictionary can be filtered based on the content of the global_list
     filtered:  {{ content | select("in",global_list) | list }} \n
-    
-    - We render content of the dict based on the filter [select] in global_list 
+
+    - We render content of the dict based on the filter [select] in global_list
     {% for pref in content| select("in",global_list) %}\n
       PREFIX  {{ pref }}: {{content[pref]}}
     {% endfor %}
-    
+
     - We render the list [reject] filtered based on the dict content
         {% for pref in global_list| reject("in",content) %}\n
       Missing  {{ pref }}
     {% endfor %}
-    
-    TODO: We need a functions that goes into a columns of a Pandas dataframe and 
-    generates prefix definitions from the values there. The assumption is that it is a column with VALID URIs. 
-    
-    It may search for 
+
+    TODO: We need a functions that goes into a columns of a Pandas dataframe and
+    generates prefix definitions from the values there. The assumption is that it is a column with VALID URIs.
+
+    It may search for
      (a) bare URI notation: http://op.europa.eu/resources/authority/country/ROU
      (b) Turtle URI notation (between angular brakets): <http://op.europa.eu/resources/authority/country/ROU>
     """
@@ -63,12 +63,6 @@ def test_dict_filtering_and_list_extension_in_template(eds_environment):
     rendered_text = template.render()
     print()
     print(rendered_text)
-
-
-def test_uri_ref():
-    ns = rdflib.namespace.NamespaceManager(rdflib.Graph())
-    u = URIRef("email@sdfds.dfgd")
-    v = URIRef("https://rdflib.readthedocs.io/en/stable/rdf_terms")
 
 
 def test_deep_update():

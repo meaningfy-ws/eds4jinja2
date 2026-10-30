@@ -7,9 +7,10 @@
 
 import json
 import pathlib
-import yaml
-import toml
+
 import pandas as pd
+import toml
+import yaml
 
 from eds4jinja2.models.data_source import DataSource, UnsupportedRepresentation
 

@@ -5,10 +5,9 @@
 # Author: Eugeniu Costetchi
 # Email: costezki.eugen@gmail.com
 import collections.abc
-from typing import List, Dict
 
 
-def sort_by_size_and_alphabet(values: List) -> List:
+def sort_by_size_and_alphabet(values: list) -> list:
     """
         Sort an iterable by size and alphabetically
     :param values:
@@ -17,14 +16,14 @@ def sort_by_size_and_alphabet(values: List) -> List:
     return sorted(values, key=lambda x: (len(x), x))
 
 
-def first_key(d: (Dict, None)) -> object:
+def first_key(d: (dict, None)) -> object:
     """
     Return the first dict key that from all the keys ordered first by their length and then alphabetically.
     """
     return sort_by_size_and_alphabet(list(d.keys()))[0] if d else None
 
 
-def first_key_value(d: (Dict, None)) -> object:
+def first_key_value(d: (dict, None)) -> object:
     """
     Return the dict value for the first key in the dict;
     The first key is determined using `first_key` function.
@@ -32,7 +31,7 @@ def first_key_value(d: (Dict, None)) -> object:
     return d[first_key(d)] if d else None
 
 
-def invert_dict(mapping_dict: Dict, reduce_values: bool = True):
+def invert_dict(mapping_dict: dict, reduce_values: bool = True):
     """
     Invert the dictionary by swapping keys and values. In case the values are unique then the inverted dict will be
     of the same size as the initial one. Otherwise it will be shrunk to the unique values and the keys will be

@@ -11,9 +11,10 @@ from unittest.mock import Mock
 
 import pytest
 import rdflib
+from bs4 import BeautifulSoup
+
 from eds4jinja2 import InMemorySPARQLDataSource
 from eds4jinja2.services.report_builder import ReportBuilder
-from bs4 import BeautifulSoup
 
 # A tiny in-process graph so make_document renders the dqgen-style template fully OFFLINE
 # (the template's section runs `select ?class (count(?instance) as ?instances) ...`).
@@ -81,7 +82,7 @@ def test_report_builder_make_document(sample_data_path):
     before_listener.assert_called_once()
     after_listener.assert_called_once()
 
-    with open(pathlib.Path(sample_data_path) / "output" / "main.html", "r") as htmlFile:
+    with open(pathlib.Path(sample_data_path) / "output" / "main.html") as htmlFile:
         parsed_html = BeautifulSoup(htmlFile.read())
         assert parsed_html.find("h1").text in "Cellar SPARQL endpoint fragment"
 

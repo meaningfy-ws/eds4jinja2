@@ -29,7 +29,7 @@ def test_determine_tabular_file_type(file_name):
 
 
 @pytest.mark.parametrize("file_name", TREE_FILE_NAME_EXAMPLES)
-def test_determine_tabular_file_type(file_name):
+def test_determine_tree_file_type(file_name):
     fds = FileDataSource(file_path=file_name)
     assert fds._can_be_tree()
 

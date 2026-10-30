@@ -1,16 +1,15 @@
-# coding=utf-8
 """SPARQL query fetcher feature tests."""
 
 import pytest
 from pytest_bdd import (
     given,
+    parsers,
     scenario,
     then,
     when,
-    parsers,
 )
 
-from tests.steps.conftest import sparql_fetch_tree, sparql_fetch_tabular
+from tests.steps.conftest import sparql_fetch_tabular, sparql_fetch_tree
 
 # These scenarios drive LIVE remote SPARQL endpoints — network integration tests.
 pytestmark = pytest.mark.network

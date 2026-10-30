@@ -20,7 +20,6 @@ no extra dependency.
 
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import List, Optional, Union
 
 import rdflib
 
@@ -47,7 +46,7 @@ OXIGRAPH_MISSING_MESSAGE = (
     "The 'oxigraph' engine requires pyoxigraph, which is not installed. Install it with: pip install eds4jinja2[oxigraph]"
 )
 
-Sources = Union[str, Path, List[Union[str, Path]]]
+Sources = str | Path | list[str | Path]
 
 
 class GraphStorePort(ABC):
@@ -66,7 +65,7 @@ class GraphStorePort(ABC):
 class RdflibGraphStore(GraphStorePort):
     """In-memory store backed by an ``rdflib.Graph`` (the default engine)."""
 
-    def __init__(self, graph: Optional[rdflib.Graph] = None):
+    def __init__(self, graph: rdflib.Graph | None = None):
         self._graph = graph if graph is not None else rdflib.Graph()
 
     def load(self, source: str) -> None:
@@ -123,7 +122,7 @@ def make_graph_store(engine: Engine = Engine.RDFLIB, sources: Sources = None, gr
     return store
 
 
-def _as_source_list(sources: Sources) -> List[Union[str, Path]]:
+def _as_source_list(sources: Sources) -> list[str | Path]:
     if not sources:
         return []
     if isinstance(sources, (str, Path)):

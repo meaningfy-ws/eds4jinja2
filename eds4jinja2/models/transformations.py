@@ -12,7 +12,6 @@ Pure presentation/data transformations:
 
 import logging
 import re
-from typing import Dict, List
 
 import numpy as np
 import pandas as pd
@@ -40,7 +39,7 @@ REGEX_ESCAPE_CHARS = [(re.compile(r"(?<!\\)" + i), r"\\" + i.replace("\\", "")) 
 
 ESCAPE_CHARS_OR = r"[{}\\]".format("".join(ESCAPE_CHARS))
 
-REGEX_BACKSLASH = re.compile(r"(?<!\\)\\(?!{})".format(ESCAPE_CHARS_OR))
+REGEX_BACKSLASH = re.compile(rf"(?<!\\)\\(?!{ESCAPE_CHARS_OR})")
 
 
 def escape_latex(value: str):
@@ -58,10 +57,10 @@ def escape_latex(value: str):
 
 def replace_strings_in_tabular(
     data_frame: pd.DataFrame,
-    target_columns: List[str] = None,
-    value_mapping_dict: Dict = None,
+    target_columns: list[str] = None,
+    value_mapping_dict: dict = None,
     mark_touched_rows: bool = False,
-) -> List[str]:
+) -> list[str]:
     """
     Replaces the values from the target columns in a data frame according to the value-mapping dictionary.
     If mark_touched_rows is true, then adds a boolean column _touched_.
@@ -120,8 +119,8 @@ def replace_strings_in_tabular(
 
 def add_relative_figures(
     data_frame: pd.DataFrame,
-    target_columns: List[str],
-    relativisers: List,  # noqa: C901
+    target_columns: list[str],
+    relativisers: list,  # noqa: C901
     percentage: bool = True,
 ):
     """
@@ -155,10 +154,11 @@ def add_relative_figures(
     # End of sanity checkers
 
     new_columns = [
-        c + "_relative" if not isinstance(r, str) else c + "_relative_to_" + r for c, r in zip(target_columns, relativisers)
+        c + "_relative" if not isinstance(r, str) else c + "_relative_to_" + r
+        for c, r in zip(target_columns, relativisers, strict=True)
     ]
 
-    for new_col, old_col, relativiser in zip(new_columns, target_columns, relativisers):
+    for new_col, old_col, relativiser in zip(new_columns, target_columns, relativisers, strict=True):
         if not relativiser:
             relativiser = data_frame[old_col].sum()
         elif isinstance(relativiser, str):

@@ -131,7 +131,7 @@ class FetchCoordinator:
             return
         thunks = [(lambda ds=ds, m=m: _invoke(ds, m)) for _, (ds, m) in items]
         results = run_parallel(thunks, max_workers)
-        for (key, _), (content, error) in zip(items, results):
+        for (key, _), (content, error) in zip(items, results, strict=True):
             if error is not None:
                 raise RuntimeError(f"Pre-warm fetch failed (all-or-nothing): {error}")
             self._cache.put(key, (content, error))
@@ -216,6 +216,7 @@ def _invoke(real_ds, method):
 
 def _placeholder(method):
     import pandas as pd
+
     from eds4jinja2.models.sparql import SparqlResults
 
     if method == TABULAR:
