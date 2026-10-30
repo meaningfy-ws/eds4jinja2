@@ -38,9 +38,9 @@ def test_public_all_is_the_expected_set():
     assert set(eds4jinja2.__all__) == EXPECTED_PUBLIC_API
 
 
-def test_version_is_major_one():
-    # major version is 1.x.x (stable across patch/minor bumps; exact value lives in VERSION)
-    assert eds4jinja2.__version__.split(".")[0] == "1"
+def test_version_is_major_two():
+    # major version is 2.x.x (stable across patch/minor bumps; exact value lives in VERSION)
+    assert eds4jinja2.__version__.split(".")[0] == "2"
 
 
 @pytest.mark.parametrize(
