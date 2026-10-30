@@ -3,7 +3,7 @@
 ## 1. Spine and agent files (PR 1)
 
 - [x] 1.1 Refresh `openspec/schemas/meaningfy/` to skillery 3.7.0
-- [ ] 1.2 Replace the `AGENTS.md` symlink with the canonical file; reduce `CLAUDE.md` to the pointer (quality-gates: Canonical agent file)
+- [x] 1.2 Replace the `AGENTS.md` symlink with the canonical file; reduce `CLAUDE.md` to the pointer (quality-gates: Canonical agent file)
 - [ ] 1.3 Regenerate `.claude/memory/MEMORY.md` and update `openspec/config.yaml` `context:` to Poetry / 3.12–3.14 / gates
 - [ ] 1.4 `openspec validate --all --strict` passes (fix spec-format issues only)
 
