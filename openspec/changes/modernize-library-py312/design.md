@@ -12,7 +12,7 @@ Downstream programs install released versions from PyPI; 1.x stays available aft
 ## Goals / Non-Goals
 
 **Goals:**
-- `make check-all` = the whole gate, green on 3.12/3.13/3.14, run by PR CI (DEC-7).
+- `make check-all` = the whole gate, green on 3.12/3.13/3.14, run by PR CI (DEC-7); coverage floor deferred (DEC-10).
 - Poetry build with lock file; tox gone (DEC-1, DEC-2).
 - Every dependency at latest stable major; stale ones pruned (DEC-4, DEC-5).
 - `library-packaging` and `quality-gates` spec deltas satisfied.
@@ -39,9 +39,7 @@ Downstream programs install released versions from PyPI; 1.x stays available aft
 - **D-8 Size of an in-scope fix.** A fix for a tightened import-linter contract or a mypy error is
   in scope when it touches ≤20 lines and moves no module between packages; anything larger is
   dropped from the contract / overridden in `mypy.ini` and recorded under Open Questions.
-- **D-9 Coverage measurement.** `poetry run pytest -m "not network" --cov=eds4jinja2
-  --cov-report=term` with `.coveragerc` `[report] fail_under = 80`, `omit = */__init__.py`; the
-  baseline number is recorded in the task 2.5 commit message.
+- **D-9 Coverage is reported only** (DEC-10): `.coveragerc` has `source`/`omit` and no `fail_under`.
 - **D-3 Singleton removal.** `SPARQLClientPool` holds all state in a class-level
   `threading.local()` behind static methods, so `@singleton` adds nothing. Delete the decorator,
   the `from py_singleton import singleton` import and the module-level `SPARQLClientPool.instance()`
@@ -72,7 +70,7 @@ command) before the next starts:
    Regenerate `MEMORY.md` from code + `openspec/specs/`; update `config.yaml` `context:`.
 2. **Gates** — Poetry migration first (keeps current versions, only the tool changes, so failures
    are attributable), then root configs, then each gate added one at a time with its debt fixed
-   in its own commit. Coverage: measure; if <80%, add `models` unit tests until ≥80%.
+   in its own commit.
 3. **Upgrade** — `requires-python` → `>=3.12`; bump runtime deps one family at a time
    (numpy+pandas, rdflib+SPARQLWrapper, pydantic, Jinja2+click, rest), then test deps
    (pytest, pytest-bdd, pytest-cov), running `make check-all` after each; prune per DEC-5.
@@ -90,7 +88,6 @@ act is the PyPI release, which `publish.yml` already guards (a version can be up
 |---|---|---|
 | Bump all deps in one commit | One dependency family per commit | Breakage is attributable and revertible |
 | `# type: ignore` / `noqa` sprinkled to go green | Fix, or a per-module override with a reason | Silenced gates erode silently |
-| Lower `fail_under` to pass | Add tests for uncovered `models` code | The floor is the point |
 | Edit `.feature` meaning to satisfy pytest-bdd 8 | Fix step definitions and paths | Features are the behaviour contract |
 | Change public signatures "while we're here" | Only breaks forced by DEC-6, logged in CHANGELOG | Bounded 2.0.0 break |
 
@@ -123,7 +120,6 @@ manual verification steps recorded in the PR description; IT-003 is observed on 
 | A dep has no wheel for 3.14 | `poetry install` fails on the 3.14 CI leg | Use the latest version with 3.14 wheels; if none, record in Open Questions and ask before dropping 3.14 |
 | New major breaks behaviour | Unit/BDD tests fail after that family's bump | Fix code; if the fix changes a public API, log it under 2.0.0 Breaking in `CHANGELOG.md` |
 | Network test drifts | Only in `make test-network` | Not a gate failure; leave as is |
-| Coverage <80% after upgrade | `make test` fails with the shortfall | Add tests; do not lower the floor |
 | import-linter tightened contract fails | `make check-architecture` | Fix if within D-8; otherwise drop that clause and record it under Open Questions |
 | mypy error outside D-8 | `make typecheck` | Per-module override in `mypy.ini` with a one-line reason |
 | `openspec validate --strict` fails on archived/legacy specs | `make check-spec` | Fix the spec format (headings/scenarios); no semantic changes |
@@ -143,7 +139,7 @@ manual verification steps recorded in the PR description; IT-003 is observed on 
 | Topic | Location |
 |---|---|
 | Audit and Q&A | [inputs/audit-and-seeds.md](inputs/audit-and-seeds.md) |
-| Decisions DEC-1…DEC-9 | [proposal.md#key-decisions](proposal.md#key-decisions) |
+| Decisions DEC-1…DEC-10 | [proposal.md#key-decisions](proposal.md#key-decisions) |
 | Agent-file rule (D8) | `project-setup` skill, `references/decisions.md` § "D8 — AGENTS.md canonical, CLAUDE.md a pointer, never a symlink" |
 | Brownfield slice order | `project-setup` skill, `references/modernizing-existing-projects.md` § "2. Plan — order the gaps safely" |
 | pyproject template | `project-setup` skill, `assets/templates/root/pyproject.toml.tmpl` |

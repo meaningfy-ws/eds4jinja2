@@ -24,14 +24,14 @@ Three stages, in this order, each leaving `make check-all` green:
    start of this change); `AGENTS.md` becomes the canonical agent file with a thin `CLAUDE.md`
    pointer; the memory index is regenerated to match the code.
 2. **Gates before upgrade.** Poetry replaces pip+tox; tool config moves to dedicated root files;
-   Ruff, mypy, a coverage floor, `openspec validate --strict` and the import-linter contracts are
+   Ruff, mypy, `openspec validate --strict` and the import-linter contracts are
    all wired into one `make check-all` that PR CI runs. The import-linter contracts are re-derived
    from the code and tightened where the code already allows it. `SECURITY.md` is added.
 3. **The upgrade.** `requires-python >=3.12`; every dependency to its latest stable major; stale
    dependencies pruned; breakage fixed; CI matrix 3.12/3.13/3.14; release as **2.0.0**.
 
 Outcome: a contributor gets one command (`make check-all`) that proves the library builds,
-installs, is lint/type/architecture clean and is tested to ≥80% on every supported Python, and the
+installs, is lint/type/architecture clean and passes its tests on every supported Python, and the
 same command gates every PR.
 
 ## Key decisions
@@ -54,11 +54,14 @@ same command gates every PR.
   permitted only where an upgrade or prune forces it, and every break is listed in `CHANGELOG.md`
   with its migration. — Dropping 3.11 already breaks consumers; rejected: 1.1.0 with a frozen API.
 - **DEC-7**: Gates are **Ruff** (lint + format, replaces the unused flake8 config), **mypy**
-  (non-strict baseline), **coverage ≥80%**, **import-linter**, **`openspec validate --strict`**,
+  (non-strict baseline), **import-linter**, **`openspec validate --strict`**,
   aggregated by `make check-all` and run on every PR. — The library-archetype gate profile;
   rejected: gates only at release time (today's state for import-linter).
 - **DEC-8**: **Gates land before the upgrade** (stage 2 before stage 3). — Breakage from new majors
   is then caught by lint/types/coverage, not by users; rejected: upgrade first.
+- **DEC-10** (re-shape, 2026-10-30, owner decision): the **coverage floor (≥80%) is deferred to a
+  follow-up change**. Coverage is still measured and reported; no `fail_under` here. — Keeps this
+  change about tooling and upgrade; rejected: writing new tests inside this change.
 - **DEC-9**: `AGENTS.md` canonical + thin `CLAUDE.md` pointer, both regular files (project-setup
   D8). — Fixes the detected symlink; rejected: keeping the symlink.
 
@@ -67,8 +70,6 @@ same command gates every PR.
 - **mypy on legacy code** may report many errors. Baseline is non-strict with
   `ignore_missing_imports`; residual errors are fixed or carried as explicit per-module overrides
   listed in `mypy.ini` — never a blanket `ignore_errors` on the whole package.
-- **Coverage baseline may be below 80%.** Measure first; if below, add unit tests for the uncovered
-  pure code (`models`) until the floor is met. Do not lower the floor; do not count `network` tests.
 - **pytest-bdd major bump** changes feature-path resolution and Gherkin parsing; existing
   `tests/steps` may need path and step-signature updates. Keep feature files unchanged in meaning.
 - **Live-network tests** (`test_describe_uri`, remote SPARQL) drift; they stay outside the gate.
@@ -84,7 +85,7 @@ same command gates every PR.
 - No re-layering (`models` stays the innermost layer; no `domain/`/`commons/` packages).
 - No new Antora page stubs; docs change only where they describe build, install or supported
   Pythons.
-- No mypy `--strict`, no pre-commit hooks requirement, no release-please migration in this change.
+- No coverage floor (DEC-10, follow-up change). No mypy `--strict`, no pre-commit hooks requirement, no release-please migration in this change.
 - No change to `publish.yml`'s Trusted Publishing flow beyond what Poetry and the new Python matrix
   require.
 

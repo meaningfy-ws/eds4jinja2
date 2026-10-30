@@ -14,16 +14,8 @@ component SHALL also be runnable alone (`make lint`, `make typecheck`, `make che
 - **WHEN** `make check-all` runs on the merged change
 - **THEN** it exits 0
 
-### Requirement: Coverage floor
-The non-network test run SHALL fail when line coverage of the `eds4jinja2` package is below 80%.
-Tests marked `network` SHALL NOT count toward the floor.
-
-#### Scenario: Coverage below the floor
-- **WHEN** coverage of the non-network run is 79%
-- **THEN** `make test` exits non-zero and reports the shortfall
-
 ### Requirement: Tool configuration in dedicated root files
-Lint, type, test and coverage configuration SHALL live in `ruff.toml`, `mypy.ini`, `pytest.ini` and
+Lint, type, test and coverage-reporting configuration SHALL live in `ruff.toml`, `mypy.ini`, `pytest.ini` and
 `.coveragerc` at the repository root; `pyproject.toml` SHALL NOT carry `[tool.ruff]`, `[tool.mypy]`,
 `[tool.pytest]` or `[tool.coverage]` tables.
 
