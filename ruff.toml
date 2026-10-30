@@ -1,6 +1,6 @@
 # Ruff — formatter + linter (replaces flake8). Rule set: modernize-library-py312 design D-5.
 line-length = 127
-target-version = "py311"
+target-version = "py312"
 
 [lint]
 select = [

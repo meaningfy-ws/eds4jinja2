@@ -7,9 +7,9 @@
 
 import json
 import pathlib
+import tomllib
 
 import pandas as pd
-import toml
 import yaml
 
 from eds4jinja2.models.data_source import DataSource, UnsupportedRepresentation
@@ -68,7 +68,7 @@ class FileDataSource(DataSource):
         elif self._file_extension in [".yaml", ".yml"]:
             return yaml.safe_load(self.file_path.read_bytes())
         elif self._file_extension in [".toml"]:
-            return toml.loads(self.file_path.read_bytes())
+            return tomllib.loads(self.file_path.read_text(encoding="utf-8"))
 
         if self._can_be_tabular():
             tabular = self._fetch_tabular()

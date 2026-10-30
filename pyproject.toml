@@ -9,7 +9,7 @@ name = "eds4jinja2"
 version = "1.0.4"
 description = "Embed the data source specifications in your JINJA templates directly, and enjoy the dynamic data contexts."
 readme = "README.md"
-requires-python = ">=3.11,<4.0"
+requires-python = ">=3.12,<4.0"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Eugeniu Costetchi", email = "costezki.eugen@gmail.com" }]
 maintainers = [{ name = "Eugeniu Costetchi", email = "costezki.eugen@gmail.com" }]
@@ -18,8 +18,9 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Topic :: Utilities",
@@ -27,20 +28,20 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Natural Language :: English",
 ]
+# Runtime ranges stay open to the next major so consumers' resolvers are not over-constrained
+# (modernize-library-py312 design D-2).
 dependencies = [
-    "Jinja2~=3.1.2",
-    "SPARQLWrapper~=2.0.0",
-    "pandas~=2.2.0",
-    "PyYAML~=6.0.1",
-    "toml~=0.10.2",
-    "xlrd~=2.0.1",        # pandas read_excel backend for .xls
-    "openpyxl~=3.1.2",    # pandas read_excel backend for .xlsx
-    "numpy~=1.26.0",
-    "click~=8.1.7",
-    "rdflib~=7.0.0",
-    "pydantic~=2.0",
-    "beautifulsoup4~=4.12.2",
-    "requests~=2.31.0",
+    "Jinja2>=3.1.6,<4",
+    "SPARQLWrapper>=2.0.0,<3",
+    "pandas>=3.1.0,<4",
+    "numpy>=2.5.4,<3",
+    "PyYAML>=6.0.3,<7",
+    "xlrd>=2.0.2,<3",       # pandas read_excel backend for .xls
+    "openpyxl>=3.1.5,<4",   # pandas read_excel backend for .xlsx
+    "click>=8.1.8,<9",
+    "rdflib>=7.0.0,<8",
+    "pydantic>=2.14.2,<3",
+    "requests>=2.31.0,<3",
 ]
 
 [project.optional-dependencies]
@@ -58,11 +59,10 @@ mkreport = "eds4jinja2.entrypoints.cli.main:build_report"
 [dependency-groups]
 # PEP 735 groups, installed via `poetry install --with test,lint,dev`.
 test = [
-    "tabulate~=0.9.0",
+    "beautifulsoup4~=4.12.2",
     "pytest~=7.4.2",
     "pytest-bdd~=7.0.0",
     "pytest-cov~=4.1.0",
-    "pytest-subtests~=0.11.0",
 ]
 lint = [
     "ruff",

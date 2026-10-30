@@ -26,7 +26,7 @@ jobs:
       fail-fast: false
     # A job can run for multiple environments
       matrix:
-        python-version: ['3.11', '3.12']
+        python-version: ['3.12', '3.13', '3.14']
         # eds4jinja2 is pure-Python; CI runs on Linux only. Uncomment macOS/Windows below to
         # restore cross-platform coverage (Windows would also need a `make` install step).
         os:
