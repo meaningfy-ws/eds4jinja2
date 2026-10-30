@@ -11,9 +11,10 @@ from unittest.mock import Mock
 
 import pytest
 import rdflib
+from bs4 import BeautifulSoup
+
 from eds4jinja2 import InMemorySPARQLDataSource
 from eds4jinja2.services.report_builder import ReportBuilder
-from bs4 import BeautifulSoup
 
 # A tiny in-process graph so make_document renders the dqgen-style template fully OFFLINE
 # (the template's section runs `select ?class (count(?instance) as ?instances) ...`).
@@ -54,21 +55,24 @@ def test_report_builder_config_file_exists(sample_data_path):
 
 def test_report_builder_flavour_config(sample_data_path):
     r = ReportBuilder(sample_data_path, additional_config={"template_flavour_syntax": "tex"})
-    assert r.template_env.block_start_string == r'\BLOCK{'
+    assert r.template_env.block_start_string == r"\BLOCK{"
 
     r = ReportBuilder(sample_data_path, additional_config={"template_flavour_syntax": "xml"})
-    assert r.template_env.block_start_string == '{%'
+    assert r.template_env.block_start_string == "{%"
 
     r = ReportBuilder(sample_data_path, additional_config={"template_flavour_syntax": ""})
-    assert r.template_env.block_start_string == '{%'
+    assert r.template_env.block_start_string == "{%"
 
 
 def test_report_builder_make_document(sample_data_path):
     before_listener = Mock()
     after_listener = Mock()
 
-    report_builder = ReportBuilder(target_path=sample_data_path, output_path=pathlib.Path(sample_data_path) / "output",
-                                   external_data_source_builders=_in_memory_endpoint_builders())
+    report_builder = ReportBuilder(
+        target_path=sample_data_path,
+        output_path=pathlib.Path(sample_data_path) / "output",
+        external_data_source_builders=_in_memory_endpoint_builders(),
+    )
 
     report_builder.add_before_rendering_listener(before_listener)
     report_builder.add_after_rendering_listener(after_listener)
@@ -78,8 +82,8 @@ def test_report_builder_make_document(sample_data_path):
     before_listener.assert_called_once()
     after_listener.assert_called_once()
 
-    with open(pathlib.Path(sample_data_path) / "output" / "main.html", 'r') as htmlFile:
-        parsed_html = BeautifulSoup(htmlFile.read())
+    with open(pathlib.Path(sample_data_path) / "output" / "main.html") as htmlFile:
+        parsed_html = BeautifulSoup(htmlFile.read(), features="html.parser")
         assert parsed_html.find("h1").text in "Cellar SPARQL endpoint fragment"
 
     path = pathlib.Path(sample_data_path) / "output"

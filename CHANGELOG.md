@@ -6,6 +6,41 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-10-30
+
+Modernization release (OpenSpec change `modernize-library-py312`). Python 3.11 users: pin
+`eds4jinja2<2` — 1.x stays on PyPI.
+
+### Breaking
+- **Python 3.12+ required** (`requires-python >=3.12`); tested on 3.12, 3.13 and 3.14.
+- **pandas 3 / numpy 2.** Tabular results are pandas 3 DataFrames: text columns have the `str`
+  dtype instead of `object`. Code that selects text columns with `select_dtypes(object)` should use
+  `select_dtypes([object, "str"])`.
+- **Dependencies no longer installed with eds4jinja2:** `xlrd`, `openpyxl` (replaced by
+  `python-calamine`, which reads `.xls` and `.xlsx`), `toml` (stdlib `tomllib` is used),
+  `py-singleton`, `beautifulsoup4`. Install them yourself if your code imports them.
+- `SPARQLClientPool.instance()` is gone (it came from the removed `@singleton` decorator); the pool
+  was always used through its static `create_or_reuse_connection`.
+
+### Fixed
+- Reading `.toml` files through `FileDataSource` works; it passed bytes to `toml.loads` and failed.
+
+### Changed
+- Runtime dependencies upgraded: pandas 2.2 → 3.1, numpy 1.26 → 2.5, rdflib 7.0 → 7.6,
+  click 8.1 → 8.5, requests 2.31 → 2.34, pyoxigraph 0.4 → 0.5 (`oxigraph` extra). Runtime
+  requirements are now major-version ranges (`>=X.Y,<X+1`) instead of patch-level pins.
+- `build_eds_environment(...)`, `ReportBuilder(additional_config=...)` and
+  `make_pdf_from_latex(...)` take `None` defaults instead of shared mutable defaults; calls without
+  those arguments behave as before.
+- Excel files are read with pandas' `calamine` engine (the `xlrd` engine is deprecated in pandas 3).
+
+### Development
+- Packaging moved from setuptools + pip + tox to **Poetry** (committed `poetry.lock`).
+- New gate `make check-all`, run on every pull request: Ruff (lint + format), mypy, import-linter
+  (now also forbidding I/O and framework imports in `models` and `services`), `openspec validate
+  --strict`, and the test suite. Test tooling upgraded to pytest 9.1, pytest-bdd 9, pytest-cov 7.
+- `AGENTS.md` is the canonical agent file; `CLAUDE.md` imports it. `SECURITY.md` added.
+
 ## [1.0.4] - 2026-06-20
 
 ### Added
@@ -112,7 +147,8 @@ only deep import paths moved (see **Migration**).
 ## [0.3.1] - 2026-06-18
 - Modernised packaging (pip + `pyproject.toml`, setuptools backend; Python 3.11/3.12) and CI.
 
-[Unreleased]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.4...HEAD
+[Unreleased]: https://github.com/meaningfy-ws/eds4jinja2/compare/2.0.0...HEAD
+[2.0.0]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.4...2.0.0
 [1.0.4]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.3...1.0.4
 [1.0.3]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.2...1.0.3
 [1.0.2]: https://github.com/meaningfy-ws/eds4jinja2/compare/1.0.1...1.0.2

@@ -9,33 +9,24 @@
 - Library: embeds data-source specs (RDF/SPARQL + tabular files) into Jinja2 templates for
   dynamic report generation. PyPI package; CLI entrypoint `mkreport`.
 - Top-level package: `eds4jinja2/` (no `/src`). Default branch: `master`.
-- Real layers: `entrypoints → builders → adapters` (adapters innermost).
-- Tooling: pip + tox + pyproject.toml (setuptools backend; NOT Poetry). Deps declared in
-  pyproject.toml (runtime + test/docs/dev extras); no setup.py, no requirements*.txt. Build with
-  `python -m build`. Tests via tox (`py311`, `py312`). `make` is the dev/CI interface.
-- Target interpreters: Python 3.11 and 3.12.
+- Layers: `entrypoints → services → adapters → models` (models innermost, pure), enforced by
+  `.importlinter` (also bans I/O/framework imports in `models` and remote I/O/CLI in `services`).
+- Tooling: Poetry (committed `poetry.lock`, PEP 735 groups `test`/`lint`), no tox. `make check-all`
+  is the gate CI runs on 3.12/3.13/3.14. Tool config in root files (`ruff.toml`, `mypy.ini`,
+  `pytest.ini`, `.coveragerc`).
+- Version: `eds4jinja2/VERSION` is the truth; `pyproject.toml` copy checked by `make check-version`.
 
 ## Spine (where work and truth live)
 
 - EPIC ≡ `openspec/changes/<id>/proposal.md`; PLAN ≡ `design.md` + `tasks.md`.
 - Durable truth: `openspec/specs/`. Orientation: `openspec/config.yaml: context:`.
-- Drive with `/opsx:*` after `npx @fission-ai/openspec init`.
-
-## Key Decisions
-
-- 2026-06-18: Added Python 3.12 support on top of master's tox/setup.py approach (kept tox; did
-  NOT migrate to Poetry). Dropped Python 3.8 — numpy>=1.26 / pandas>=2.1 (needed for 3.12) require
-  Python >=3.9. Bumped numpy ~=1.26.0, pandas ~=2.2.0.
-- 2026-06-18: Adopted pyproject.toml (setuptools backend), removed setup.py + setup.cfg +
-  requirements*.txt + MANIFEST.in (the latter referenced a non-existent dir; no package data
-  ships). Deps now live in pyproject (runtime + test/docs/dev extras); build via `python -m build`.
-- 2026-06-18: 3.12 code fix — distutils.copy_tree → shutil.copytree(dirs_exist_ok=True);
-  `import collections` → `import collections.abc`. (master already fixed collections.Mapping and
-  the pandas df.replace usage.)
+- `make check-spec` runs `openspec validate --all --strict` (needs Node.js).
 
 ## Gotchas
 
-- numpy/pandas pinned for 3.12 cannot run on Python 3.8 — the two interpreters cannot share one
-  requirements set. That is why 3.8 was dropped rather than kept.
-- `tests/unit/test_sparql_ds.py::test_describe_uri` asserts on live remote DESCRIBE data from
-  publications.europa.eu that has drifted; it can fail offline or when the remote data changes.
+- pytest is pinned to 9.1.1: pytest-bdd 9.0.0 breaks on pytest 9.2 (`_arg2fixturedefs`).
+- pandas 3: string columns are the `str` dtype; select them with `select_dtypes([object, "str"])`.
+  Excel files are read with the `calamine` engine (python-calamine; no xlrd/openpyxl).
+- Tests marked `network` hit live SPARQL endpoints and are excluded from the gate (`make
+  test-network`); `test_describe_uri` asserts on remote data that can drift.
+- Coverage is reported, not gated; the ≥80% floor is a planned follow-up change.

@@ -7,4 +7,5 @@ the RFC-2119 SHALL requirements + Given/When/Then scenarios that survived `/opsx
   it disagrees with these specs, the specs win.
 - Deltas in `openspec/changes/<id>/specs/` merge **here** on archive — never hand-edit a merged
   spec to diverge from the change that produced it.
-- Starts empty; fills as changes are archived. Validate shape with `openspec validate --strict`.
+- Fills as changes are archived (`openspec/changes/archive/`). Validate shape with
+  `make check-spec` (`openspec validate --all --strict`).

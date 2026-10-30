@@ -4,6 +4,7 @@ Date:  11/08/2020
 Author: Eugeniu Costetchi
 Email: costezki.eugen@gmail.com
 """
+
 import pathlib
 from urllib.error import URLError
 
@@ -11,8 +12,15 @@ import pytest
 from SPARQLWrapper.SPARQLExceptions import QueryBadFormed, URITooLong
 
 from eds4jinja2.adapters.remote_sparql_ds import RemoteSPARQLEndpointDataSource
-from tests import ENDPOINT_REMOTE_CORRECT, DUMMY_DESCRIBE_URI, SPO_LIMIT_10, WRONG_SPO_LIMIT_10, \
-    QUERY_LONGER_THAN_2048KB, ENDPOINT_INEXISTENT_SERVER, DUMMY_DESCRIBE_URI_GRAPH
+from tests import (
+    DUMMY_DESCRIBE_URI,
+    DUMMY_DESCRIBE_URI_GRAPH,
+    ENDPOINT_INEXISTENT_SERVER,
+    ENDPOINT_REMOTE_CORRECT,
+    QUERY_LONGER_THAN_2048KB,
+    SPO_LIMIT_10,
+    WRONG_SPO_LIMIT_10,
+)
 
 # Every test here drives a LIVE remote SPARQL endpoint (publications.europa.eu) — it is a
 # network integration test, excluded from the default gate. Run with: make test-network
@@ -57,8 +65,7 @@ def test_query_endpoint_and_fetch_tree():
 def test_query_endpoint_and_fetch_tree_with_query_from_file():
     fds = RemoteSPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
 
-    response_object, error = fds.with_query_from_file(
-        pathlib.Path("./tests/test_data/queries/spo_limit_10.txt")).fetch_tree()
+    response_object, error = fds.with_query_from_file(pathlib.Path("./tests/test_data/queries/spo_limit_10.txt")).fetch_tree()
     assert len(str(response_object)) > 2000
     assert "results" in str(response_object)
     assert error is None
@@ -80,8 +87,7 @@ def test_query_and_prefixes():
 
 def test_query_from_file_and_prefixes():
     fds = RemoteSPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
-    fds.with_query_from_file(
-        pathlib.Path("./tests/test_data/queries/spo_limit_10.txt"), None, "PREFIX TEST")
+    fds.with_query_from_file(pathlib.Path("./tests/test_data/queries/spo_limit_10.txt"), None, "PREFIX TEST")
     assert fds.endpoint.queryString.startswith("PREFIX TEST")
 
 
@@ -99,8 +105,9 @@ def test_query_endpoint_and_fetch_tree_without_query():
 
 def test_query_endpoint_with_substitution_and_fetch_tabular():
     fds = RemoteSPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
-    response_object, error = fds.with_query('select * where {~a ~b ~c} limit 10',
-                                            {'a': '?s', 'b': '?p', 'c': '?o'}).fetch_tabular()
+    response_object, error = fds.with_query(
+        "select * where {~a ~b ~c} limit 10", {"a": "?s", "b": "?p", "c": "?o"}
+    ).fetch_tabular()
     assert len(str(response_object)) > 500
     assert "http://" in str(response_object)
     assert error is None
@@ -110,10 +117,10 @@ def test_query_endpoint_with_substitution_and_fetch_tree_with_query_from_file():
     fds = RemoteSPARQLEndpointDataSource(ENDPOINT_REMOTE_CORRECT)
 
     response_object, error = fds.with_query_from_file(
-        pathlib.Path("./tests/test_data/queries/spo_limit_10.txt"),
-        {'substitution_placeholder': 'after_substitution'}).fetch_tree()
-    assert 'after_substitution' in fds.endpoint.queryString
-    assert '~substitution_placeholder' not in fds.endpoint.queryString
+        pathlib.Path("./tests/test_data/queries/spo_limit_10.txt"), {"substitution_placeholder": "after_substitution"}
+    ).fetch_tree()
+    assert "after_substitution" in fds.endpoint.queryString
+    assert "~substitution_placeholder" not in fds.endpoint.queryString
     assert len(str(response_object)) > 2000
     assert "results" in str(response_object)
     assert error is None

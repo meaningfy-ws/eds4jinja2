@@ -63,7 +63,12 @@ pip install eds4jinja2
 pip install eds4jinja2[oxigraph]
 ```
 
-Requires Python 3.11+.
+Requires Python 3.12+ (tested on 3.12, 3.13 and 3.14). On Python 3.11, pin `eds4jinja2<2`.
+
+**Upgrading from 1.x?** 2.0 needs Python 3.12+, runs on pandas 3 / numpy 2 (text columns in tabular
+results have the `str` dtype), and no longer installs `xlrd`, `openpyxl`, `toml`, `py-singleton` or
+`beautifulsoup4` for you. Templates and the public API are otherwise unchanged; see the
+[CHANGELOG](CHANGELOG.md#200---2026-10-30) for the full list and migration notes.
 
 ## Quick start
 
@@ -154,6 +159,20 @@ with new data sources, architecture) is authored in AsciiDoc, built with Antora 
 GitHub Pages: **https://meaningfy-ws.github.io/eds4jinja2/**
 
 Build and preview it locally with `make preview-docs` (needs Node.js).
+
+## Development
+
+The project uses [Poetry](https://python-poetry.org/) and a Makefile as the dev interface:
+
+```shell
+make install      # install with the test and lint dependency groups
+make check-all    # the gate CI runs: ruff, mypy, import-linter, openspec validate, tests
+make test-network # live SPARQL-endpoint tests (need network; not part of the gate)
+make build        # build the sdist and wheel into dist/
+```
+
+Work is planned as [OpenSpec](https://github.com/Fission-AI/OpenSpec) changes under
+`openspec/changes/`; the merged requirements live in `openspec/specs/`.
 
 ## Contributing
 

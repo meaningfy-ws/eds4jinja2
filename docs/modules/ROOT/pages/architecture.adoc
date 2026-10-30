@@ -29,21 +29,21 @@ Crossing a boundary (for example a model importing an adapter) fails the import-
 
 == Tooling & developer workflow
 
-Tooling is *pip + tox + `pyproject.toml`* (setuptools backend; *not* Poetry). The `make` targets are
-the dev/CI interface:
+Tooling is *Poetry* (`pyproject.toml` + committed `poetry.lock`). The `make` targets are the
+dev/CI interface:
 
 [source,bash]
 ----
-make install-all          # install the project with the dev extra
-make test-unit            # unit tests (tox: py311, py312)
+make install              # install the project with the test and lint groups
+make check-all            # the full gate CI runs: version, ruff, mypy, import-linter, openspec, tests
+make test-unit            # unit tests
 make test-features        # BDD feature tests
-make test-all             # full suite (excludes live-network tests)
 make test-network         # live-network integration tests (need network)
 make check-architecture   # validate the layer boundaries (import-linter)
-make build                # build the wheel/sdist (PEP 517)
+make build                # build the wheel/sdist
 ----
 
-Target interpreters are *Python 3.11 and 3.12*. Tests live under `tests/unit/` (isomorphic to the
+Target interpreters are *Python 3.12, 3.13 and 3.14*. Tests live under `tests/unit/` (isomorphic to the
 layers: `models / adapters / services / meta`) and `tests/steps` + `tests/features` (BDD).
 
 == Building these docs
@@ -64,5 +64,5 @@ On every pull request a GitHub Actions workflow builds the site; on push to `mas
 == Version single source of truth
 
 The package version lives in *one* file — `eds4jinja2/VERSION`. It is read at runtime by
-`eds4jinja2/__init__.py`, by `pyproject.toml` (`[tool.setuptools.dynamic]` `file=`), and by the
-release tooling. Never hand-edit a version literal anywhere else.
+`eds4jinja2/__init__.py`; `pyproject.toml` carries a static copy that `make check-version` (part
+of `make check-all`) keeps in sync. Never hand-edit a version literal anywhere else.

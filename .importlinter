@@ -1,5 +1,7 @@
 [importlinter]
 root_package = eds4jinja2
+# Needed so contracts can name third-party packages (forbidden I/O / framework imports).
+include_external_packages = True
 
 [importlinter:contract:layers]
 name = eds4jinja2 cosmic layers
@@ -28,3 +30,30 @@ source_modules =
 forbidden_modules =
     eds4jinja2.services
     eds4jinja2.entrypoints
+
+[importlinter:contract:models-no-io]
+name = models do no I/O and know no frameworks
+type = forbidden
+# Direct imports only: reaching I/O through an adapter is the intended path.
+allow_indirect_imports = True
+source_modules =
+    eds4jinja2.models
+forbidden_modules =
+    requests
+    SPARQLWrapper
+    rdflib
+    yaml
+    jinja2
+    click
+
+[importlinter:contract:services-no-remote-io-or-cli]
+name = services reach remote I/O only through adapters and know no CLI framework
+type = forbidden
+# Direct imports only: reaching I/O through an adapter is the intended path.
+allow_indirect_imports = True
+source_modules =
+    eds4jinja2.services
+forbidden_modules =
+    requests
+    SPARQLWrapper
+    click

@@ -1,46 +1,46 @@
 name: meaningfy
 version: 1
 description: >
-  Meaningfy spine workflow — Shape-Up EPIC (proposal) → normative specs →
-  PLAN (design + tasks). A THIN fork of OpenSpec's spec-driven schema (Q2.1=A):
-  it keeps OpenSpec's native artifact files and lifecycle, and overlays the
-  Meaningfy artifact vocabulary. Meaningfy nouns map onto native files:
-  EPIC ≡ proposal.md (the work shape); PLAN ≡ design.md + tasks.md (the pair the
-  clarity gate scores ≥9/10); normative requirements live in specs/ deltas
-  (RFC-2119 SHALL + Given/When/Then, no EARS — DEC-8). Rich per-artifact rules
-  are deferred until the dogfood gate teaches what the artifacts must carry.
+  Meaningfy workflow — EPIC (proposal) → requirements (specs) → PLAN
+  (design + tasks). A thin fork of OpenSpec's spec-driven schema: it keeps
+  OpenSpec's files and lifecycle and adds Meaningfy's names for them:
+  EPIC = proposal.md; PLAN = design.md + tasks.md (the pair the clarity gate
+  scores, ≥9/10); requirements live in the specs/ deltas as SHALL/MUST
+  statements with WHEN/THEN scenarios.
 artifacts:
   - id: proposal
     generates: proposal.md
-    description: The EPIC — the shaped bet (Shape-Up work shape = OpenSpec proposal)
+    description: The EPIC — the problem, the approach chosen and its limits (= the OpenSpec proposal)
     template: proposal.md
     instruction: >
-      Create the EPIC: the shaped bet for this change. In Meaningfy an EPIC *is*
-      the OpenSpec proposal (file `proposal.md`); it carries the Shape-Up work
-      shape that plain OpenSpec lacks, plus the native proposal contract.
+      Create the EPIC for this change. In Meaningfy an EPIC *is* the OpenSpec
+      proposal (file `proposal.md`): the shaping sections plain OpenSpec lacks,
+      then OpenSpec's own proposal sections.
 
 
-      Shape-Up sections (the bet):
+      Shaping sections:
 
-      - **Appetite**: how much time/risk this is worth (small / medium / large).
-      A fixed appetite, not an estimate.
+      - **Appetite**: one size — TINY, SMALL, MEDIUM, LARGE, VERY LARGE or
+      HUGE — saying how deep and how extensive the solution may be (definitions
+      in the epic-planning skill). Never days or weeks; not an estimate.
 
       - **Why** (the problem): 1-2 sentences — the raw problem or opportunity.
-      Why now? (Header is `## Why` for OpenSpec-native compatibility.)
+      Why now? (The heading stays `## Why`, as OpenSpec expects.)
 
-      - **Solution outline**: the shaped approach at the right altitude — enough
-      to start, not a full design (design.md carries the how).
+      - **Solution outline**: the approach chosen, in enough detail to start,
+      not a full design (design.md carries the how).
 
-      - **Key decisions**: the decisions already taken and their rationale. Give
-      each a citeable ID (e.g. `DEC-1`) — this is the golden thread's anchor.
+      - **Key decisions**: the decisions already taken, each with its reason and
+      the alternative rejected. Give each an id (e.g. `DEC-1`) so the design,
+      tasks and specs can cite it.
 
       - **Rabbit-holes**: known traps to avoid; things deliberately left vague.
 
       - **No-gos**: explicitly out of scope (MANDATORY — an EPIC without no-gos
-      is unshaped).
+      is not ready to plan).
 
 
-      Native proposal contract (the contract with the specs phase):
+      OpenSpec's proposal sections (what the specs are written from):
 
       - **What Changes**: bullet list; mark breaking changes **BREAKING**.
 
@@ -50,13 +50,13 @@ artifacts:
       - **Impact**: affected code, APIs, dependencies, systems.
 
 
-      Keep it concise (1-2 pages). Focus on the bet and the "why" — the "how"
-      belongs in design.md. This is the foundation: specs, design, and tasks all
+      Keep it concise (1-2 pages). Focus on the problem and the "why" — the
+      "how" belongs in design.md. This is the foundation: specs, design, and tasks all
       build on it.
     requires: []
   - id: specs
     generates: specs/**/*.md
-    description: Normative requirements — RFC-2119 SHALL + Given/When/Then (no EARS)
+    description: Requirements — SHALL/MUST statements with WHEN/THEN scenarios
     template: spec.md
     instruction: >
       Create specification files that define WHAT the system must do. One spec
@@ -73,7 +73,7 @@ artifacts:
       (FROM:/TO:).
 
 
-      Format (DEC-8 — native normative layer, NOT EARS):
+      Format (no other requirement syntax):
 
       - Each requirement: `### Requirement: <name>` then a SHALL/MUST statement
       (avoid should/may for normative behaviour).
@@ -125,8 +125,7 @@ artifacts:
 
       Sections:
 
-      - **Parent**: cite the EPIC this derives from (golden thread — "cite your
-      parent").
+      - **Derives from**: name the EPIC this plan derives from.
 
       - **Context**: background, current state, constraints.
 
@@ -136,9 +135,9 @@ artifacts:
       alternatives considered).
 
       - **Algorithm / approach**: the shape of the solution; concrete worked
-      examples; explicit **anti-patterns** to avoid.
+      examples; **anti-patterns** to avoid, as a table: don't / do instead / why.
 
-      - **Error matrix**: failure modes → expected handling.
+      - **Error matrix**: failure mode → how it is detected → expected handling.
 
       - **Risks / Trade-offs**: [Risk] → Mitigation.
 
@@ -159,8 +158,8 @@ artifacts:
       tracked.
 
 
-      **Cite your parent** (golden thread): the first line MUST reference the
-      EPIC id this plan derives from (e.g. `> Derived from EPIC-0N`).
+      **Name the EPIC**: the first line MUST name the EPIC this plan derives
+      from (e.g. `> Derives from: the EPIC in proposal.md`).
 
 
       Guidelines:

@@ -1,6 +1,9 @@
-<!-- PLAN (design half). PLAN = this file + tasks.md. The clarity gate scores the pair (≥9/10). -->
+<!-- PLAN (design half). PLAN = this file + tasks.md. The clarity gate scores the pair (≥9/10).
 
-> Parent: <cite the EPIC this derives from — golden thread "cite your parent">
+     What belongs here: HOW, and why this how. Cite the EPIC's DEC-n; never re-explain a settled decision.
+     Acceptance criteria live in the spec deltas as WHEN/THEN scenarios, NOT here. -->
+
+> Derives from: <the EPIC this plan derives from>
 
 ## Context
 
@@ -14,20 +17,26 @@
 
 ## Decisions
 
-<!-- Key technical choices + rationale (why X over Y; alternatives considered). -->
+<!-- NEW technical choices made while planning + rationale (why X over Y; alternatives considered).
+     For anything already settled in the EPIC, cite its DEC-n — do not re-explain it. -->
 
 ## Algorithm / approach
 
-<!-- The shape of the solution; concrete worked examples. -->
+<!-- The shape of the solution; concrete worked examples.
+     Idempotency by design: state whether operations are safe to retry/replay (at-least-once) and how
+     (idempotency keys, upserts, dedupe) — or why the operation is inherently safe. -->
 
 ### Anti-patterns
-<!-- Explicit ❌ things to avoid in this change. -->
+<!-- Explicit things to avoid in this change. -->
+| Don't | Do instead | Why |
+|---|---|---|
 
 ## Error matrix
 
-<!-- Failure mode → expected handling. -->
-| Failure mode | Expected handling |
-|---|---|
+<!-- Failure mode → how it is detected → expected handling. Include retry/replay paths (timeouts, duplicate delivery) and
+     the idempotency guarantee that keeps them safe. -->
+| Failure mode | How it is detected | Expected handling |
+|---|---|---|
 
 ## Risks / Trade-offs
 

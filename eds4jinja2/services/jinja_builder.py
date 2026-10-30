@@ -7,18 +7,17 @@
 
 import jinja2
 
-from eds4jinja2.models.collections import invert_dict
-from eds4jinja2.models.data_source import Engine
-from eds4jinja2.models.transformations import (escape_latex, replace_strings_in_tabular,
-                                               add_relative_figures)
 from eds4jinja2.adapters.file_ds import FileDataSource
 from eds4jinja2.adapters.graph_store import make_graph_store
 from eds4jinja2.adapters.in_memory_sparql_ds import InMemorySPARQLDataSource
 from eds4jinja2.adapters.local_sparql_ds import RDFFileDataSource
 from eds4jinja2.adapters.namespace_handler import NamespaceInventory, simplify_uris_in_tabular
 from eds4jinja2.adapters.remote_sparql_ds import RemoteSPARQLEndpointDataSource
+from eds4jinja2.models.collections import invert_dict
+from eds4jinja2.models.data_source import Engine
+from eds4jinja2.models.transformations import add_relative_figures, escape_latex, replace_strings_in_tabular
 
-DATA_SOURCE_BUILDERS = {
+DATA_SOURCE_BUILDERS: dict = {
     "from_endpoint": lambda endpoint: RemoteSPARQLEndpointDataSource(endpoint),
     "from_file": lambda file_path: FileDataSource(file_path),
     "from_rdf_file": lambda from_rdf_file: RDFFileDataSource(from_rdf_file),
@@ -27,42 +26,43 @@ DATA_SOURCE_BUILDERS = {
     "from_memory": lambda source: InMemorySPARQLDataSource(source),
     # Load RDF file(s)/URL(s) into an in-memory graph (engine configurable) and query it.
     "from_rdf": lambda sources, engine="rdflib": InMemorySPARQLDataSource(
-        make_graph_store(Engine(engine), sources=sources).query),
+        make_graph_store(Engine(engine), sources=sources).query
+    ),
 }
+
+
+def _simplify_uri_columns_in_tabular(
+    data_frame, namespace_inventory, target_columns=None, prefix_cc_lookup=True, inplace=True, error_fail=True
+):
+    return simplify_uris_in_tabular(data_frame, namespace_inventory, target_columns, prefix_cc_lookup, inplace, error_fail)
+
 
 TABULAR_HELPERS = {
     "invert_dict": lambda mapping_dict, reduce_values=True: invert_dict(mapping_dict, reduce_values),
-    "replace_strings_in_tabular": lambda data_frame, target_columns,
-                                         value_mapping_dict, mark_touched_rows=False: replace_strings_in_tabular(
-        data_frame,
-        target_columns,
-        value_mapping_dict,
-        mark_touched_rows),
+    "replace_strings_in_tabular": lambda data_frame, target_columns, value_mapping_dict, mark_touched_rows=False: (
+        replace_strings_in_tabular(data_frame, target_columns, value_mapping_dict, mark_touched_rows)
+    ),
     "add_relative_figures": lambda data_frame, target_columns, relativisers, percentage=True: add_relative_figures(
-        data_frame,
-        target_columns,
-        relativisers, percentage),
+        data_frame, target_columns, relativisers, percentage
+    ),
     "namespace_inventory": lambda namespace_definition_dict: NamespaceInventory(
-        namespace_definition_dict=namespace_definition_dict),
-    "simplify_uri_columns_in_tabular": lambda data_frame, namespace_inventory, target_columns=None, prefix_cc_lookup=True,
-                                       inplace=True, error_fail=True: simplify_uris_in_tabular(
-        data_frame,
-        namespace_inventory,
-        target_columns,
-        prefix_cc_lookup,
-        inplace,
-        error_fail)
+        namespace_definition_dict=namespace_definition_dict
+    ),
+    "simplify_uri_columns_in_tabular": _simplify_uri_columns_in_tabular,
 }
 
-TREE_HELPERS = {}
+TREE_HELPERS: dict = {}
 
 ADDITIONAL_FILTERS = {
     "escape_latex": lambda value: escape_latex(value),
 }
 
 
-def build_eds_environment(external_data_source_builders={**DATA_SOURCE_BUILDERS, **TABULAR_HELPERS, **TREE_HELPERS},
-                          external_filters=ADDITIONAL_FILTERS, **kwargs):
+def build_eds_environment(
+    external_data_source_builders: dict | None = None,
+    external_filters: dict | None = None,
+    **kwargs,
+):
     """
         creates a JINJA environment and injects the global context with EDS functions
     :param external_filters: additional filters to be make available in the templates
@@ -70,6 +70,10 @@ def build_eds_environment(external_data_source_builders={**DATA_SOURCE_BUILDERS,
     :param kwargs:
     :return:
     """
+    if external_data_source_builders is None:
+        external_data_source_builders = {**DATA_SOURCE_BUILDERS, **TABULAR_HELPERS, **TREE_HELPERS}
+    if external_filters is None:
+        external_filters = ADDITIONAL_FILTERS
     template_env = jinja2.Environment(**kwargs)
     inject_environment_globals(template_env, external_data_source_builders)
     inject_environment_filters(template_env, external_filters)
@@ -89,8 +93,7 @@ def inject_environment_filters(jinja_environment: jinja2.Environment, filters: d
     if update_existent:
         jinja_environment.filters.update(filters)
     else:
-        jinja_environment.filters.update(
-            {k: v for k, v in filters.items() if k not in jinja_environment.filters.keys()})
+        jinja_environment.filters.update({k: v for k, v in filters.items() if k not in jinja_environment.filters.keys()})
 
 
 def inject_environment_globals(jinja_environment: jinja2.Environment, context: dict, update_existent=True):
@@ -106,5 +109,4 @@ def inject_environment_globals(jinja_environment: jinja2.Environment, context: d
     if update_existent:
         jinja_environment.globals.update(context)
     else:
-        jinja_environment.globals.update(
-            {k: v for k, v in context.items() if k not in jinja_environment.globals.keys()})
+        jinja_environment.globals.update({k: v for k, v in context.items() if k not in jinja_environment.globals.keys()})

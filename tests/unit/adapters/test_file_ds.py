@@ -2,8 +2,9 @@
 test_file_ds.py
 Date:  11/08/2020
 Author: Eugeniu Costetchi
-Email: costezki.eugen@gmail.com 
+Email: costezki.eugen@gmail.com
 """
+
 import pathlib
 
 import pytest
@@ -28,7 +29,7 @@ def test_determine_tabular_file_type(file_name):
 
 
 @pytest.mark.parametrize("file_name", TREE_FILE_NAME_EXAMPLES)
-def test_determine_tabular_file_type(file_name):
+def test_determine_tree_file_type(file_name):
     fds = FileDataSource(file_path=file_name)
     assert fds._can_be_tree()
 
@@ -56,7 +57,7 @@ def test_open_tabular_file_failure(file_name):
 
 @pytest.mark.parametrize("file_name", TREE_FILE_NAME_EXAMPLES)
 def test_open_tree_file_success(file_name):
-    print (TEST_DATA_FOLDER / file_name)
+    print(TEST_DATA_FOLDER / file_name)
     fds = FileDataSource(file_path=TEST_DATA_FOLDER / file_name)
     content, error = fds.fetch_tree()
     assert content is not None
@@ -65,3 +66,27 @@ def test_open_tree_file_success(file_name):
     # content, error = fds.fetch_tabular()
     # assert content is None
     # assert error is not None
+
+
+def test_fetch_toml_as_tree(tmp_path):
+    toml_file = tmp_path / "file.toml"
+    toml_file.write_text('a = 1\nname = "Ștefan"\n[b]\nc = "d"\n', encoding="utf-8")
+    content, error = FileDataSource(file_path=toml_file).fetch_tree()
+    assert error is None
+    assert content == {"a": 1, "name": "Ștefan", "b": {"c": "d"}}
+
+
+def test_fetch_empty_toml_as_tree(tmp_path):
+    toml_file = tmp_path / "empty.toml"
+    toml_file.write_text("", encoding="utf-8")
+    content, error = FileDataSource(file_path=toml_file).fetch_tree()
+    assert error is None
+    assert content == {}
+
+
+def test_fetch_invalid_toml_fails_safe(tmp_path):
+    toml_file = tmp_path / "invalid.toml"
+    toml_file.write_text("a = ", encoding="utf-8")
+    content, error = FileDataSource(file_path=toml_file).fetch_tree()
+    assert content is None
+    assert error

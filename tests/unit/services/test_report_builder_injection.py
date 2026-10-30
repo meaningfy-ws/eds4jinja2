@@ -4,6 +4,7 @@ test_report_builder_injection.py
 Tests for the ReportBuilder builder-injection seam: external_data_source_builders /
 external_filters are forwarded (merged over the defaults) into the Jinja environment.
 """
+
 import pathlib
 
 import pytest
@@ -26,17 +27,14 @@ def test_no_injection_preserves_default_globals_and_filters(sample_data_path):
 
 def test_injected_builder_overrides_default(sample_data_path):
     sentinel = object()
-    rb = ReportBuilder(
-        sample_data_path,
-        external_data_source_builders={"from_endpoint": lambda _endpoint: sentinel})
+    rb = ReportBuilder(sample_data_path, external_data_source_builders={"from_endpoint": lambda _endpoint: sentinel})
     assert rb.template_env.globals["from_endpoint"]("ignored") is sentinel
 
 
 def test_partial_injection_preserves_other_defaults(sample_data_path):
     rb = ReportBuilder(
-        sample_data_path,
-        external_data_source_builders={
-            "from_endpoint": lambda _e: InMemorySPARQLDataSource(lambda q: None)})
+        sample_data_path, external_data_source_builders={"from_endpoint": lambda _e: InMemorySPARQLDataSource(lambda q: None)}
+    )
     # the single override must not wipe the rest of the registry / filters
     assert "from_file" in rb.template_env.globals
     assert "invert_dict" in rb.template_env.globals

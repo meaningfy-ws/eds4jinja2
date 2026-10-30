@@ -3,14 +3,12 @@
 # test_top_imports.py
 # Date:  17/08/2020
 # Author: Eugeniu Costetchi
-# Email: costezki.eugen@gmail.com 
+# Email: costezki.eugen@gmail.com
 
-"""just making sure that the eds4jinja2 provides a window to its functions and classes """
+"""just making sure that the eds4jinja2 provides a window to its functions and classes"""
 
 
 def test_can_import_file_ds():
     from eds4jinja2 import FileDataSource
-    from eds4jinja2 import RemoteSPARQLEndpointDataSource
-    from eds4jinja2 import build_eds_environment
-    from eds4jinja2 import RDFFileDataSource
-    f = FileDataSource(file_path="random")
+
+    assert FileDataSource(file_path="random") is not None

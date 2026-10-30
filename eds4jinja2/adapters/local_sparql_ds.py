@@ -7,17 +7,17 @@
 import pandas as pd
 import rdflib
 
-from eds4jinja2.models.data_source import DataSource, UnsupportedRepresentation
-from eds4jinja2.models.sparql import build_query, is_empty_query, EMPTY_QUERY_ERROR
 from eds4jinja2.adapters.query_files import read_query_file
+from eds4jinja2.models.data_source import DataSource, UnsupportedRepresentation
+from eds4jinja2.models.sparql import EMPTY_QUERY_ERROR, build_query, is_empty_query
 
-DEFAULT_ENCODING = 'utf-8'
+DEFAULT_ENCODING = "utf-8"
 QUERY_ALREADY_SET_ERROR = "The query was already set."
 
 
 class RDFFileDataSource(DataSource):
     """
-        Accesses a local RDF file and provides the possibility to fetch data from it by SPARQL queries.
+    Accesses a local RDF file and provides the possibility to fetch data from it by SPARQL queries.
     """
 
     def __init__(self, filename):
@@ -30,7 +30,9 @@ class RDFFileDataSource(DataSource):
     def __reduce_bound_triple_to_string_format(self, dict_of_bound_variables: dict):
         return {str(k): str(v) for k, v in dict_of_bound_variables.items()}
 
-    def with_query(self, sparql_query: str, substitution_variables: dict = None, prefixes: str = "") -> 'RDFFileDataSource':
+    def with_query(
+        self, sparql_query: str, substitution_variables: dict | None = None, prefixes: str = ""
+    ) -> "RDFFileDataSource":
         """
             Set the query text and return the reference to self for chaining.
         :return:
@@ -40,8 +42,9 @@ class RDFFileDataSource(DataSource):
         self.__query__ = build_query(sparql_query, substitution_variables, prefixes)
         return self
 
-    def with_query_from_file(self, sparql_query_file_path: str, substitution_variables: dict = None,
-                             prefixes: str = "") -> 'RDFFileDataSource':
+    def with_query_from_file(
+        self, sparql_query_file_path: str, substitution_variables: dict | None = None, prefixes: str = ""
+    ) -> "RDFFileDataSource":
         """
             Set the query text and return the reference to self for chaining.
         :return:
@@ -51,7 +54,7 @@ class RDFFileDataSource(DataSource):
         self.__query__ = build_query(read_query_file(sparql_query_file_path), substitution_variables, prefixes)
         return self
 
-    def with_file(self, file: str) -> 'RDFFileDataSource':
+    def with_file(self, file: str) -> "RDFFileDataSource":
         """
             Set the query text and return the reference to self for chaining.
         :return:

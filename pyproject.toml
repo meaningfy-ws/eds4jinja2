@@ -1,17 +1,16 @@
-# Standards-based packaging (PEP 517/518/621) with the setuptools backend.
-# Single source of truth for dependencies; the version is read from
-# eds4jinja2/__init__.py. No setup.py, no requirements*.txt.
-
-[build-system]
-requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.build_meta"
+# Minimal pyproject.toml — Meaningfy standard (no-src, config-in-root).
+# Only [project], [dependency-groups], [tool.poetry], [build-system] live here; every tool is
+# configured in its own root file: ruff.toml · mypy.ini · pytest.ini · .coveragerc · .importlinter
+# The single source of truth for the version is eds4jinja2/VERSION; `make check-version` fails when
+# the `version` field below drifts from it.
 
 [project]
 name = "eds4jinja2"
+version = "2.0.0"
 description = "Embed the data source specifications in your JINJA templates directly, and enjoy the dynamic data contexts."
 readme = "README.md"
-requires-python = ">=3.11"
-license = { text = "Apache License 2.0" }
+requires-python = ">=3.12,<4.0"
+license = { text = "Apache-2.0" }
 authors = [{ name = "Eugeniu Costetchi", email = "costezki.eugen@gmail.com" }]
 maintainers = [{ name = "Eugeniu Costetchi", email = "costezki.eugen@gmail.com" }]
 keywords = ["template", "jinja", "report", "report generation", "rdf", "sparql", "linked-data", "data-source", "dynamic-context"]
@@ -19,8 +18,9 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Topic :: Utilities",
@@ -28,66 +28,51 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Natural Language :: English",
 ]
-# Single source of truth for the version is the eds4jinja2/VERSION file (read here at build time
-# and by eds4jinja2/__init__.py at runtime). Deps are declared below.
-dynamic = ["version"]
+# Runtime ranges stay open to the next major so consumers' resolvers are not over-constrained
+# (modernize-library-py312 design D-2).
 dependencies = [
-    "Jinja2~=3.1.2",
-    "SPARQLWrapper~=2.0.0",
-    "pandas~=2.2.0",
-    "PyYAML~=6.0.1",
-    "toml~=0.10.2",
-    "xlrd~=2.0.1",        # pandas read_excel backend for .xls
-    "openpyxl~=3.1.2",    # pandas read_excel backend for .xlsx
-    "numpy~=1.26.0",
-    "click~=8.1.7",
-    "rdflib~=7.0.0",
-    "pydantic~=2.0",
-    "py-singleton~=1.0.0",
-    "beautifulsoup4~=4.12.2",
-    "requests~=2.31.0",
+    "Jinja2>=3.1.6,<4",
+    "SPARQLWrapper>=2.0.0,<3",
+    "pandas>=3.1.0,<4",
+    "numpy>=2.5.4,<3",
+    "PyYAML>=6.0.3,<7",
+    "python-calamine>=0.9,<1",  # pandas read_excel engine for .xls and .xlsx (replaces xlrd + openpyxl)
+    "click>=8.5.0,<9",
+    "rdflib>=7.6.0,<8",
+    "pydantic>=2.14.2,<3",
+    "requests>=2.34.2,<3",
 ]
 
 [project.optional-dependencies]
-# Opt-in fast in-memory SPARQL engine for the built-in graph store (the `oxigraph`
-# engine of `from_rdf` / make_graph_store). The rdflib engine needs no extra.
-oxigraph = [
-    "pyoxigraph~=0.4",
-]
-test = [
-    "tabulate~=0.9.0",
-    "coverage~=7.3.2",
-    "pytest~=7.4.2",
-    "pytest-bdd~=7.0.0",
-    "pytest-cov~=4.1.0",
-    "pytest-subtests~=0.11.0",
-    "flake8~=6.1.0",
-]
-# Documentation is authored in AsciiDoc and built by Antora (Node) — see package.json,
-# the `make build-docs` target and .github/workflows/docs.yml. There is no Python docs extra.
-dev = [
-    "eds4jinja2[test]",
-    "import-linter~=2.0",
-    "tox~=4.11.3",
-    "tox-pytest-summary~=0.1.2",
-    "build~=1.2",
-    "twine~=6.2",
-    "setuptools~=68.2.2",
-    "wheel~=0.41.2",
-]
+# Opt-in fast in-memory SPARQL engine for the built-in graph store (the `oxigraph` engine of
+# `from_rdf` / make_graph_store). The rdflib engine needs no extra.
+oxigraph = ["pyoxigraph>=0.5.13,<0.6"]
 
 [project.urls]
 Homepage = "https://github.com/meaningfy-ws/eds4jinja2"
+Documentation = "https://meaningfy-ws.github.io/eds4jinja2/"
 
 [project.scripts]
 mkreport = "eds4jinja2.entrypoints.cli.main:build_report"
 
-[tool.setuptools.dynamic]
-version = { file = ["eds4jinja2/VERSION"] }
+[dependency-groups]
+# PEP 735 groups, installed via `poetry install --with test,lint`. Exact pins (design D-1).
+test = [
+    "beautifulsoup4==4.15.0",
+    "pytest==9.1.1",  # shortcut: pytest-bdd 9.0.0 breaks on pytest 9.2 (FixtureManager._arg2fixturedefs); bump with the next pytest-bdd
+    "pytest-bdd==9.0.0",
+    "pytest-cov==7.1.0",
+]
+lint = [
+    "ruff==0.17.3",
+    "mypy==2.4.1",
+    "import-linter==2.15",
+]
 
-[tool.setuptools.packages.find]
-include = ["eds4jinja2*"]
+[tool.poetry]
+# No-src layout: include the top-level package directly. VERSION ships inside the package.
+packages = [{ include = "eds4jinja2" }]
 
-[tool.setuptools.package-data]
-eds4jinja2 = ["VERSION"]
-exclude = ["tests*"]
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

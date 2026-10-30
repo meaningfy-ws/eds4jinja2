@@ -5,13 +5,24 @@ Unit tests for InMemorySPARQLDataSource — an engine-agnostic in-process SPARQL
 data source that accepts either an rdflib.Graph or a query(sparql_text) callable
 and implements both tabular (DataFrame) and tree (SPARQL-JSON) fetching.
 """
+
 import pandas as pd
 import pytest
 import rdflib
 
 from eds4jinja2.adapters.in_memory_sparql_ds import (
-    InMemorySPARQLDataSource, HEAD, VARS, RESULTS, BINDINGS, TYPE, VALUE,
-    DATATYPE, XML_LANG, URI, LITERAL, BNODE,
+    BINDINGS,
+    BNODE,
+    DATATYPE,
+    HEAD,
+    LITERAL,
+    RESULTS,
+    TYPE,
+    URI,
+    VALUE,
+    VARS,
+    XML_LANG,
+    InMemorySPARQLDataSource,
 )
 
 TTL = """
@@ -66,8 +77,7 @@ def test_empty_query_is_fail_safe(graph):
 
 
 def test_empty_result_set_returns_empty_dataframe(graph):
-    ds = InMemorySPARQLDataSource(graph).with_query(
-        "SELECT ?s WHERE { ?s a <http://example.org/Nonexistent> }")
+    ds = InMemorySPARQLDataSource(graph).with_query("SELECT ?s WHERE { ?s a <http://example.org/Nonexistent> }")
     df, error = ds.fetch_tabular()
     assert error is None
     assert isinstance(df, pd.DataFrame)
@@ -78,7 +88,8 @@ def test_substitution_and_prefixes(graph):
     ds = InMemorySPARQLDataSource(graph).with_query(
         "SELECT * WHERE { ~a ~b ~c }",
         substitution_variables={"a": "?s", "b": "?p", "c": "?o"},
-        prefixes="PREFIX ex: <http://example.org/>")
+        prefixes="PREFIX ex: <http://example.org/>",
+    )
     assert ds._InMemorySPARQLDataSource__query.startswith("PREFIX ex:")
     assert "~a" not in ds._InMemorySPARQLDataSource__query
     df, error = ds.fetch_tabular()
@@ -124,12 +135,14 @@ def test_with_query_from_file(tmp_path, graph):
     query_file = tmp_path / "q.rq"
     query_file.write_text("SELECT ?s ?p ?o WHERE { ~a ~b ~c }")
     ds = InMemorySPARQLDataSource(graph).with_query_from_file(
-        str(query_file), substitution_variables={"a": "?s", "b": "?p", "c": "?o"})
+        str(query_file), substitution_variables={"a": "?s", "b": "?p", "c": "?o"}
+    )
     df, error = ds.fetch_tabular()
     assert error is None and not df.empty
 
 
 # --- engine-agnostic normalisation against pyoxigraph-shaped (duck-typed) results -----------
+
 
 class _FakeVar:
     def __init__(self, name):
@@ -183,8 +196,11 @@ class Literal:
 def _fake_result():
     return _FakeSolutions(
         ["s", "o"],
-        [_FakeSolution({"s": NamedNode("http://e/a"), "o": Literal("hi", language="en")}),
-         _FakeSolution({"s": BlankNode("b0"), "o": Literal("5", datatype="http://www.w3.org/2001/XMLSchema#int")})])
+        [
+            _FakeSolution({"s": NamedNode("http://e/a"), "o": Literal("hi", language="en")}),
+            _FakeSolution({"s": BlankNode("b0"), "o": Literal("5", datatype="http://www.w3.org/2001/XMLSchema#int")}),
+        ],
+    )
 
 
 def test_pyoxigraph_shaped_callable_tabular():

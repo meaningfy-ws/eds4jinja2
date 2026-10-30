@@ -14,30 +14,45 @@ source produced the data: tabular -> a pandas ``DataFrame`` of stringified bindi
 SPARQL-1.1 JSON results dict (built from the :class:`SparqlResults` model), closing the tree gap
 that ``RDFFileDataSource`` leaves open.
 """
+
 import pandas as pd
 import rdflib
 
-from eds4jinja2.models.data_source import DataSource
-from eds4jinja2.models.sparql import build_query, is_empty_query, EMPTY_QUERY_ERROR
 from eds4jinja2.adapters.query_files import read_query_file
-from eds4jinja2.models.sparql import SparqlResults, SparqlTerm
+from eds4jinja2.models.data_source import DataSource
+
 # Re-exported for callers that import the SPARQL-JSON keys from this module.
 from eds4jinja2.models.sparql import (  # noqa: F401
-    HEAD, VARS, RESULTS, BINDINGS, TYPE, VALUE, DATATYPE, XML_LANG, URI, LITERAL, BNODE,
+    BINDINGS,
+    BNODE,
+    DATATYPE,
+    EMPTY_QUERY_ERROR,
+    HEAD,
+    LITERAL,
+    RESULTS,
+    TYPE,
+    URI,
+    VALUE,
+    VARS,
+    XML_LANG,
+    SparqlResults,
+    SparqlTerm,
+    build_query,
+    is_empty_query,
 )
 
 
 class InMemorySPARQLDataSource(DataSource):
     """
-        Query an in-process RDF graph by SPARQL.
+    Query an in-process RDF graph by SPARQL.
 
-        >>> ds = InMemorySPARQLDataSource(rdflib_graph)
-        >>> df, error = ds.with_query("SELECT * WHERE {?s ?p ?o}").fetch_tabular()
+    >>> ds = InMemorySPARQLDataSource(rdflib_graph)
+    >>> df, error = ds.with_query("SELECT * WHERE {?s ?p ?o}").fetch_tabular()
 
-        A pyoxigraph (or any) backend is supported via a query callable:
+    A pyoxigraph (or any) backend is supported via a query callable:
 
-        >>> ds = InMemorySPARQLDataSource(store.query)
-        >>> tree, error = ds.with_query(sparql).fetch_tree()
+    >>> ds = InMemorySPARQLDataSource(store.query)
+    >>> tree, error = ds.with_query(sparql).fetch_tree()
     """
 
     def __init__(self, source):
@@ -46,20 +61,20 @@ class InMemorySPARQLDataSource(DataSource):
         elif callable(source):
             self.__query_fn = source
         else:
-            raise TypeError(
-                "source must be an rdflib.Graph or a query(sparql_text) callable, "
-                f"got {type(source).__name__}")
+            raise TypeError(f"source must be an rdflib.Graph or a query(sparql_text) callable, got {type(source).__name__}")
         self.__query = ""
         self.__can_be_tabular = True
         self.__can_be_tree = True
 
-    def with_query(self, sparql_query: str, substitution_variables: dict = None,
-                   prefixes: str = "") -> 'InMemorySPARQLDataSource':
+    def with_query(
+        self, sparql_query: str, substitution_variables: dict | None = None, prefixes: str = ""
+    ) -> "InMemorySPARQLDataSource":
         self.__query = build_query(sparql_query, substitution_variables, prefixes)
         return self
 
-    def with_query_from_file(self, sparql_query_file_path: str, substitution_variables: dict = None,
-                             prefixes: str = "") -> 'InMemorySPARQLDataSource':
+    def with_query_from_file(
+        self, sparql_query_file_path: str, substitution_variables: dict | None = None, prefixes: str = ""
+    ) -> "InMemorySPARQLDataSource":
         self.__query = build_query(read_query_file(sparql_query_file_path), substitution_variables, prefixes)
         return self
 
@@ -69,8 +84,7 @@ class InMemorySPARQLDataSource(DataSource):
 
     def _fetch_tabular(self):
         self._assert_query()
-        rows = [{var: str(term) for var, term in binding.items()}
-                for binding in _iter_bindings(self.__query_fn(self.__query))]
+        rows = [{var: str(term) for var, term in binding.items()} for binding in _iter_bindings(self.__query_fn(self.__query))]
         return pd.DataFrame(rows)
 
     def _fetch_tree(self):
@@ -89,6 +103,7 @@ class InMemorySPARQLDataSource(DataSource):
 
 # --- engine-agnostic normalisation (rdflib Result OR pyoxigraph-shaped solutions) -------------
 
+
 def _variables(result) -> list:
     if hasattr(result, "vars"):  # rdflib.query.Result
         return [str(variable) for variable in (result.vars or [])]
@@ -96,7 +111,7 @@ def _variables(result) -> list:
 
 
 def _iter_bindings(result):
-    """ Yield each solution as a {variable_name: term} mapping, engine-agnostically. """
+    """Yield each solution as a {variable_name: term} mapping, engine-agnostically."""
     if hasattr(result, "bindings"):  # rdflib.query.Result
         for binding in result.bindings:
             yield {str(variable): term for variable, term in binding.items()}
@@ -117,8 +132,8 @@ def _iter_bindings(result):
 def _to_results(result) -> SparqlResults:
     return SparqlResults(
         variables=_variables(result),
-        bindings=[{var: _term_to_model(term) for var, term in binding.items()}
-                  for binding in _iter_bindings(result)])
+        bindings=[{var: _term_to_model(term) for var, term in binding.items()} for binding in _iter_bindings(result)],
+    )
 
 
 def _term_to_model(term) -> SparqlTerm:
@@ -127,7 +142,7 @@ def _term_to_model(term) -> SparqlTerm:
 
 
 def _rdflib_term(term):
-    """ SparqlTerm for an rdflib term, or None if it is not an rdflib term. """
+    """SparqlTerm for an rdflib term, or None if it is not an rdflib term."""
     if isinstance(term, rdflib.URIRef):
         return SparqlTerm.uri(str(term))
     if isinstance(term, rdflib.BNode):
@@ -141,7 +156,7 @@ def _rdflib_term(term):
 
 
 def _foreign_term(term) -> SparqlTerm:
-    """ SparqlTerm for a pyoxigraph (or other) term, classified by class name without import. """
+    """SparqlTerm for a pyoxigraph (or other) term, classified by class name without import."""
     class_name = type(term).__name__
     if class_name == "NamedNode":
         return SparqlTerm.uri(term.value)

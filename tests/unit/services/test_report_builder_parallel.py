@@ -5,6 +5,7 @@ Integration tests for the opt-in parallel pre-warm path of ReportBuilder. Uses a
 in-memory graph (no network) so the test is deterministic, and asserts that parallel and
 sequential renders produce identical output.
 """
+
 import json
 
 import rdflib
@@ -40,8 +41,8 @@ def _build(tmp_path, parallelism):
     target = _scaffold(tmp_path, parallelism)
     output = target / "out"
     rb = ReportBuilder(
-        target, output_path=output,
-        external_data_source_builders={"from_endpoint": lambda _e: InMemorySPARQLDataSource(graph)})
+        target, output_path=output, external_data_source_builders={"from_endpoint": lambda _e: InMemorySPARQLDataSource(graph)}
+    )
     rb.make_document()
     return (output / "report.html").read_text()
 
@@ -58,6 +59,7 @@ def test_parallel_and_sequential_outputs_match(tmp_path_factory):
 
 def test_no_prewarm_temp_dirs_leak(tmp_path):
     import tempfile
+
     before = set(p.name for p in __import__("pathlib").Path(tempfile.gettempdir()).glob("eds4jinja2-prewarm-*"))
     _build(tmp_path, parallelism=4)
     after = set(p.name for p in __import__("pathlib").Path(tempfile.gettempdir()).glob("eds4jinja2-prewarm-*"))

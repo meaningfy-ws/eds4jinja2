@@ -9,6 +9,7 @@ from eds4jinja2.models.data_source import DataSource
 
 class HTTPDataSource(DataSource):
     """
-        Fetching data by HTTP calls
+    Fetching data by HTTP calls
     """
+
     # TODO:
