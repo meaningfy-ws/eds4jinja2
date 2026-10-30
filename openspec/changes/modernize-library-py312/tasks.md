@@ -4,8 +4,8 @@
 
 - [x] 1.1 Refresh `openspec/schemas/meaningfy/` to skillery 3.7.0
 - [x] 1.2 Replace the `AGENTS.md` symlink with the canonical file; reduce `CLAUDE.md` to the pointer (quality-gates: Canonical agent file)
-- [ ] 1.3 Regenerate `.claude/memory/MEMORY.md` and update `openspec/config.yaml` `context:` to Poetry / 3.12–3.14 / gates
-- [ ] 1.4 `openspec validate --all --strict` passes (fix spec-format issues only)
+- [x] 1.3 Regenerate `.claude/memory/MEMORY.md` and update `openspec/config.yaml` `context:` to Poetry / 3.12–3.14 / gates
+- [x] 1.4 `openspec validate --all --strict` passes (fix spec-format issues only)
 
 ## 2. Poetry and gates (PR 2)
 
@@ -26,18 +26,18 @@
 - [x] 3.4 Bump rdflib, SPARQLWrapper, pyoxigraph; fix breakage
 - [x] 3.5 Bump pydantic, Jinja2, click, PyYAML, requests; fix breakage
 - [x] 3.6 Bump pytest, pytest-bdd, pytest-cov, import-linter, ruff, mypy; fix step definitions/paths
-- [ ] 3.7 Ruff `UP` autofix pass for 3.12 syntax; `make check-all` green on 3.12, 3.13, 3.14
+- [x] 3.7 Ruff `UP` autofix pass for 3.12 syntax; `make check-all` green on 3.12, 3.13, 3.14
 
 ## 4. Release 2.0.0 (PR 3, final commits)
 
-- [ ] 4.1 `eds4jinja2/VERSION` → `2.0.0`; `CHANGELOG.md` 2.0.0 with a Breaking section (3.11 dropped, Poetry, every API break + migration)
-- [ ] 4.2 Smoke-test the wheel in a fresh venv: `mkreport --help` exits 0; `import bs4` fails (library-packaging: Installed wheel provides the CLI and runtime only)
-- [ ] 4.3 Update `README.md` install/dev instructions and the docs pages that mention tox, pip extras or Python versions
-- [ ] 4.4 Find downstream dependents of eds4jinja2; confirm each pins `<2` or is ready for 2.0.0 before publishing
+- [x] 4.1 `eds4jinja2/VERSION` → `2.0.0`; `CHANGELOG.md` 2.0.0 with a Breaking section (3.11 dropped, Poetry, every API break + migration)
+- [x] 4.2 Smoke-test the wheel in a fresh venv: `mkreport --help` exits 0; `import bs4` fails (library-packaging: Installed wheel provides the CLI and runtime only)
+- [x] 4.3 Update `README.md` install/dev instructions and the docs pages that mention tox, pip extras or Python versions
+- [x] 4.4 Find downstream dependents of eds4jinja2; confirm each pins `<2` or is ready for 2.0.0 before publishing
 
 ## Roadmap
 
-- [x] 1.1 · [ ] 1.2 · [ ] 1.3 · [ ] 1.4 · [ ] 2.1 · [ ] 2.2 · [ ] 2.3 · [ ] 2.4 · [ ] 2.5 · [ ] 2.6 · [ ] 2.7 · [ ] 2.8 · [ ] 3.1 · [ ] 3.2 · [ ] 3.3 · [ ] 3.4 · [ ] 3.5 · [ ] 3.6 · [ ] 3.7 · [ ] 4.1 · [ ] 4.2 · [ ] 4.3 · [ ] 4.4
+- [x] 1.1 · [x] 1.2 · [x] 1.3 · [x] 1.4 · [x] 2.1 · [x] 2.2 · [x] 2.3 · [x] 2.4 · [x] 2.5 · [x] 2.6 · [x] 2.7 · [x] 2.8 · [x] 3.1 · [x] 3.2 · [x] 3.3 · [x] 3.4 · [x] 3.5 · [x] 3.6 · [x] 3.7 · [x] 4.1 · [x] 4.2 · [x] 4.3 · [x] 4.4
 
 ## Verification
 

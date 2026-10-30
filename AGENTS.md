@@ -52,16 +52,17 @@ commits reference the change.
   `services`. Boundaries are checked by `make check-architecture` (`.importlinter`). *(This
   supersedes the earlier `adapters/builders/entrypoints` layout — see the archived
   `cosmic-layer-restructure` change.)*
-- **Tooling is pip + tox + `pyproject.toml`** (setuptools backend; NOT Poetry): runtime and
-  `test`/`docs`/`dev` dependencies are declared in `pyproject.toml` (no `setup.py`, no
-  `requirements*.txt`). Build with `python -m build`; run tests via `tox` (envs `py311`, `py312`).
-  The `make` targets are the dev/CI interface: `make install-all`, `make test-unit`,
-  `make test-features`, `make test-all`, `make check-architecture`, `make build`.
-- Target interpreters: **Python 3.11 and 3.12** (3.8 dropped — incompatible with the numpy/pandas
-  versions needed for 3.12).
+- **Tooling is Poetry** (`poetry-core` backend, committed `poetry.lock`, PEP 735 dependency
+  groups `test` and `lint`); no tox. Tool config lives in root files: `ruff.toml`, `mypy.ini`,
+  `pytest.ini`, `.coveragerc`, `.importlinter`. The `make` targets are the dev/CI interface:
+  `make install`, `make check-all` (the gate CI runs: `check-version`, `lint`, `typecheck`,
+  `check-architecture`, `check-spec`, `test`), `make test-unit`, `make test-features`,
+  `make test-network`, `make build`.
+- Target interpreters: **Python 3.12, 3.13 and 3.14** (`requires-python >=3.12`).
+- Runtime dependencies use major-version ranges (`>=X.Y,<X+1`); `test`/`lint` groups are pinned `==`.
 - The package version is the single source of truth in the `eds4jinja2/VERSION` file
-  (`eds4jinja2/__init__.py` reads it at runtime; `pyproject.toml` reads it via
-  `[tool.setuptools.dynamic]` `file=`).
+  (`eds4jinja2/__init__.py` reads it at runtime). `pyproject.toml` carries a static copy that
+  `make check-version` keeps in sync.
 - Tests: `tests/unit/` (unit) and `tests/steps/` + `tests/features/` (BDD). Some SPARQL tests hit
   live remote endpoints and need network; `test_describe_uri` asserts on remote data that can
   drift.

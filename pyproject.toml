@@ -6,7 +6,7 @@
 
 [project]
 name = "eds4jinja2"
-version = "1.0.4"
+version = "2.0.0"
 description = "Embed the data source specifications in your JINJA templates directly, and enjoy the dynamic data contexts."
 readme = "README.md"
 requires-python = ">=3.12,<4.0"

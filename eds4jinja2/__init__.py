@@ -7,8 +7,8 @@
 
 __docformat__ = "restructuredtext en"
 
-# Single source of truth for the version is the sibling VERSION file, also read by
-# pyproject.toml ([tool.setuptools.dynamic]) and docs/conf.py. Never hand-edit a literal here.
+# Single source of truth for the version is the sibling VERSION file; pyproject.toml carries a copy
+# that `make check-version` keeps in sync. Never hand-edit a literal here.
 import pathlib
 
 __version__ = (pathlib.Path(__file__).parent / "VERSION").read_text(encoding="utf-8").strip()

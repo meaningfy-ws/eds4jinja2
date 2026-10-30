@@ -58,3 +58,13 @@ type-split test dirs (`tests/unit` + `tests/steps`/`tests/features` already spli
 | Major versions? | **Latest majors, fix breakage.** |
 | Prune deps? | **Yes, prune.** |
 | API break / version? | **Allow breaks → 2.0.0.** |
+
+## Downstream dependents (task 4.4, `gh search code eds4jinja2 --owner meaningfy-ws`, 2026-10-30)
+
+| Repo | Pin | Affected by 2.0.0? |
+|---|---|---|
+| lam-validator | `eds4jinja2==0.1.34` | No |
+| lam-workflow | `eds4jinja2==0.2.0` | No |
+| rdf-fingerprinter-ws | `eds4jinja2~=0.2.0` | No |
+| rdf-differ-ws | `eds4jinja2>=0.3.1,<0.4` | No. Its openspec notes ask for relaxed rdflib/requests pins, which 2.0.0 provides. |
+| **lam4doc** | `git+https://github.com/meaningfy-ws/eds4jinja2@master` | **Yes. It tracks `master`, so it gets 2.0.0 on merge.** It needs a pin (`@1.0.4` tag or `eds4jinja2<2`) before this merges. |

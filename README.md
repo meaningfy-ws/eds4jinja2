@@ -63,7 +63,7 @@ pip install eds4jinja2
 pip install eds4jinja2[oxigraph]
 ```
 
-Requires Python 3.11+.
+Requires Python 3.12+ (tested on 3.12, 3.13 and 3.14). On Python 3.11, pin `eds4jinja2<2`.
 
 ## Quick start
 
