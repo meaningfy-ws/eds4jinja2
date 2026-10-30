@@ -23,8 +23,8 @@
 - [x] 3.1 `requires-python = ">=3.12"`, classifiers 3.12–3.14, CI matrix 3.12/3.13/3.14 in `main.yml` and `publish.yml` (library-packaging: Supported Python versions)
 - [x] 3.2 Prune: `toml` → `tomllib` with tests TC-001…TC-003; remove `py-singleton` (D-3) with test TC-004; move `beautifulsoup4` to the test group; drop `tabulate`, `pytest-subtests` (library-packaging: TOML files are read with the standard library; Installed wheel provides the CLI and runtime only)
 - [x] 3.3 Bump numpy + pandas (+ xlrd, openpyxl) to latest majors; fix breakage
-- [ ] 3.4 Bump rdflib, SPARQLWrapper, pyoxigraph; fix breakage
-- [ ] 3.5 Bump pydantic, Jinja2, click, PyYAML, requests; fix breakage
+- [x] 3.4 Bump rdflib, SPARQLWrapper, pyoxigraph; fix breakage
+- [x] 3.5 Bump pydantic, Jinja2, click, PyYAML, requests; fix breakage
 - [ ] 3.6 Bump pytest, pytest-bdd, pytest-cov, import-linter, ruff, mypy; fix step definitions/paths
 - [ ] 3.7 Ruff `UP` autofix pass for 3.12 syntax; `make check-all` green on 3.12, 3.13, 3.14
 

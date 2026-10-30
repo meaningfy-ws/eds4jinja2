@@ -37,16 +37,16 @@ dependencies = [
     "numpy>=2.5.4,<3",
     "PyYAML>=6.0.3,<7",
     "python-calamine>=0.9,<1",  # pandas read_excel engine for .xls and .xlsx (replaces xlrd + openpyxl)
-    "click>=8.1.8,<9",
-    "rdflib>=7.0.0,<8",
+    "click>=8.5.0,<9",
+    "rdflib>=7.6.0,<8",
     "pydantic>=2.14.2,<3",
-    "requests>=2.31.0,<3",
+    "requests>=2.34.2,<3",
 ]
 
 [project.optional-dependencies]
 # Opt-in fast in-memory SPARQL engine for the built-in graph store (the `oxigraph` engine of
 # `from_rdf` / make_graph_store). The rdflib engine needs no extra.
-oxigraph = ["pyoxigraph~=0.4"]
+oxigraph = ["pyoxigraph>=0.5.13,<0.6"]
 
 [project.urls]
 Homepage = "https://github.com/meaningfy-ws/eds4jinja2"

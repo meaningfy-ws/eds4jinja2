@@ -47,7 +47,7 @@ def output_path_contains_the_file(scenarioContext, sample_data_path, output, fil
 @then(parsers.parse("Then file contains the {content}"))
 def then_file_contains_the_content(scenarioContext, content):
     with open(pathlib.Path(scenarioContext["outputFile"])) as htmlFile:
-        parsed_html = BeautifulSoup(htmlFile.read())
+        parsed_html = BeautifulSoup(htmlFile.read(), features="html.parser")
         assert content in parsed_html.find("h1").text
 
     path = pathlib.Path(scenarioContext["outputPath"])

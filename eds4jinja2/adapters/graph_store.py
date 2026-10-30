@@ -89,15 +89,15 @@ class OxigraphGraphStore(GraphStorePort):
 
     def load(self, source: str) -> None:
         source = str(source)
-        media_type = _media_type_for(source)
+        rdf_format = _import_pyoxigraph().RdfFormat.from_media_type(_media_type_for(source))
         if _is_url(source):
             import requests
 
             response = requests.get(source)
             response.raise_for_status()
-            self._store.load(response.content, media_type)
+            self._store.load(response.content, format=rdf_format)
         else:
-            self._store.load(path=source, format=media_type)
+            self._store.load(path=source, format=rdf_format)
 
     def query(self, sparql: str):
         return self._store.query(sparql)

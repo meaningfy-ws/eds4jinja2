@@ -94,7 +94,7 @@ def replace_strings_in_tabular(
     if mark_touched_rows:
         mask = np.column_stack(
             [
-                data_frame[col].str.contains("(" + "|".join(escaped_value_mapping_dict.keys()) + ")", na=False)
+                data_frame[col].str.contains("(?:" + "|".join(escaped_value_mapping_dict.keys()) + ")", na=False)
                 for col in obj_columns
             ]
         )

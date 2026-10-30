@@ -83,7 +83,7 @@ def test_report_builder_make_document(sample_data_path):
     after_listener.assert_called_once()
 
     with open(pathlib.Path(sample_data_path) / "output" / "main.html") as htmlFile:
-        parsed_html = BeautifulSoup(htmlFile.read())
+        parsed_html = BeautifulSoup(htmlFile.read(), features="html.parser")
         assert parsed_html.find("h1").text in "Cellar SPARQL endpoint fragment"
 
     path = pathlib.Path(sample_data_path) / "output"
