@@ -15,8 +15,8 @@
 - [x] 2.4 Add `mypy.ini` + `make typecheck`; fix or override per design D-4
 - [x] 2.5 ~~Coverage floor~~ — deferred to a follow-up change (DEC-10)
 - [x] 2.6 Tighten `.importlinter` with the external-package contracts (quality-gates: Layer contracts enforced on every pull request)
-- [ ] 2.7 Add `make check-version`, `make check-spec` and `make check-all`; `main.yml` runs `make check-all` and `poetry check --lock` (quality-gates: One aggregate gate)
-- [ ] 2.8 Add `SECURITY.md`
+- [x] 2.7 Add `make check-version`, `make check-spec` and `make check-all`; `main.yml` runs `make check-all` and `poetry check --lock` (quality-gates: One aggregate gate)
+- [x] 2.8 Add `SECURITY.md`
 
 ## 3. Python 3.12+ and latest dependencies (PR 3)
 
