@@ -1,56 +1,98 @@
-.PHONY: test install install-all install-dev build publish-pipy test-unit test-features test-all test-network generate-tests-from-features install-antora build-docs clean-docs serve-docs preview-docs
+SHELL = /bin/bash -o pipefail
+
+.PHONY: help install install-poetry lock build publish-pypi check-version lint format lint-fix typecheck \
+	check-architecture check-spec test test-unit test-features test-network check-quality check-all \
+	generate-tests-from-features install-antora build-docs clean-docs serve-docs preview-docs
 
 include .env-dev
 
 BUILD_PRINT = \e[1;34mSTEP: \e[0m
+END_BUILD_PRINT = \e[0m
+
+PACKAGE_NAME = eds4jinja2
+TEST_PATH = tests
+OPENSPEC = npx -y @fission-ai/openspec@1.4.1
+# Coverage is reported, not gated (modernize-library-py312 DEC-10).
+COV_FLAGS = --cov=$(PACKAGE_NAME) --cov-report=term --cov-report=xml:coverage.xml
+
+.DEFAULT_GOAL := help
+
+help: ## Display available targets
+	@ grep -hE '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort \
+		| awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-26s\033[0m %s\n", $$1, $$2}'
 
 #-----------------------------------------------------------------------------
-# Basic commands
+# Install / build
 #-----------------------------------------------------------------------------
 
-install-all:
-	@ echo -e "$(BUILD_PRINT)Installing the package with its dev extra$(END_BUILD_PRINT)"
-	@ python -m pip install --upgrade pip
-	@ python -m pip install ".[dev]"
+install-poetry: ## Install Poetry if not present
+	@ command -v poetry >/dev/null || python -m pip install "poetry>=2.0.0,<3.0.0"
 
-install-dev:
-	@ echo -e "$(BUILD_PRINT)Installing the package (editable) with its dev extra$(END_BUILD_PRINT)"
-	@ python -m pip install --upgrade pip
-	@ python -m pip install -e ".[dev]"
+install: install-poetry ## Install the package with all dependency groups
+	@ echo -e "$(BUILD_PRINT)Installing dependencies$(END_BUILD_PRINT)"
+	@ poetry install --with test,lint,dev --all-extras
 
+lock: ## Update poetry.lock
+	@ poetry lock
 
-install:
-	@ echo "$(BUILD_PRINT)Installing the package (runtime only)"
-	@ python -m pip install --upgrade pip
-	@ python -m pip install .
+build: check-version ## Build the sdist and wheel into dist/
+	@ echo -e "$(BUILD_PRINT)Building the distribution$(END_BUILD_PRINT)"
+	@ rm -rf dist
+	@ poetry build
 
+publish-pypi: build ## Check and upload dist/ to PyPI (CI uses Trusted Publishing instead)
+	@ poetry run twine check dist/*
+	@ poetry run twine upload --skip-existing dist/*
 
-test: test-unit
+#-----------------------------------------------------------------------------
+# Quality gates — `make check-all` is the gate CI runs
+#-----------------------------------------------------------------------------
 
+check-version: ## Fail when pyproject's version drifts from eds4jinja2/VERSION
+	@ test "$$(poetry version -s)" = "$$(cat $(PACKAGE_NAME)/VERSION)" \
+		|| (echo "pyproject version $$(poetry version -s) != VERSION $$(cat $(PACKAGE_NAME)/VERSION)" && exit 1)
 
-check-architecture:
-	@ echo -e "$(BUILD_PRINT)Checking layer boundaries (import-linter) ...$(END_BUILD_PRINT)"
-	@ lint-imports
+lint: ## Ruff lint and format check
+	@ echo -e "$(BUILD_PRINT)Ruff$(END_BUILD_PRINT)"
+	@ poetry run ruff check $(PACKAGE_NAME) $(TEST_PATH)
+	@ poetry run ruff format --check $(PACKAGE_NAME) $(TEST_PATH)
 
+format: ## Format code with Ruff
+	@ poetry run ruff format $(PACKAGE_NAME) $(TEST_PATH)
 
-test-unit:
-	@ echo -e "$(BUILD_PRINT)Unit Testing ...$(END_BUILD_PRINT)"
-	@ tox -e unit
+lint-fix: ## Ruff auto-fix
+	@ poetry run ruff check --fix $(PACKAGE_NAME) $(TEST_PATH)
 
+typecheck: ## mypy type check of the package
+	@ echo -e "$(BUILD_PRINT)mypy$(END_BUILD_PRINT)"
+	@ poetry run mypy $(PACKAGE_NAME)
 
-test-features:
-	@ echo -e "$(BUILD_PRINT)Gherkin Features Testing ...$(END_BUILD_PRINT)"
-	@ tox -e features
+check-architecture: ## Check layer boundaries (import-linter)
+	@ echo -e "$(BUILD_PRINT)Checking layer boundaries (import-linter)$(END_BUILD_PRINT)"
+	@ poetry run lint-imports --config .importlinter
 
+check-spec: ## Validate the OpenSpec spine strictly (needs Node.js)
+	@ echo -e "$(BUILD_PRINT)openspec validate --strict$(END_BUILD_PRINT)"
+	@ $(OPENSPEC) validate --all --strict
 
-test-all:
-	@ echo "$(BUILD_PRINT)Running all tests (excludes live-network tests)"
-	@ tox
+test: ## All non-network tests, with coverage report
+	@ echo -e "$(BUILD_PRINT)Running all tests (excludes live-network tests)$(END_BUILD_PRINT)"
+	@ poetry run pytest $(TEST_PATH) -m "not network" $(COV_FLAGS) --junitxml=junit_report.xml
 
-test-network:
-	@ echo -e "$(BUILD_PRINT)Running live-network integration tests (need network)$(END_BUILD_PRINT)"
-	@ tox -e network
+test-unit: ## Unit tests only
+	@ poetry run pytest $(TEST_PATH)/unit -m "not network"
 
+test-features: ## Gherkin feature tests only
+	@ poetry run pytest $(TEST_PATH)/steps -m "not network"
+
+test-network: ## Live-network integration tests (need network)
+	@ poetry run pytest $(TEST_PATH) -m network
+
+check-quality: check-version lint typecheck check-architecture check-spec ## Static checks
+	@ echo -e "$(BUILD_PRINT)All quality checks passed$(END_BUILD_PRINT)"
+
+check-all: check-quality test ## The full gate: static checks + tests
+	@ echo -e "$(BUILD_PRINT)Full verification suite passed$(END_BUILD_PRINT)"
 
 #-----------------------------------------------------------------------------
 # Gherkin feature and acceptance test generation commands
@@ -67,11 +109,11 @@ generate-tests-from-features: $(TEST_FILES)
 	@ echo "$(BUILD_PRINT)The following test files should be generated: $(TEST_FILES)"
 	@ echo "$(BUILD_PRINT)Done generating missing feature files"
 	@ echo "$(BUILD_PRINT)Verifying if there are any missing step implementations"
-	@ py.test --generate-missing --feature $(FEATURES_FOLDER)
+	@ poetry run pytest --generate-missing --feature $(FEATURES_FOLDER)
 
 $(addprefix $(STEPS_FOLDER)/test_, $(notdir $(STEPS_FOLDER)/%.py)): $(FEATURES_FOLDER)/%.feature
 	@ echo "$(BUILD_PRINT)Generating the testfile "$@"  from "$<" feature file"
-	@ pytest-bdd generate $< > $@
+	@ poetry run pytest-bdd generate $< > $@
 	@ sed -i  's|features|../features|' $@
 
 #-----------------------------------------------------------------------------
@@ -100,16 +142,6 @@ start-service: start-fuseki fuseki-create-test-dbs
 
 stop-service: stop-fuseki clean-data
 
-build:
-	@ echo "$(BUILD_PRINT)Building the sdist and wheel (PEP 517 via python -m build)"
-	@ rm -rf dist
-	@ python -m build
-
-publish-pipy: build
-	@ echo "$(BUILD_PRINT)Checking the distribution"
-	@ twine check dist/*
-	@ echo "$(BUILD_PRINT)Uploading the distribution"
-	@ twine upload --skip-existing dist/*
 
 #-----------------------------------------------------------------------------
 # Documentation (AsciiDoc + Antora, Node-based)
@@ -143,7 +175,3 @@ serve-docs:
 
 preview-docs: build-docs serve-docs
 
-#-----------------------------------------------------------------------------
-# Default
-#-----------------------------------------------------------------------------
-all: install test

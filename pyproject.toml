@@ -1,17 +1,16 @@
-# Standards-based packaging (PEP 517/518/621) with the setuptools backend.
-# Single source of truth for dependencies; the version is read from
-# eds4jinja2/__init__.py. No setup.py, no requirements*.txt.
-
-[build-system]
-requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.build_meta"
+# Minimal pyproject.toml — Meaningfy standard (no-src, config-in-root).
+# Only [project], [dependency-groups], [tool.poetry], [build-system] live here; every tool is
+# configured in its own root file: ruff.toml · mypy.ini · pytest.ini · .coveragerc · .importlinter
+# The single source of truth for the version is eds4jinja2/VERSION; `make check-version` fails when
+# the `version` field below drifts from it.
 
 [project]
 name = "eds4jinja2"
+version = "1.0.4"
 description = "Embed the data source specifications in your JINJA templates directly, and enjoy the dynamic data contexts."
 readme = "README.md"
-requires-python = ">=3.11"
-license = { text = "Apache License 2.0" }
+requires-python = ">=3.11,<4.0"
+license = { text = "Apache-2.0" }
 authors = [{ name = "Eugeniu Costetchi", email = "costezki.eugen@gmail.com" }]
 maintainers = [{ name = "Eugeniu Costetchi", email = "costezki.eugen@gmail.com" }]
 keywords = ["template", "jinja", "report", "report generation", "rdf", "sparql", "linked-data", "data-source", "dynamic-context"]
@@ -28,9 +27,6 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Natural Language :: English",
 ]
-# Single source of truth for the version is the eds4jinja2/VERSION file (read here at build time
-# and by eds4jinja2/__init__.py at runtime). Deps are declared below.
-dynamic = ["version"]
 dependencies = [
     "Jinja2~=3.1.2",
     "SPARQLWrapper~=2.0.0",
@@ -49,45 +45,39 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Opt-in fast in-memory SPARQL engine for the built-in graph store (the `oxigraph`
-# engine of `from_rdf` / make_graph_store). The rdflib engine needs no extra.
-oxigraph = [
-    "pyoxigraph~=0.4",
-]
-test = [
-    "tabulate~=0.9.0",
-    "coverage~=7.3.2",
-    "pytest~=7.4.2",
-    "pytest-bdd~=7.0.0",
-    "pytest-cov~=4.1.0",
-    "pytest-subtests~=0.11.0",
-    "flake8~=6.1.0",
-]
-# Documentation is authored in AsciiDoc and built by Antora (Node) — see package.json,
-# the `make build-docs` target and .github/workflows/docs.yml. There is no Python docs extra.
-dev = [
-    "eds4jinja2[test]",
-    "import-linter~=2.0",
-    "tox~=4.11.3",
-    "tox-pytest-summary~=0.1.2",
-    "build~=1.2",
-    "twine~=6.2",
-    "setuptools~=68.2.2",
-    "wheel~=0.41.2",
-]
+# Opt-in fast in-memory SPARQL engine for the built-in graph store (the `oxigraph` engine of
+# `from_rdf` / make_graph_store). The rdflib engine needs no extra.
+oxigraph = ["pyoxigraph~=0.4"]
 
 [project.urls]
 Homepage = "https://github.com/meaningfy-ws/eds4jinja2"
+Documentation = "https://meaningfy-ws.github.io/eds4jinja2/"
 
 [project.scripts]
 mkreport = "eds4jinja2.entrypoints.cli.main:build_report"
 
-[tool.setuptools.dynamic]
-version = { file = ["eds4jinja2/VERSION"] }
+[dependency-groups]
+# PEP 735 groups, installed via `poetry install --with test,lint,dev`.
+test = [
+    "tabulate~=0.9.0",
+    "pytest~=7.4.2",
+    "pytest-bdd~=7.0.0",
+    "pytest-cov~=4.1.0",
+    "pytest-subtests~=0.11.0",
+]
+lint = [
+    "ruff",
+    "mypy",
+    "import-linter~=2.0",
+]
+dev = [
+    "twine~=6.2",
+]
 
-[tool.setuptools.packages.find]
-include = ["eds4jinja2*"]
+[tool.poetry]
+# No-src layout: include the top-level package directly. VERSION ships inside the package.
+packages = [{ include = "eds4jinja2" }]
 
-[tool.setuptools.package-data]
-eds4jinja2 = ["VERSION"]
-exclude = ["tests*"]
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

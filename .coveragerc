@@ -1,0 +1,12 @@
+# Coverage is reported, not gated — the floor is a follow-up change (modernize-library-py312 DEC-10).
+[run]
+relative_files = True
+source = eds4jinja2
+omit = */__init__.py
+
+[report]
+show_missing = true
+exclude_lines =
+    pragma: no cover
+    if TYPE_CHECKING:
+    raise NotImplementedError
