@@ -63,7 +63,7 @@ builder.make_documents(
 
 | Situation | Result |
 |---|---|
-| a name, variable or type that `__validated_output_paths` refuses (outside the folder, same file, parent folder of another name, existing directory, shadowed global, wrong type) | its `ValueError`/`TypeError`; no listener; nothing written |
+| a name, variable or type that `__validated_output_paths` refuses (outside the folder, same file, parent folder of another name, existing directory, below an existing file, shadowed global, wrong type) | its `ValueError`/`TypeError`; no listener; nothing written |
 | template raises during render | the exception propagates; before-listeners ran; after-listeners not run; nothing written |
 | `check` raises for one output | that exception object propagates; later checks not called; nothing written; after-listeners not run |
 | a write fails (disk full, permission) | the `OSError` propagates; files written before it remain (no rollback — [no-go](proposal.md#no-gos)); after-listeners not run |
@@ -92,15 +92,18 @@ Unit tests in `tests/unit/services/test_report_builder_make_documents.py` (fixtu
 | Bytes on disk are the checked text | `test_bytes_on_disk_are_the_checked_text` |
 | An existing file | `test_existing_file_is_overwritten_and_others_untouched` |
 | Two outputs, one listener call each | `test_listeners_once_per_batch`, `test_listeners_get_the_configuration_context` |
-| A refused batch | `test_refused_batch_runs_no_after_listener` |
+| A failed check | `test_failed_check_runs_no_after_listener` |
 | A render failure | `test_render_failure_runs_no_after_listener` |
-| A refused name | `test_refused_name_runs_no_listener`, `test_names_of_the_same_file_write_nothing` |
+| A refused name | `test_refused_name_runs_no_listener`, `test_names_of_the_same_file_write_nothing`, `test_name_under_an_existing_file_writes_nothing` |
+| (error matrix) a write fails | `test_failed_write_runs_no_after_listener` |
 | Empty batch | `test_empty_batch` |
 
 ## Risks / Trade-offs
 
 - Writes are not atomic ([rabbit-hole](proposal.md#rabbit-holes)): the guarantee is about checks, not
-  about the disk.
+  about the disk. Everything predictable is refused before the first write (names that clash, sit
+  under an existing file or name a directory), so only a disk-level error (full, permission, a file
+  created concurrently) can leave a partial set.
 - The before-listeners run before rendering, as in `make_document()`; when rendering or a check then
   fails they have run without output.
 - `test_bytes_on_disk_are_the_checked_text` cannot fail on Linux (no newline translation there); it
@@ -109,4 +112,4 @@ Unit tests in `tests/unit/services/test_report_builder_make_documents.py` (fixtu
 
 ## Open Questions
 
-None. Release: together with `render-documents` as 2.1.0 (`tasks.md` 2.4).
+None. Release: together with `render-documents` as 2.1.0 (`tasks.md` 2.5).

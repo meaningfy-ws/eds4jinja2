@@ -47,8 +47,9 @@ Neither path accepts template variables or returns the text.
 - **P-3 Batch validation (DEC-3).** `__validated_output_paths(outputs) -> dict[str, Path]` runs
   before anything is rendered and returns name → path in iteration order. Per name it checks, in
   this order: types (P-1, `TypeError`); shadowed globals (P-1); `(output_folder / name).resolve()`
-  lies inside `output_folder.resolve()` and differs from it; the path is not an existing directory;
-  no earlier name has the same path, and neither path is a parent folder of the other. Every
+  lies inside `output_folder.resolve()` and differs from it; the path is not an existing directory
+  and no folder above it is an existing file (its folder could not be created when written); no
+  earlier name has the same path, and neither path is a parent folder of the other. Every
   refusal is a `ValueError` naming the output(s). Sub-folders are allowed (`a/b.ttl`). The helpers
   are name-mangled, so `make_documents` must stay a `ReportBuilder` method.
 - **P-4 Autoescape per batch (DEC-6).** When `autoescape` is not `None`, the batch renders on
@@ -79,6 +80,7 @@ texts = builder.render_documents(
 | a top-level variable named like an environment global (`conf`, `from_endpoint`, …) | `ValueError` naming it, before any render |
 | name absolute, `..` out of the folder, or the folder itself | `ValueError` naming it, before any render |
 | name of an existing directory | `ValueError` naming it, before any render |
+| name below an existing file (`g/b.txt` while `out/g` is a file) | `ValueError` naming it, before any render |
 | two names resolving to the same path (`a.txt`, `./a.txt`, `a.txt/`) | `ValueError` naming both, before any render |
 | one name a parent folder of another (`g`, `g/b.txt`) | `ValueError` naming both, before any render |
 | name that cannot be resolved (NUL byte, other OS error) | `ValueError` naming it, before any render |
@@ -118,6 +120,8 @@ Unit tests in `tests/unit/services/test_report_builder_render_documents.py` (fix
 | Two names of the same file | `test_names_of_the_same_file_are_refused` |
 | A name that is the parent folder of another | `test_name_that_is_a_parent_of_another_is_refused` |
 | A name of an existing directory | `test_name_of_an_existing_directory_is_refused` |
+| A name under an existing file | `test_name_under_an_existing_file_is_refused` |
+| A symlink pointing outside the folder | `test_symlink_pointing_outside_is_refused` |
 | A name with a NUL byte | `test_unreadable_name_is_refused_naming_it` |
 | A sub-folder | `test_sub_folder_name` |
 | Escaping on for one batch only | `test_autoescape_for_one_batch_only`, `test_autoescape_batch_leaves_shared_environment_untouched` |
@@ -142,4 +146,4 @@ Unit tests in `tests/unit/services/test_report_builder_render_documents.py` (fix
 
 ## Open Questions
 
-None. Release: together with `make-documents` as 2.1.0 (`tasks.md` 3.4).
+None. Release: together with `make-documents` as 2.1.0 (`tasks.md` 3.5).

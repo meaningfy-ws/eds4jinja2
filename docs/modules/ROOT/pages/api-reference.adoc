@@ -92,8 +92,8 @@ several texts, for example one per named graph. It writes no file and runs no re
 * `outputs` maps an output name to the variables of that render. A name is a relative file name
   inside the output folder; sub-folders such as `g/a.txt` are allowed. The whole batch is checked
   before anything is rendered, and each of these raises `ValueError` naming the output:
-** a name that is absolute, leaves the folder with `..`, is the folder itself, or is an existing
-   directory;
+** a name that is absolute, leaves the folder with `..`, is the folder itself, is an existing
+   directory, or sits under an existing file (`g/b.txt` while `out/g` is a file);
 ** two names of the same file (`a.txt` and `./a.txt`), or a name that is the folder of another
    (`g` and `g/b.txt`);
 ** a name that cannot be used as a path, for example one containing a NUL byte.

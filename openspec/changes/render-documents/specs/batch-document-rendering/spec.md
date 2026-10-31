@@ -38,7 +38,8 @@ any render, while nested keys SHALL be allowed. A non-`str` output name, variabl
 
 ### Requirement: Output names stay inside the output folder
 Every output name SHALL resolve (`Path.resolve()`, following existing symlinks) to a path inside the
-builder's output folder, other than the folder itself and other than an existing directory. No two
+builder's output folder, other than the folder itself, other than an existing directory, and not
+below an existing file (whose folder could not be created). No two
 names of a batch SHALL resolve to the same path, and no name SHALL resolve to a parent folder of
 another name's path. Sub-folders SHALL be allowed. A name that cannot be resolved (e.g. it contains a
 NUL byte) SHALL be refused. Every refusal SHALL raise `ValueError` naming the output before anything
@@ -50,7 +51,7 @@ is rendered.
 
 #### Scenario: Two names of the same file
 - **WHEN** a batch names `a.txt` together with `./a.txt`, `g/../a.txt` or `a.txt/`
-- **THEN** `ValueError` is raised naming both and no output is rendered
+- **THEN** `ValueError` is raised naming both names and no output is rendered
 
 #### Scenario: A name that is the parent folder of another
 - **WHEN** a batch names both `g` and `g/b.txt`, in either order
@@ -59,6 +60,16 @@ is rendered.
 #### Scenario: A name of an existing directory
 - **GIVEN** the folder `out/g` exists
 - **WHEN** an output is named `g`
+- **THEN** `ValueError` is raised naming it and no output is rendered
+
+#### Scenario: A name under an existing file
+- **GIVEN** `out/g` exists as a file
+- **WHEN** a batch names `a.txt` and `g/b.txt`
+- **THEN** `ValueError` is raised naming `g/b.txt` and no output is rendered
+
+#### Scenario: A symlink pointing outside the folder
+- **GIVEN** `out/link` is a symlink to a folder outside `out`
+- **WHEN** an output is named `link/x.txt`
 - **THEN** `ValueError` is raised naming it and no output is rendered
 
 #### Scenario: A name with a NUL byte
@@ -94,8 +105,8 @@ environment SHALL keep its own setting, before and after the batch, also when re
 When the configuration sets `parallelism > 1`, each output of a batch SHALL be rendered through the
 parallel pre-fetch with that output's variables, with the same all-or-nothing pre-warm as
 `make_document()`. When the pre-warm fails, `render_documents` SHALL raise and return nothing. When
-the record pass of an output fails, that output SHALL be rendered sequentially to memory, never
-written.
+the record pass of an output fails, a warning SHALL be logged and that output SHALL be rendered
+sequentially to memory, never written.
 
 #### Scenario: Parallel batch equals sequential batch
 - **GIVEN** a data-dependent template package whose data source counts its fetches
@@ -111,7 +122,7 @@ written.
 #### Scenario: Record-pass fallback stays in memory
 - **GIVEN** `parallelism` 4 and a template whose record pass raises
 - **WHEN** `render_documents` is called
-- **THEN** the text is returned and no file is written
+- **THEN** the text is returned, a "record pass failed" warning is logged and no file is written
 
 ### Requirement: make_document is unchanged
 `make_document()` SHALL keep writing the configured template to `output/<template name>` with the

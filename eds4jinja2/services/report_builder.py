@@ -199,13 +199,18 @@ class ReportBuilder:
     def render_documents(self, outputs: Mapping[str, Mapping[str, Any]], *, autoescape: bool | None = None) -> dict[str, str]:
         """
         Render the configured template once per output, in memory, and return output name -> text
-        in the order of ``outputs``. Writes no file and runs no rendering listener.
+        in the iteration order of ``outputs``. Writes no file and runs no rendering listener.
 
         :param outputs: output name (a relative path inside the output folder) -> template variables
         :param autoescape: when given, the autoescaping of this batch; the builder's environment is
                            left as it is
-        :raises ValueError: before any render, for a name outside the output folder, two names of
-                            the same file, or a variable named ``conf`` (reserved for the configuration)
+        :raises TypeError: before any render: a non-str name, non-Mapping variables or a non-str
+                           variable name
+        :raises ValueError: before any render: a top-level variable shadowing an environment global
+                            (``conf``, the data-source builders, the helpers); a name outside the
+                            output folder, of an existing directory, under an existing file or that
+                            cannot be resolved; two names of the same file, or a name that is a
+                            parent folder of another name
         """
         self.__validated_output_paths(outputs)
         return self.__render_batch(outputs, autoescape)
@@ -256,9 +261,10 @@ class ReportBuilder:
 
         :raises TypeError: a non-str name, non-Mapping variables or a non-str variable name
         :raises ValueError: a top-level variable shadowing an environment global (``conf``, the
-                            data-source builders, the helpers), a name outside the output folder or
-                            of an existing directory, two names of the same file, or a name that is
-                            a parent folder of another name
+                            data-source builders, the helpers); a name outside the output folder,
+                            of an existing directory, under an existing file or that cannot be
+                            resolved; two names of the same file, or a name that is a parent folder
+                            of another name
         """
         paths: dict[str, pathlib.Path] = {}
         for name, variables in outputs.items():
@@ -273,6 +279,9 @@ class ReportBuilder:
             path = self.__output_path(name)
             if path.is_dir():
                 raise ValueError(f"output {name!r} names an existing directory")
+            blocker = next((parent for parent in path.parents if parent.is_file()), None)
+            if blocker is not None:  # its folder could not be created at write time
+                raise ValueError(f"output {name!r}: {str(blocker)!r} is an existing file, not a folder")
             for other, other_path in paths.items():
                 if other_path == path:
                     raise ValueError(f"outputs {other!r} and {name!r} name the same file")

@@ -50,7 +50,7 @@ and run no listener.
 - **WHEN** a batch of two outputs is made
 - **THEN** each listener ran exactly once, with the builder's `configuration_context`
 
-#### Scenario: A refused batch
+#### Scenario: A failed check
 - **WHEN** a check raises
 - **THEN** the before-listener ran once and the after-listener did not run
 

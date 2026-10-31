@@ -52,9 +52,10 @@ one of them passed its check, with the rendering listeners run once for the batc
 - Writing several files is not atomic; a disk error mid-batch can still leave some files. Checks
   are what this change guarantees, not transactional writes.
 - Sub-folders in names must be created before writing.
-- Two names can point to one file (`a.txt`, `./a.txt`) or one name can be the folder of another
-  (`g`, `g/b.txt`); `render-documents` refuses both before anything runs, so no output is lost
-  silently.
+- Two names can point to one file (`a.txt`, `./a.txt`), one name can be the folder of another
+  (`g`, `g/b.txt`), or a name can sit under an existing file (`g/b.txt` while `out/g` is a file);
+  `render-documents` refuses all three before anything runs, so neither a lost output nor a
+  predictable mid-batch write failure can occur.
 
 ## No-gos
 

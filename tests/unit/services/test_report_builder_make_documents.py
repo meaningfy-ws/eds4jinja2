@@ -3,6 +3,8 @@ ReportBuilder.make_documents — check every rendered output, then write them al
 (OpenSpec change `make-documents`, capability `checked-document-writing`).
 """
 
+import pathlib
+
 import pytest
 
 from tests.unit.services.conftest import listen
@@ -35,11 +37,11 @@ def test_one_check_fails_nothing_written(tmp_path, make_builder):
         if name == "b.txt":
             raise refusal
 
+    (tmp_path / "out").mkdir()  # an empty output folder
     with pytest.raises(SyntaxError) as raised:
-        make_builder().make_documents({"a.txt": {"name": "A"}, "b.txt": {"name": "B"}}, check=check)
+        make_builder().make_documents({"a.txt": {"name": "A"}, "b.txt": {"name": "B"}, "c.txt": {"name": "C"}}, check=check)
     assert raised.value is refusal  # propagated unchanged
-    assert not (tmp_path / "out" / "a.txt").exists()
-    assert not (tmp_path / "out" / "b.txt").exists()
+    assert not any((tmp_path / "out").rglob("*"))
 
 
 def test_no_check(tmp_path, make_builder):
@@ -64,7 +66,7 @@ def test_listeners_once_per_batch(tmp_path, make_builder):
     assert calls == ["before", "after"]
 
 
-def test_refused_batch_runs_no_after_listener(tmp_path, make_builder):
+def test_failed_check_runs_no_after_listener(tmp_path, make_builder):
     builder = make_builder()
     calls = listen(builder)
     with pytest.raises(SyntaxError):
@@ -148,3 +150,29 @@ def test_listeners_get_the_configuration_context(make_builder):
     builder.add_after_rendering_listener(received.append)
     builder.make_documents({"a.txt": {"name": "A"}})
     assert received == [builder.configuration_context, builder.configuration_context]
+
+
+def test_name_under_an_existing_file_writes_nothing(tmp_path, make_builder):
+    builder = make_builder()
+    (tmp_path / "out").mkdir()
+    (tmp_path / "out" / "g").write_text("a file, not a folder")
+    with pytest.raises(ValueError):
+        builder.make_documents({"a.txt": {"name": "A"}, "g/b.txt": {"name": "B"}})
+    assert not (tmp_path / "out" / "a.txt").exists()
+
+
+def test_failed_write_runs_no_after_listener(tmp_path, make_builder, monkeypatch):
+    builder = make_builder()
+    calls = listen(builder)
+    real_write_text = pathlib.Path.write_text
+
+    def write_text(path, *args, **kwargs):
+        if path.name == "b.txt":
+            raise OSError("disk full")
+        return real_write_text(path, *args, **kwargs)
+
+    monkeypatch.setattr(pathlib.Path, "write_text", write_text)
+    with pytest.raises(OSError, match="disk full"):
+        builder.make_documents({"a.txt": {"name": "A"}, "b.txt": {"name": "B"}})
+    assert calls == ["before"]
+    assert (tmp_path / "out" / "a.txt").exists()  # no rollback (no-go)

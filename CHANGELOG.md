@@ -12,8 +12,8 @@ All notable changes to this project are documented in this file. The format is b
 - `ReportBuilder.render_documents(outputs, *, autoescape=None)` renders the configured template once
   per named output, each with its own template variables, and returns _name → text_ in memory. It
   writes no file and runs no listener. The batch is checked before anything is rendered: output names
-  must stay inside the output folder and must not clash (two names of one file, or a name that is the
-  folder of another), and a template variable may not hide an environment global such as `conf` or
+  must stay inside the output folder and must not clash (two names of one file, a name that is the
+  folder of another, or a name under an existing file), and a template variable may not hide an environment global such as `conf` or
   `from_endpoint`. Autoescaping can be set per batch without changing the builder's
   environment. It uses the parallel pre-fetch when `parallelism` > 1. (OpenSpec change
   `render-documents`)

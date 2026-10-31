@@ -74,10 +74,11 @@ def test_parallel_batch_equals_sequential_batch(tmp_path, make_builder):
     assert seq == par == {"a.txt": "A:3", "b.txt": "B:3"}
 
 
-def test_record_pass_fallback_stays_in_memory(tmp_path, make_builder):
+def test_record_pass_fallback_stays_in_memory(tmp_path, make_builder, caplog):
     builder = make_builder(RECORD_FAILS_TEMPLATE, parallelism=4)
     calls = listen(builder)
     assert builder.render_documents({"a.txt": {"name": "A"}}) == {"a.txt": "A:3"}
+    assert "record pass failed" in caplog.text
     assert not (tmp_path / "out").exists()
     assert calls == []
 
@@ -91,8 +92,9 @@ def test_make_document_after_parallel_batch_still_writes(tmp_path, make_builder)
 
 @pytest.mark.parametrize("twin", ["./a.txt", "g/../a.txt", "a.txt/"])
 def test_names_of_the_same_file_are_refused(tmp_path, make_builder, twin):
-    with pytest.raises(ValueError, match="same file"):
+    with pytest.raises(ValueError, match="same file") as raised:
         make_builder(template="{{ 1 / 0 }}").render_documents({"a.txt": {}, twin: {}})
+    assert "'a.txt'" in str(raised.value) and repr(twin) in str(raised.value)
 
 
 def test_unreadable_name_is_refused_naming_it(tmp_path, make_builder):
@@ -180,3 +182,20 @@ def test_name_of_an_existing_directory_is_refused(tmp_path, make_builder):
 def test_wrong_types_raise_type_error_before_render(make_builder, batch):
     with pytest.raises(TypeError):
         make_builder(template="{{ 1 / 0 }}").render_documents({"ok.txt": {}, **batch})
+
+
+def test_symlink_pointing_outside_is_refused(tmp_path, make_builder):
+    builder = make_builder(template="{{ 1 / 0 }}")
+    (tmp_path / "outside").mkdir()
+    (tmp_path / "out").mkdir()
+    (tmp_path / "out" / "link").symlink_to(tmp_path / "outside", target_is_directory=True)
+    with pytest.raises(ValueError, match="'link/x.txt'"):
+        builder.render_documents({"link/x.txt": {}})
+
+
+def test_name_under_an_existing_file_is_refused(tmp_path, make_builder):
+    builder = make_builder(template="{{ 1 / 0 }}")
+    (tmp_path / "out").mkdir()
+    (tmp_path / "out" / "g").write_text("a file, not a folder")
+    with pytest.raises(ValueError, match="'g/b.txt'"):
+        builder.render_documents({"a.txt": {}, "g/b.txt": {}})
