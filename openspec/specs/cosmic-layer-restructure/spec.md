@@ -1,7 +1,9 @@
 # cosmic-layer-restructure Specification
 
 ## Purpose
-TBD - created by archiving change cosmic-layer-restructure. Update Purpose after archive.
+How the package is layered: the four Cosmic-Python layers (`models`, `adapters`, `services`,
+`entrypoints`), the dependency direction enforced by import-linter, and the stable top-level public
+API. Origin: change `cosmic-layer-restructure`.
 ## Requirements
 ### Requirement: The package is organised into the four Cosmic-Python layers
 
@@ -67,14 +69,4 @@ after the move, and the package `__all__` SHALL be unchanged.
   `Engine`, `add_relative_figures`, `replace_strings_in_tabular`, `NamespaceInventory` — are
   imported from `eds4jinja2`
 - **THEN** every name resolves and `eds4jinja2.__all__` equals the pre-change set
-
-### Requirement: The version is bumped to 1.0.0 to signal the breaking move
-
-The package version SHALL be bumped to `1.0.0` to signal the breaking deep-import-path move,
-read from the single-source-of-truth `VERSION` file.
-
-#### Scenario: VERSION reads 1.0.0
-- **WHEN** the package version is read (via `eds4jinja2.__version__` or the `eds4jinja2/VERSION`
-  file)
-- **THEN** it is `1.0.0`
 

@@ -1,7 +1,9 @@
 # documentation-site Specification
 
 ## Purpose
-TBD - created by archiving change docs-asciidoc-antora. Update Purpose after archive.
+How the documentation is written, built and published: AsciiDoc sources built by Antora, local
+`make` targets, and the GitHub Actions workflow that builds on pull requests and deploys to GitHub
+Pages from `master`. Origin: change `docs-asciidoc-antora`.
 ## Requirements
 ### Requirement: Documentation is authored in AsciiDoc and built by Antora
 
