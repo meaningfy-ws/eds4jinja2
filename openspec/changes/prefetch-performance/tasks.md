@@ -6,12 +6,13 @@
 
 ## 1. Caches
 
-- [ ] 1.1 Add `MemoryFetchCache` (`get` returns a deep copy) and rename the pickle cache to
+- [ ] 1.1 Add `MemoryFetchCache` (`put` and `get` both deep-copy, P-4) and rename the pickle cache to
   `DiskFetchCache`, updating `tests/unit/services/test_parallel_executor.py` (P-4; Spec: The fetch
   cache is in memory by default and always cleaned up; Identical queries are fetched once — "A stored
   result is a copy")
 - [ ] 1.2 `FetchCoordinator`: default to `MemoryFetchCache`; in `Phase.RENDER` store a live result
-  whose error is `None`, never one with an error (P-3; Spec: Identical queries are fetched once — "A
+  whose error is `None` and return `cache.get(key)`, never the live object; never store a result with
+  an error (P-3; Spec: Identical queries are fetched once — "A
   failed fetch is retried")
 
 ## 2. Configuration
@@ -66,5 +67,5 @@
 
 ## Verification
 
-`make check-all`; `make benchmark` on `master` and on the branch; `openspec validate
+`make check-all`; the benchmark on the branch and in a 2.1.1 virtualenv (P-6); `openspec validate
 prefetch-performance --strict`; clarity gate ≥9/10 on this PLAN before task 1.1.
