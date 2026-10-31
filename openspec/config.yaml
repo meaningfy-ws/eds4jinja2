@@ -12,7 +12,7 @@ context: |
   Tooling: Poetry (poetry-core, committed lock, PEP 735 groups test/lint); no tox. `make check-all`
   is the gate (ruff, mypy, import-linter, openspec validate --strict, pytest). Target interpreters:
   Python 3.12, 3.13, 3.14.
-  Top-level package: eds4jinja2 (no /src). Default branch: master.
+  Top-level package: eds4jinja2 (no /src). GitFlow: features PR into develop; master = releases.
   Commits: Conventional Commits (imperative, no trailing punctuation).
   Artifact vocabulary: EPIC ≡ proposal.md (Shape-Up work shape);
   PLAN ≡ design.md + tasks.md (clarity gate scores the pair ≥9/10);

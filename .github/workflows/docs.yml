@@ -11,7 +11,7 @@ on:
       - '.github/workflows/docs.yml'
       - 'README.md'
   pull_request:
-    branches: [ master ]
+    branches: [ master, develop ]
     paths:
       - 'docs/**'
       - 'package.json'

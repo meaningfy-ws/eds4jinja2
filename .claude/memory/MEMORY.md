@@ -8,7 +8,8 @@
 
 - Library: embeds data-source specs (RDF/SPARQL + tabular files) into Jinja2 templates for
   dynamic report generation. PyPI package; CLI entrypoint `mkreport`.
-- Top-level package: `eds4jinja2/` (no `/src`). Default branch: `master`.
+- Top-level package: `eds4jinja2/` (no `/src`). GitFlow since 2026-10-31: features PR into
+  `develop`; `master` holds releases only (see AGENTS.md "GitFlow").
 - Layers: `entrypoints → services → adapters → models` (models innermost, pure), enforced by
   `.importlinter` (also bans I/O/framework imports in `models` and remote I/O/CLI in `services`).
 - Tooling: Poetry (committed `poetry.lock`, PEP 735 groups `test`/`lint`), no tox. `make check-all`
@@ -40,6 +41,8 @@
 
 ## Release
 
-- Publish = GitHub Release tagged `X.Y.Z` (no `v`) on the merge commit, notes = the CHANGELOG
+- Publish = `release/X.Y.Z` from `develop` → PR into `master` → GitHub Release tagged `X.Y.Z` (no
+  `v`) on the merge commit, notes = the CHANGELOG
   section; `publish.yml` uploads to PyPI via Trusted Publishing. An upload timeout is transient:
-  check PyPI shows nothing for the version, then re-run the failed job.
+  check PyPI shows nothing for the version, then re-run the failed job. Afterwards merge `master`
+  back into `develop`.

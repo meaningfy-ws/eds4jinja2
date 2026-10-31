@@ -58,8 +58,9 @@ make preview-docs      # build, then serve at http://localhost:8088
 make clean-docs        # remove docs/build
 ----
 
-On every pull request a GitHub Actions workflow builds the site; on push to `master` it deploys to
-*GitHub Pages* at https://meaningfy-ws.github.io/eds4jinja2/.
+On every pull request to `develop` or `master` a GitHub Actions workflow builds the site; on push to
+`master` (a release, under GitFlow) it deploys to *GitHub Pages* at
+https://meaningfy-ws.github.io/eds4jinja2/, so the site documents the released version.
 
 == Version single source of truth
 

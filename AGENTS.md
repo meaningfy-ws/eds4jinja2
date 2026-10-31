@@ -66,7 +66,19 @@ commits reference the change.
 - Tests: `tests/unit/` (unit) and `tests/steps/` + `tests/features/` (BDD). Some SPARQL tests hit
   live remote endpoints and need network; `test_describe_uri` asserts on remote data that can
   drift.
-- Default branch is **`master`** (the PR target). Branch off it; never commit to it directly.
+- **GitFlow** (meaningfy-git-workflow, meaningfy-release). Two long-lived branches, never committed
+  to directly:
+  - **`develop`** — integration. `feature/<descriptor>` branches off it and returns by PR into it.
+  - **`master`** — released history only; every merge into it is a release, tagged `X.Y.Z` (no `v`
+    prefix, as `2.0.0`–`2.1.1`). The docs site deploys from `master`, so it shows released docs.
+  - **Release:** cut `release/X.Y.Z` from `develop` (version bump in `eds4jinja2/VERSION` +
+    `pyproject.toml`, CHANGELOG section, stabilisation fixes only) → PR into `master` → merge → GitHub
+    Release `X.Y.Z` on the merge commit with the CHANGELOG section as notes (this runs `publish.yml`,
+    PyPI Trusted Publishing) → merge `master` back into `develop`.
+  - **Hotfix:** cut `hotfix/X.Y.Z` from the released tag → PR into `master` → release as above →
+    merge back into `develop`.
+  - CI: `main.yml` runs on pull requests to and pushes on both lines; the docs build runs on pull
+    requests to both lines and deploys only on pushes to `master`.
 
 ## `.claude/` is a regenerable index — the truth is `openspec/specs/`
 
