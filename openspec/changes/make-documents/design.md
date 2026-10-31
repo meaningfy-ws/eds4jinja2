@@ -95,8 +95,13 @@ Unit tests in `tests/unit/services/test_report_builder_make_documents.py` (fixtu
 | A failed check | `test_failed_check_runs_no_after_listener` |
 | A render failure | `test_render_failure_runs_no_after_listener` |
 | A refused name | `test_refused_name_runs_no_listener`, `test_names_of_the_same_file_write_nothing`, `test_name_under_an_existing_file_writes_nothing` |
-| (error matrix) a write fails | `test_failed_write_runs_no_after_listener` |
 | Empty batch | `test_empty_batch` |
+
+Error-matrix rows without a spec scenario:
+
+| Error-matrix row | Test |
+|---|---|
+| a write fails | `test_failed_write_runs_no_after_listener` |
 
 ## Risks / Trade-offs
 

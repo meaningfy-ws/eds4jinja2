@@ -48,7 +48,8 @@ Neither path accepts template variables or returns the text.
   before anything is rendered and returns name → path in iteration order. Per name it checks, in
   this order: types (P-1, `TypeError`); shadowed globals (P-1); `(output_folder / name).resolve()`
   lies inside `output_folder.resolve()` and differs from it; the path is not an existing directory
-  and no folder above it is an existing file (its folder could not be created when written); no
+  and no folder above it (the output folder and its ancestors included) is an existing file (its
+  folder could not be created when written); no
   earlier name has the same path, and neither path is a parent folder of the other. Every
   refusal is a `ValueError` naming the output(s). Sub-folders are allowed (`a/b.ttl`). The helpers
   are name-mangled, so `make_documents` must stay a `ReportBuilder` method.

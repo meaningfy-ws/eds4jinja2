@@ -154,11 +154,13 @@ def test_listeners_get_the_configuration_context(make_builder):
 
 def test_name_under_an_existing_file_writes_nothing(tmp_path, make_builder):
     builder = make_builder()
+    calls = listen(builder)
     (tmp_path / "out").mkdir()
     (tmp_path / "out" / "g").write_text("a file, not a folder")
     with pytest.raises(ValueError):
         builder.make_documents({"a.txt": {"name": "A"}, "g/b.txt": {"name": "B"}})
     assert not (tmp_path / "out" / "a.txt").exists()
+    assert calls == []
 
 
 def test_failed_write_runs_no_after_listener(tmp_path, make_builder, monkeypatch):
