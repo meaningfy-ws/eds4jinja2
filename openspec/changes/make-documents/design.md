@@ -27,8 +27,8 @@ eds4jinja2 writes such a batch, checks it, or runs the listeners for it.
   ```
 - **P-2 Order (DEC-1, DEC-4).** before-listeners once → `render_documents(outputs, autoescape=…)` →
   `check(name, text)` for every output, in order (the first exception propagates; nothing written) →
-  write every text as UTF-8 at `__output_path(name)`, creating parent folders → after-listeners once →
-  the paths, in order. An empty `outputs` returns `[]` and runs no listener.
+  write every text as UTF-8 at its validated path, creating parent folders → after-listeners once →
+  the paths (absolute, resolved), in order. An empty `outputs` returns `[]` and runs no listener.
 - **P-3 The check (DEC-2).** Any callable; it refuses by raising. eds4jinja2 does not wrap or translate
   the exception, so the consumer sees its own error type and message.
 
@@ -41,7 +41,7 @@ builder.make_documents(
     check=lambda name, text: rdflib.Graph().parse(data=text, format="turtle"),
     autoescape=False,
 )
-# -> [Path("out/shapes-g1.ttl"), Path("out/shapes-g2.ttl")], written only if both parse
+# -> the absolute, resolved paths of out/shapes-g1.ttl and out/shapes-g2.ttl, written only if both parse
 ```
 
 ## Error matrix

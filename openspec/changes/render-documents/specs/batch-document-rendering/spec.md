@@ -22,20 +22,24 @@ a variable named `conf` SHALL be rejected with `ValueError` before any render.
 
 ### Requirement: Output names stay inside the output folder
 Every output name SHALL resolve to a path inside the builder's output folder, other than the folder
-itself; sub-folders SHALL be allowed. Otherwise `ValueError` naming the output SHALL be raised before
-anything is rendered.
+itself, and no two names of a batch SHALL resolve to the same path; sub-folders SHALL be allowed.
+Otherwise `ValueError` naming the output SHALL be raised before anything is rendered.
 
 #### Scenario: Names that leave the folder
 - **WHEN** an output is named `/tmp/x.txt`, `../x.txt` or `.`
 - **THEN** `ValueError` is raised naming it and no output is rendered
+
+#### Scenario: Two names of the same file
+- **WHEN** a batch names both `a.txt` and `./a.txt`
+- **THEN** `ValueError` is raised naming both and no output is rendered
 
 #### Scenario: A sub-folder
 - **WHEN** `render_documents({"g/a.txt": {"name": "A"}})` is called
 - **THEN** it returns `{"g/a.txt": "A"}`
 
 ### Requirement: Autoescape per batch
-When `autoescape` is given, the batch SHALL be rendered with the environment's autoescaping set to it,
-and the previous setting SHALL be restored afterwards, also when rendering fails.
+When `autoescape` is given, the batch SHALL be rendered with that autoescaping, and the builder's
+environment SHALL keep its own setting afterwards, also when rendering fails.
 
 #### Scenario: Escaping on for one batch only
 - **GIVEN** a template printing `{{ name }}` and an environment with autoescape off

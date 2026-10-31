@@ -11,12 +11,13 @@ All notable changes to this project are documented in this file. The format is b
 ### Added
 - `ReportBuilder.render_documents(outputs, *, autoescape=None)` renders the configured template once
   per named output, each with its own template variables, and returns _name → text_ in memory. It
-  writes no file and runs no listener. Output names must stay inside the output folder. Autoescaping
-  can be set per batch. It uses the parallel pre-fetch when `parallelism` > 1. (OpenSpec change
+  writes no file and runs no listener. Output names must stay inside the output folder, and two names
+  of the same file are refused. Autoescaping can be set per batch without changing the builder's
+  environment. It uses the parallel pre-fetch when `parallelism` > 1. (OpenSpec change
   `render-documents`)
 - `ReportBuilder.make_documents(outputs, *, check=None, autoescape=None)` renders a batch the same
   way, passes each text to `check(name, text)`, and writes the files only if every check passes. It
-  writes them as UTF-8 under the output folder and returns their paths in order. The rendering
+  writes them as UTF-8 under the output folder and returns their absolute paths in order. The rendering
   listeners run once per batch. The after-rendering listeners do not run when a check fails. The
   writes are not atomic: a disk error partway through can leave some files. (OpenSpec change
   `make-documents`)

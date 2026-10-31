@@ -91,10 +91,11 @@ several texts, for example one per named graph. It writes no file and runs no re
 
 * `outputs` maps an output name to the variables of that render. A name is a relative file name
   inside the output folder (sub-folders such as `g/a.txt` are allowed). A name that is absolute, leaves
-  the folder with `..`, or is the folder itself raises `ValueError` before anything is rendered.
+  the folder with `..`, or is the folder itself raises `ValueError` before anything is rendered, and
+  so do two names of the same file (`a.txt` and `./a.txt`).
 * `conf` stays the configuration global. A template variable named `conf` raises `ValueError`.
-* `autoescape`, when given, sets the environment's autoescaping for this batch only. The previous
-  setting is restored afterwards, also when rendering fails.
+* `autoescape`, when given, sets the autoescaping of this batch only. The builder's environment
+  keeps its own setting.
 * With `parallelism` > 1 each output goes through the parallel pre-fetch with its own variables. When
   the record pass fails, that output is rendered sequentially, still in memory.
 
@@ -108,13 +109,14 @@ texts = builder.render_documents(
 ----
 
 All texts are held in memory. For a very large single report, use `make_document()`, which streams
-to disk.
+to disk. A builder is not safe to use from several threads at once: the parallel pre-fetch swaps the
+environment's globals while it runs.
 
 .`make_documents(outputs, *, check=None, autoescape=None) -> list[pathlib.Path]`
 Renders a batch exactly as `render_documents` does, then passes every text to `check(name, text)`.
 The files are written only when every check returns. Each text is written as UTF-8 at its output
-name under the output folder, sub-folders are created, and the written paths are returned in the
-order of `outputs`.
+name under the output folder, sub-folders are created, and the written paths (absolute, with
+symlinks resolved) are returned in the order of `outputs`.
 
 * `check` is any callable. It refuses an output by raising. The exception propagates unchanged and
   no file of the batch is written. eds4jinja2 has no built-in format checks: bring your own parser.
@@ -133,7 +135,7 @@ builder.make_documents(
     check=lambda name, text: rdflib.Graph().parse(data=text, format="turtle"),
     autoescape=False,
 )
-# -> [Path("out/shapes-g1.ttl"), Path("out/shapes-g2.ttl")], written only if both parse
+# -> the absolute paths of out/shapes-g1.ttl and out/shapes-g2.ttl, written only if both parse
 ----
 
 == Data sources

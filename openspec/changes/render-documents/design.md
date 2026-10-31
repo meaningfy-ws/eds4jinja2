@@ -37,11 +37,15 @@ Neither path accepts template variables or returns the text.
   (each output may issue different queries).
 - **P-3 Names (DEC-3).** Before rendering anything, every name is resolved as
   `(output_folder / name).resolve()` and must lie inside `output_folder.resolve()` and differ from it;
-  otherwise `ValueError` naming the offending output. Sub-folders are allowed (`a/b.ttl`). The check
-  is a private helper `__output_path(name) -> Path`, reused by `make-documents`.
-- **P-4 Autoescape.** When `autoescape` is not `None`, set `template_env.autoescape` for the batch and
-  restore the previous value afterwards (also on error). Jinja compiles templates per environment
-  setting, so the template is fetched after setting it.
+  otherwise `ValueError` naming the offending output. Two names resolving to the same path (`a.txt`,
+  `./a.txt`) are refused too (found in review: the later write would silently replace the earlier).
+  Sub-folders are allowed (`a/b.ttl`). The batch check is a private helper
+  `__validated_output_paths(outputs) -> dict[name, Path]`, reused by `make-documents`.
+- **P-4 Autoescape.** When `autoescape` is not `None`, the batch renders on
+  `template_env.overlay(autoescape=…)`: it shares the globals (so the parallel wrapping applies) but
+  has its own autoescape and compiled-template cache, so the builder's environment is never changed,
+  on success or error. (Chosen in review over set-and-restore, which had to clear the shared cache
+  because Jinja compiles autoescaping into the template.)
 - **P-5 `make_document()` unchanged.** Same file, same bytes, same listener calls; the existing tests
   stay as they are and pass.
 
