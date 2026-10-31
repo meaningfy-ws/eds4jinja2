@@ -1,5 +1,9 @@
 <!-- The EPIC — the shaped bet. In Meaningfy the EPIC *is* the OpenSpec proposal. -->
 
+> **Parked, 2026-10-31.** Shaped and planned; the PLAN passed the clarity gate at 9.2/10.
+> Implementation has not started (all tasks open). Resume at `tasks.md` 1.1. Before resuming, check
+> that `report_builder.py` and `parallel_executor.py` still match the design's Context section.
+
 # EPIC: Prefetch performance — one pre-fetch per batch, results in memory, no repeated query
 
 ## Appetite
