@@ -30,3 +30,16 @@
 - Tests marked `network` hit live SPARQL endpoints and are excluded from the gate (`make
   test-network`); `test_describe_uri` asserts on remote data that can drift.
 - Coverage is reported, not gated; the ≥80% floor is a planned follow-up change.
+- `ReportBuilder.__with_prefetch(parallelism, env, variables, render)` is the one parallel seam,
+  shared by `make_document()` and the 2.1 batch methods (`render_documents`, `make_documents`). Its
+  record-pass fallback to a sequential render is required by the `batch-document-rendering` spec.
+- A `ReportBuilder` is not thread-safe: the parallel path swaps `template_env.globals`. Per-batch
+  autoescape uses `template_env.overlay(...)`, never a set-and-restore on the shared env.
+- `openspec archive` leaves `Purpose: TBD` in a newly created spec; write the Purpose at archive.
+- `master` requires one approving review; the author cannot approve their own PR.
+
+## Release
+
+- Publish = GitHub Release tagged `X.Y.Z` (no `v`) on the merge commit, notes = the CHANGELOG
+  section; `publish.yml` uploads to PyPI via Trusted Publishing. An upload timeout is transient:
+  check PyPI shows nothing for the version, then re-run the failed job.

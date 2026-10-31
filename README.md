@@ -152,6 +152,32 @@ unset or `1` the behaviour is exactly the previous sequential render. Threaded s
 remote endpoints and `oxigraph` in-memory graphs (both release the GIL); `rdflib` in-memory queries
 are GIL-bound (correct, limited speed-up).
 
+## Several documents from one template
+
+Since 2.1, a `ReportBuilder` can render its template once per named output, each with its own
+template variables (for example one file per named graph):
+
+```python
+import rdflib
+from eds4jinja2.services.report_builder import ReportBuilder
+
+builder = ReportBuilder("templates/shapes", output_path="out")
+
+# in memory: {"shapes-g1.ttl": "...", "shapes-g2.ttl": "..."}; nothing written
+texts = builder.render_documents({"shapes-g1.ttl": {"view": g1}, "shapes-g2.ttl": {"view": g2}})
+
+# to disk, only if every text passes your check; returns the written paths
+builder.make_documents(
+    {"shapes-g1.ttl": {"view": g1}, "shapes-g2.ttl": {"view": g2}},
+    check=lambda name, text: rdflib.Graph().parse(data=text, format="turtle"),
+    autoescape=False,
+)
+```
+
+The whole batch is validated before anything renders: names must stay inside the output folder and
+must not clash. Autoescaping can be set per batch, and `parallelism` applies as for
+`make_document()`. See the `ReportBuilder` section of the API reference for the full rules.
+
 ## Documentation
 
 Full documentation (concepts, getting started, every data source, the `ReportBuilder` API, extending
