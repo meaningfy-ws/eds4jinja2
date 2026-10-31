@@ -6,6 +6,19 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+## [2.1.1] - 2026-10-31
+
+No change to the package code.
+
+### Documentation
+- The README shows the 2.1 batch methods `render_documents` and `make_documents`, so the PyPI page
+  describes them.
+
+### Development
+- GitHub Actions moved off the deprecated Node.js 20 runtime: `actions/download-artifact` v8,
+  `actions/upload-artifact` v7, `actions/setup-node` v7, `actions/upload-pages-artifact` v5,
+  `actions/deploy-pages` v5.
+
 ## [2.1.0] - 2026-10-31
 
 ### Added
