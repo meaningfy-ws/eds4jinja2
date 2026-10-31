@@ -6,14 +6,14 @@
 
 ## 1. Checked writes
 
-- [ ] 1.1 `make_documents`: render, check all, then write all, with sub-folders (P-1, P-2, P-3; Spec:
+- [x] 1.1 `make_documents`: render, check all, then write all, with sub-folders (P-1, P-2, P-3; Spec:
   Write a batch only when every output passes)
-- [ ] 1.2 Listeners once per batch; not after a refused batch (P-2; Spec: Listeners run once per batch)
+- [x] 1.2 Listeners once per batch; not after a refused batch (P-2; Spec: Listeners run once per batch)
 
 ## 2. Close
 
-- [ ] 2.1 Docs: the method on the `ReportBuilder` page, with the example of design.md
-- [ ] 2.2 Version 2.1.0 (with `render-documents`) and CHANGELOG entry; `make check-all` green
+- [x] 2.1 Docs: the method on the `ReportBuilder` page, with the example of design.md
+- [x] 2.2 Version 2.1.0 (with `render-documents`) and CHANGELOG entry; `make check-all` green
 - [ ] 2.3 PR; release only with the developer's go-ahead; archive the change
 
 ## Verification

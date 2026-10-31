@@ -205,11 +205,7 @@ class ReportBuilder:
         :raises ValueError: a name outside the output folder, or a variable named ``conf``
                             (the configuration stays the ``conf`` global); raised before any render
         """
-        for name, variables in outputs.items():
-            self.__output_path(name)
-            if "conf" in variables:
-                raise ValueError(f"output {name!r}: the template variable 'conf' is reserved for the configuration")
-
+        self.__output_paths(outputs)
         previous_autoescape = self.template_env.autoescape
         switch = autoescape is not None and autoescape != previous_autoescape
         if switch:
@@ -219,6 +215,52 @@ class ReportBuilder:
         finally:
             if switch:
                 self.__set_autoescape(previous_autoescape)
+
+    def make_documents(
+        self,
+        outputs: Mapping[str, Mapping[str, Any]],
+        *,
+        check: Callable[[str, str], None] | None = None,
+        autoescape: bool | None = None,
+    ) -> list[pathlib.Path]:
+        """
+        Render every output as ``render_documents`` does, call ``check(name, text)`` on each, and
+        only when every check returns write every text as UTF-8 under the output folder (creating
+        sub-folders). Return the written paths in the order of ``outputs``.
+
+        The before-rendering listeners run once before the batch, the after-rendering listeners once
+        after the files are written; neither runs for an empty batch or a refused name/variable,
+        and the after-rendering listeners do not run when rendering or a check fails.
+
+        :param check: refuses an output by raising; the exception propagates unchanged and no file
+                      is written. Writes are not atomic: a disk error mid-batch can leave some files.
+        :raises ValueError: as ``render_documents``, before any listener runs
+        """
+        if not outputs:
+            return []
+        paths = self.__output_paths(outputs)
+
+        for listener in self.__before_rendering_listeners:
+            listener(self.configuration_context)
+
+        texts = self.render_documents(outputs, autoescape=autoescape)
+        if check is not None:
+            for name, text in texts.items():
+                check(name, text)
+        for path, text in zip(paths, texts.values(), strict=True):
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text, encoding="utf-8")
+
+        for listener in self.__after_rendering_listeners:
+            listener(self.configuration_context)
+        return paths
+
+    def __output_paths(self, outputs: Mapping[str, Mapping[str, Any]]) -> list[pathlib.Path]:
+        """Validate a batch before anything is rendered; return its output paths in order."""
+        for name, variables in outputs.items():
+            if "conf" in variables:
+                raise ValueError(f"output {name!r}: the template variable 'conf' is reserved for the configuration")
+        return [self.__output_path(name) for name in outputs]
 
     def __set_autoescape(self, autoescape) -> None:
         # Jinja compiles autoescaping into the cached template, so drop the cache with the setting

@@ -110,6 +110,32 @@ texts = builder.render_documents(
 All texts are held in memory. For a very large single report, use `make_document()`, which streams
 to disk.
 
+.`make_documents(outputs, *, check=None, autoescape=None) -> list[pathlib.Path]`
+Renders a batch exactly as `render_documents` does, then passes every text to `check(name, text)`.
+The files are written only when every check returns. Each text is written as UTF-8 at its output
+name under the output folder, sub-folders are created, and the written paths are returned in the
+order of `outputs`.
+
+* `check` is any callable. It refuses an output by raising. The exception propagates unchanged and
+  no file of the batch is written. eds4jinja2 has no built-in format checks: bring your own parser.
+* The before-rendering listeners run once before the batch. The after-rendering listeners run once
+  after the files are written. They do not run when rendering or a check fails.
+* An empty batch returns `[]` and runs no listener. A name or `conf` variable that `render_documents`
+  refuses raises `ValueError` before any listener runs.
+* Writing is not atomic: a disk error partway through the writes can leave some files behind. The
+  guarantee covers the checks, not the disk.
+
+[source,python]
+----
+builder = ReportBuilder(target_path="templates/shapes", output_path="out")
+builder.make_documents(
+    {"shapes-g1.ttl": {"view": g1}, "shapes-g2.ttl": {"view": g2}},
+    check=lambda name, text: rdflib.Graph().parse(data=text, format="turtle"),
+    autoescape=False,
+)
+# -> [Path("out/shapes-g1.ttl"), Path("out/shapes-g2.ttl")], written only if both parse
+----
+
 == Data sources
 
 The classes behind the template builders. Each subclasses the `DataSource` ABC and exposes the
