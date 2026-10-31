@@ -133,17 +133,22 @@ Acceptance (recorded in the PR, not asserted in CI): the parallel batch at least
 Fetch counts use a counting fake source injected as `from_endpoint` (as in
 `tests/unit/services/test_report_builder_render_documents.py`).
 
-| What | Test (to write) |
+| Spec scenario | Test (to write) |
 |---|---|
-| a query shared by 3 outputs runs once, `parallelism` 4 | `test_parallel_batch_fetches_shared_query_once` |
-| a query shared by 2 outputs runs once, `parallelism` 1 | `test_sequential_batch_fetches_shared_query_once` |
-| a query repeated 3 times in one report runs once, `parallelism` 1 | `test_sequential_report_memoises_repeated_query` |
-| editing a fetched DataFrame in place does not change the next use | `test_memoised_result_is_a_copy` |
-| a failing fetch is retried on its next call | `test_failed_fetch_is_not_memoised` |
-| one output's record pass fails; the others are still pre-warmed once | `test_record_failure_keeps_batch_prefetch` (replaces the 2.1 fallback test) |
-| default cache creates no temp folder; `disk` creates one and removes it | `test_memory_cache_by_default`, `test_disk_cache_opt_in_cleaned_up` |
-| unknown `prefetch_cache` | `test_unknown_prefetch_cache_is_refused` |
-| 2.1 tests (`make_document` parallel = sequential, batch parity, listeners) | unchanged, green |
+| Default or unset parallelism preserves sequential output | the 2.1 tests of `test_report_builder.py`, unchanged |
+| Memory cache by default | `test_memory_cache_by_default` |
+| Temp folder removed after a successful render / an aborted run | `test_disk_cache_opt_in_cleaned_up`, `test_disk_cache_removed_after_abort` |
+| Unknown cache medium | `test_unknown_prefetch_cache_is_refused` |
+| A repeated source-and-query is executed a single time | `test_identical_queries_recorded_once` (2.1, unchanged) |
+| A query repeated in a sequential report | `test_sequential_report_memoises_repeated_query` |
+| A stored result is a copy | `test_memoised_result_is_a_copy` (parametrised on `parallelism` 1 and 4) |
+| A failed fetch is retried | `test_failed_fetch_is_not_memoised` |
+| No cache between renders | `test_no_cache_between_renders` |
+| Parallel batch equals sequential batch | `test_parallel_batch_equals_sequential_batch` (2.1, unchanged) |
+| A fetch shared by the outputs runs once | `test_batch_fetches_shared_query_once` (parametrised on `parallelism` 1 and 4); `test_parallel_batch_fetches_once_per_output` (2.1) changes from 2 to 1 |
+| Pre-warm failure | `test_parallel_prewarm_failure_propagates` (2.1, unchanged) |
+| Record-pass fallback stays in memory | `test_record_pass_fallback_stays_in_memory` (2.1; its expected warning text becomes "record pass failed", still matched) |
+| One output's record pass fails | `test_record_failure_keeps_batch_prefetch` |
 
 ## Risks / Trade-offs
 
