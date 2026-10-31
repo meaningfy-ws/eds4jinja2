@@ -32,14 +32,14 @@ jobs:
         with:
           fetch-depth: 0
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '22'
       - name: Build the docs
         run: make build-docs
       - name: Upload Pages artifact
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: docs/build/site
 
@@ -51,10 +51,11 @@ jobs:
     permissions:
       pages: write
       id-token: write
+      actions: read  # required by actions/deploy-pages since v4
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
