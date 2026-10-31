@@ -19,9 +19,10 @@ ex:c a ex:Thing .
 @pytest.fixture
 def make_builder(tmp_path):
     """A one-template package `t.txt` under `root` (default tmp_path), output to root/out, with an in-memory
-    `from_endpoint` serving three ex:Thing instances."""
+    `from_endpoint` serving three ex:Thing instances through `data_source` (a DataSource class
+    taking the graph; swap it to count or fail fetches)."""
 
-    def make(template="{{ name }}", parallelism=1, conf=None, root=tmp_path):
+    def make(template="{{ name }}", parallelism=1, conf=None, root=tmp_path, data_source=InMemorySPARQLDataSource):
         (root / "templates").mkdir(parents=True)
         (root / "templates" / "t.txt").write_text(template)
         config = {"template": "t.txt", "conf": conf or {}, "parallelism": parallelism}
@@ -30,7 +31,7 @@ def make_builder(tmp_path):
         return ReportBuilder(
             root,
             output_path=root / "out",
-            external_data_source_builders={"from_endpoint": lambda _e: InMemorySPARQLDataSource(graph)},
+            external_data_source_builders={"from_endpoint": lambda _e: data_source(graph)},
         )
 
     return make

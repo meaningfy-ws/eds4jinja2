@@ -103,3 +103,48 @@ def test_names_of_the_same_file_write_nothing(tmp_path, make_builder):
         builder.make_documents({"a.txt": {"name": "1"}, "./a.txt": {"name": "2"}})
     assert not (tmp_path / "out" / "a.txt").exists()
     assert calls == []
+
+
+def test_bytes_on_disk_are_the_checked_text(tmp_path, make_builder):
+    accepted = {}
+    make_builder("line 1\r\nline 2\nline 3{{ name }}").make_documents(
+        {"a.txt": {"name": "\n"}}, check=lambda name, text: accepted.update({name: text})
+    )
+    assert (tmp_path / "out" / "a.txt").read_bytes() == accepted["a.txt"].encode("utf-8")
+
+
+def test_existing_file_is_overwritten_and_others_untouched(tmp_path, make_builder):
+    builder = make_builder()
+    (tmp_path / "out").mkdir()
+    (tmp_path / "out" / "a.txt").write_text("old")
+    (tmp_path / "out" / "keep.txt").write_text("keep")
+    builder.make_documents({"a.txt": {"name": "new"}})
+    assert (tmp_path / "out" / "a.txt").read_text() == "new"
+    assert (tmp_path / "out" / "keep.txt").read_text() == "keep"
+
+
+def test_checks_stop_at_the_first_failure(make_builder):
+    seen = []
+
+    def check(name, _text):
+        seen.append(name)
+        if name == "b.txt":
+            raise SyntaxError("bad")
+
+    with pytest.raises(SyntaxError):
+        make_builder().make_documents({"a.txt": {}, "b.txt": {}, "c.txt": {}}, check=check)
+    assert seen == ["a.txt", "b.txt"]
+
+
+def test_check_return_value_is_ignored(tmp_path, make_builder):
+    make_builder().make_documents({"a.txt": {"name": "A"}}, check=lambda _n, _t: False)
+    assert (tmp_path / "out" / "a.txt").read_text() == "A"
+
+
+def test_listeners_get_the_configuration_context(make_builder):
+    builder = make_builder()
+    received = []
+    builder.add_before_rendering_listener(received.append)
+    builder.add_after_rendering_listener(received.append)
+    builder.make_documents({"a.txt": {"name": "A"}})
+    assert received == [builder.configuration_context, builder.configuration_context]

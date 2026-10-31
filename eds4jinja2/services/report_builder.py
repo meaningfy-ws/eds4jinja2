@@ -43,7 +43,7 @@ HTML_TEMPLATE_SYNTAX = {
     "trim_blocks": False,
 }
 
-# the configuration global; a template variable of this name is refused in batch renders
+# the name of the configuration global in templates
 CONF_GLOBAL = "conf"
 
 # do not change anything
@@ -243,22 +243,41 @@ class ReportBuilder:
                 check(name, text)
         for name, path in paths.items():
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(texts[name], encoding="utf-8")
+            path.write_text(texts[name], encoding="utf-8", newline="")  # bytes on disk = the checked text
 
         for listener in self.__after_rendering_listeners:
             listener(self.configuration_context)
         return list(paths.values())
 
     def __validated_output_paths(self, outputs: Mapping[str, Mapping[str, Any]]) -> dict[str, pathlib.Path]:
-        """Refuse a batch that is unsafe to render or write; return output name -> path, in order."""
+        """
+        Refuse a batch that is unsafe to render or write, before anything runs; return output
+        name -> path in the iteration order of ``outputs``.
+
+        :raises TypeError: a non-str name, non-Mapping variables or a non-str variable name
+        :raises ValueError: a top-level variable shadowing an environment global (``conf``, the
+                            data-source builders, the helpers), a name outside the output folder or
+                            of an existing directory, two names of the same file, or a name that is
+                            a parent folder of another name
+        """
         paths: dict[str, pathlib.Path] = {}
         for name, variables in outputs.items():
-            if CONF_GLOBAL in variables:
-                raise ValueError(f"output {name!r}: the template variable {CONF_GLOBAL!r} is reserved for the configuration")
+            if not isinstance(name, str):
+                raise TypeError(f"output name {name!r} is not a str")
+            if not isinstance(variables, Mapping) or not all(isinstance(key, str) for key in variables):
+                raise TypeError(f"output {name!r}: the template variables must be a mapping with str names")
+            # a shadowed data-source builder is not wrapped, so the parallel pre-fetch would be bypassed
+            shadowed = sorted(set(variables) & set(self.template_env.globals))
+            if shadowed:
+                raise ValueError(f"output {name!r}: the template variables {shadowed} would shadow environment globals")
             path = self.__output_path(name)
-            twin = next((other for other, other_path in paths.items() if other_path == path), None)
-            if twin is not None:
-                raise ValueError(f"outputs {twin!r} and {name!r} name the same file")
+            if path.is_dir():
+                raise ValueError(f"output {name!r} names an existing directory")
+            for other, other_path in paths.items():
+                if other_path == path:
+                    raise ValueError(f"outputs {other!r} and {name!r} name the same file")
+                if other_path in path.parents or path in other_path.parents:
+                    raise ValueError(f"outputs {other!r} and {name!r}: one is a parent folder of the other")
             paths[name] = path
         return paths
 

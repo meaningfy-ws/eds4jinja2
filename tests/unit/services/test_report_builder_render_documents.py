@@ -5,6 +5,7 @@ ReportBuilder.render_documents — one template, several named outputs, rendered
 
 import pytest
 
+from eds4jinja2.adapters.in_memory_sparql_ds import InMemorySPARQLDataSource
 from tests.unit.services.conftest import listen
 
 FETCH = (
@@ -58,7 +59,7 @@ def test_autoescape_for_one_batch_only(tmp_path, make_builder):
     assert builder.render_documents({"a.txt": {"name": "<b>"}}) == {"a.txt": "<b>"}
 
 
-def test_autoescape_restored_on_error(tmp_path, make_builder):
+def test_autoescape_batch_error_leaves_environment_unchanged(tmp_path, make_builder):
     builder = make_builder(template="{{ 1 / 0 }}")
     previous = builder.template_env.autoescape
     with pytest.raises(ZeroDivisionError):
@@ -104,3 +105,78 @@ def test_autoescape_batch_leaves_shared_environment_untouched(tmp_path, make_bui
     previous = builder.template_env.autoescape
     builder.render_documents({"a.html": {"name": "<b>"}}, autoescape=not previous)
     assert builder.template_env.autoescape == previous
+
+
+class CountingSource(InMemorySPARQLDataSource):
+    fetches = 0
+
+    def _fetch_tabular(self):
+        CountingSource.fetches += 1
+        return super()._fetch_tabular()
+
+
+class FailingSource(InMemorySPARQLDataSource):
+    def _fetch_tabular(self):
+        raise ConnectionError("endpoint down")
+
+
+def test_parallel_batch_fetches_once_per_output(make_builder):
+    CountingSource.fetches = 0
+    builder = make_builder(DATA_TEMPLATE, parallelism=4, data_source=CountingSource)
+    assert builder.render_documents({"a.txt": {"name": "A"}, "b.txt": {"name": "B"}}) == {"a.txt": "A:3", "b.txt": "B:3"}
+    assert CountingSource.fetches == 2  # pre-warmed once per output; the record pass and the render fetch nothing
+
+
+def test_parallel_prewarm_failure_propagates(make_builder):
+    builder = make_builder(DATA_TEMPLATE, parallelism=4, data_source=FailingSource)
+    with pytest.raises(RuntimeError, match="all-or-nothing"):
+        builder.render_documents({"a.txt": {"name": "A"}})
+
+
+def test_autoescape_batch_after_plain_batch(make_builder):
+    builder = make_builder()  # a default ReportBuilder: autoescape off
+    assert builder.render_documents({"a.txt": {"name": "<b>"}}) == {"a.txt": "<b>"}
+    assert builder.render_documents({"a.html": {"name": "<b>"}}, autoescape=True) == {"a.html": "&lt;b&gt;"}
+    assert builder.render_documents({"a.txt": {"name": "<b>"}}) == {"a.txt": "<b>"}
+
+
+def test_plain_render_after_failed_autoescape_batch(make_builder):
+    builder = make_builder("{% if fail %}{{ 1 / 0 }}{% endif %}{{ name }}")
+    with pytest.raises(ZeroDivisionError):
+        builder.render_documents({"a.html": {"fail": True}}, autoescape=True)
+    assert builder.render_documents({"a.txt": {"name": "<b>"}}) == {"a.txt": "<b>"}
+
+
+@pytest.mark.parametrize("variable", ["conf", "from_endpoint", "from_file", "range"])
+def test_variable_shadowing_a_global_is_refused(make_builder, variable):
+    builder = make_builder(template="{{ 1 / 0 }}")
+    with pytest.raises(ValueError, match=variable):
+        builder.render_documents({"ok.txt": {}, "a.txt": {variable: "x"}})
+
+
+def test_nested_global_name_is_allowed(make_builder):
+    builder = make_builder("{{ x.conf }}")
+    assert builder.render_documents({"a.txt": {"x": {"conf": "C"}}}) == {"a.txt": "C"}
+
+
+@pytest.mark.parametrize("batch", [{"g": {}, "g/b.txt": {}}, {"g/b.txt": {}, "g": {}}])
+def test_name_that_is_a_parent_of_another_is_refused(make_builder, batch):
+    with pytest.raises(ValueError, match="'g'"):
+        make_builder(template="{{ 1 / 0 }}").render_documents(batch)
+
+
+def test_name_of_an_existing_directory_is_refused(tmp_path, make_builder):
+    builder = make_builder(template="{{ 1 / 0 }}")
+    (tmp_path / "out" / "g").mkdir(parents=True)
+    with pytest.raises(ValueError, match="'g'"):
+        builder.render_documents({"g": {}})
+
+
+@pytest.mark.parametrize(
+    "batch",
+    [{1: {}}, {"a.txt": ["name"]}, {"a.txt": {1: "x"}}],
+    ids=["non-str name", "non-mapping variables", "non-str variable name"],
+)
+def test_wrong_types_raise_type_error_before_render(make_builder, batch):
+    with pytest.raises(TypeError):
+        make_builder(template="{{ 1 / 0 }}").render_documents({"ok.txt": {}, **batch})
