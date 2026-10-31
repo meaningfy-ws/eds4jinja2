@@ -6,9 +6,9 @@ name: test
 # No branch globs on push, so a PR branch is tested once (via pull_request), not twice.
 on:
   push:
-    branches: [ master ]
+    branches: [ master, develop ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, develop ]
 
 # Ensure redundant parallel runs don't occur in the same workflow.
 # Use either PR or branch information to prevent such runs.
