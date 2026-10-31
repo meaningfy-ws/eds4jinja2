@@ -31,8 +31,8 @@
   environment global; `TypeError` for wrong types; refuse names that clash or sit under an existing
   file) and the gate re-run at ≥9/10
 - [x] 3.4 PR #60 (one PR with `make-documents`, branch `feature/batch-documents`)
-- [ ] 3.5 Release 2.1.0 together with `make-documents` (DEC-7), on the developer's go-ahead
-- [ ] 3.6 Archive the change after the release
+- [x] 3.5 Release 2.1.0 together with `make-documents` (DEC-7), on the developer's go-ahead
+- [x] 3.6 Archive the change after the release
 
 ## Verification
 

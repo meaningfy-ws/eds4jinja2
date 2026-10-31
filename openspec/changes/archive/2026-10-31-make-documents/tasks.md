@@ -23,8 +23,8 @@
 - [x] 2.4 Clarity-gate corrections applied (in code: write with `newline=""`; refuse a name that is
   the folder of another, names an existing directory or sits under an existing file) and the gate
   re-run at ≥9/10
-- [ ] 2.5 Release 2.1.0 together with `render-documents` (DEC-6), on the developer's go-ahead
-- [ ] 2.6 Archive the change after the release
+- [x] 2.5 Release 2.1.0 together with `render-documents` (DEC-6), on the developer's go-ahead
+- [x] 2.6 Archive the change after the release
 
 ## Verification
 
