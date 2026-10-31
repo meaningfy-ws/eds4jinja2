@@ -6,6 +6,8 @@ Unit tests for the built-in graph store: load RDF file(s) into an in-memory grap
 """
 
 import importlib.util
+import threading
+from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 
@@ -107,3 +109,31 @@ def test_oxigraph_store_loads_and_queries(ttl_file):
     ds = InMemorySPARQLDataSource(store.query).with_query(SELECT_THINGS)
     df, error = ds.fetch_tabular()
     assert error is None and len(df) == 2
+
+
+def test_concurrent_reads_return_correct_results(tmp_path):
+    # Spec builtin-graph-store, "Stores are safe for concurrent reads": many threads query one
+    # loaded rdflib store at once, with different queries, and each gets the sequential answer.
+    triples = "\n".join(f'ex:s{i} a ex:Thing ; ex:label "label {i}" .' for i in range(200))
+    path = tmp_path / "many.ttl"
+    path.write_text("@prefix ex: <http://example.org/> .\n" + triples)
+    store = make_graph_store(Engine.RDFLIB, sources=[path])
+    queries = [SELECT_THINGS] + [
+        f"PREFIX ex: <http://example.org/> SELECT ?l WHERE {{ ex:s{i} ex:label ?l }}" for i in range(0, 200, 20)
+    ]
+
+    def answer(query):
+        df, error = InMemorySPARQLDataSource(store.query).with_query(query).fetch_tabular()
+        assert error is None
+        return sorted(map(str, df.iloc[:, 0]))
+
+    expected = [answer(query) for query in queries]
+    start = threading.Barrier(8)
+
+    def worker():
+        start.wait()
+        return [[answer(query) for query in queries] for _ in range(2)]
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        runs = [future.result() for future in [pool.submit(worker) for _ in range(8)]]
+    assert all(run == expected for rounds in runs for run in rounds)
