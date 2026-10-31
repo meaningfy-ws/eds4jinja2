@@ -1,7 +1,9 @@
 # in-memory-sparql-datasource Specification
 
 ## Purpose
-TBD - created by archiving change in-memory-sparql-datasource. Update Purpose after archive.
+Rendering reports from an in-process graph instead of a SPARQL server: data-source builders and
+filters injected into `ReportBuilder`, and the in-memory SPARQL data source whose tabular and tree
+results match the remote source's shape. Origin: change `in-memory-sparql-datasource`.
 ## Requirements
 ### Requirement: ReportBuilder accepts injected data-source builders and filters
 

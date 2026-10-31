@@ -1,7 +1,9 @@
 # builtin-graph-store Specification
 
 ## Purpose
-TBD - created by archiving change builtin-graph-store. Update Purpose after archive.
+Loading RDF files or URLs once into an in-memory graph store (rdflib by default, oxigraph opt-in)
+and querying it from templates through the `from_rdf` builder, with tabular and tree results and
+safe concurrent reads. Origin: change `builtin-graph-store`.
 ## Requirements
 ### Requirement: Built-in graph store loads RDF sources with a configurable engine
 

@@ -1,5 +1,12 @@
 <!-- The EPIC — the shaped bet. In Meaningfy the EPIC *is* the OpenSpec proposal. -->
 
+> **Closed unimplemented, 2026-10-31** (change `groom-living-specs`, DEC-3). 0 of 22 tasks were done;
+> no consumer asks for waves, per-source limits or run stats; the design predates 2.1.0 (it targets
+> `__make_document_parallel`, now `__with_prefetch`, and removes the record-pass fallback that
+> `batch-document-rendering` requires). Its manifest cleanup (DEC-4) was done by
+> `groom-living-specs`. Archived with `--skip-specs`: none of its spec deltas were merged. Re-shape
+> as a new change if the need appears.
+
 # EPIC: Parallel executor hardening — dependent fetches, honest fallback, polite concurrency
 
 ## Appetite

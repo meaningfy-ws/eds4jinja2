@@ -1,7 +1,9 @@
 # parallel-report-executor Specification
 
 ## Purpose
-TBD - created by archiving change parallel-report-executor. Update Purpose after archive.
+Opt-in parallel pre-fetching of a report's data: the `parallelism` setting, the record pass that
+discovers fetches, the all-or-nothing parallel pre-warm into a temp-folder cache, and rendering from
+that cache. Origin: change `parallel-report-executor`.
 ## Requirements
 ### Requirement: Configurable parallelism with a sequential default
 
@@ -20,12 +22,12 @@ threads before rendering.
 
 ### Requirement: Pre-warm fetches in parallel, then render from cache
 
-The library SHALL discover the report's data-fetch units (by a record pass over the template and/or
-an explicit `prefetch` manifest), execute them in parallel before rendering, and render from the
-resulting cache; a unit absent from the cache SHALL be fetched live during rendering.
+The library SHALL discover the report's data-fetch units by a record pass over the template, execute
+them in parallel before rendering, and render from the resulting cache; a unit absent from the cache
+SHALL be fetched live during rendering.
 
-#### Scenario: Recorded and manifested queries are fetched before rendering
-- **WHEN** parallelism is enabled and the template's `fetch_*` calls (plus any `prefetch` manifest entries) are discovered
+#### Scenario: Recorded queries are fetched before rendering
+- **WHEN** parallelism is enabled and the template's `fetch_*` calls are discovered by the record pass
 - **THEN** all discovered units are fetched concurrently and their results are staged in the cache before the real render begins
 
 #### Scenario: Render consumes cached results
@@ -33,7 +35,7 @@ resulting cache; a unit absent from the cache SHALL be fetched live during rende
 - **THEN** the cached result is served without issuing the query again
 
 #### Scenario: A query not in the cache runs live
-- **WHEN** the real render reaches a `fetch_*` call whose unit was not discovered during the record pass or manifest seeding
+- **WHEN** the real render reaches a `fetch_*` call whose unit was not discovered during the record pass
 - **THEN** that query is fetched live during rendering, producing the correct result without aborting the report
 
 ### Requirement: All-or-nothing pre-warm execution
