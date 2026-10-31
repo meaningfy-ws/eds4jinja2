@@ -84,6 +84,32 @@ ReportBuilder(
 ).make_document()
 ----
 
+.`render_documents(outputs, *, autoescape=None) -> dict[str, str]`
+Renders the entry template once per output, in memory, and returns _output name → text_ in the
+order of `outputs`. Each output gets its own template variables, so one template package can produce
+several texts, for example one per named graph. It writes no file and runs no rendering listener.
+
+* `outputs` maps an output name to the variables of that render. A name is a relative file name
+  inside the output folder (sub-folders such as `g/a.txt` are allowed). A name that is absolute, leaves
+  the folder with `..`, or is the folder itself raises `ValueError` before anything is rendered.
+* `conf` stays the configuration global. A template variable named `conf` raises `ValueError`.
+* `autoescape`, when given, sets the environment's autoescaping for this batch only. The previous
+  setting is restored afterwards, also when rendering fails.
+* With `parallelism` > 1 each output goes through the parallel pre-fetch with its own variables. When
+  the record pass fails, that output is rendered sequentially, still in memory.
+
+[source,python]
+----
+builder = ReportBuilder(target_path="templates/diagram", output_path="out")
+texts = builder.render_documents(
+    {"diagram-g1.puml": {"view": g1}, "diagram-g2.puml": {"view": g2}}, autoescape=False
+)
+# {"diagram-g1.puml": "@startuml…", "diagram-g2.puml": "@startuml…"}; nothing in out/
+----
+
+All texts are held in memory. For a very large single report, use `make_document()`, which streams
+to disk.
+
 == Data sources
 
 The classes behind the template builders. Each subclasses the `DataSource` ABC and exposes the

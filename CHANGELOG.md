@@ -6,6 +6,13 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+### Added
+- `ReportBuilder.render_documents(outputs, *, autoescape=None)` renders the configured template once
+  per named output, each with its own template variables, and returns _name → text_ in memory. It
+  writes no file and runs no listener. Output names must stay inside the output folder. Autoescaping
+  can be set per batch. It uses the parallel pre-fetch when `parallelism` > 1. (OpenSpec change
+  `render-documents`)
+
 ## [2.0.0] - 2026-10-30
 
 Modernization release (OpenSpec change `modernize-library-py312`). Python 3.11 users: pin

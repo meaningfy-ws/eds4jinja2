@@ -12,6 +12,8 @@ this module implements the report generation functionality.
 import json
 import logging
 import pathlib
+from collections.abc import Callable, Mapping
+from typing import Any, TypeVar
 
 import jinja2
 
@@ -27,6 +29,8 @@ from eds4jinja2.services.jinja_builder import (
 from eds4jinja2.services.parallel_executor import DEFAULT_PARALLELISM, PARALLELISM, FetchCoordinator, Phase, wrap_builders
 
 logger = logging.getLogger(__name__)
+
+T = TypeVar("T")
 
 # aims to be close to the J2 default env syntax definition, but explicitly specified
 HTML_TEMPLATE_SYNTAX = {
@@ -185,11 +189,60 @@ class ReportBuilder:
         the data fetches are pre-warmed in parallel (see ``parallel_executor``). With
         ``parallelism`` unset or 1 the behaviour is byte-for-byte the previous sequential path.
         """
-        parallelism = int(self.configuration_context.get(PARALLELISM, DEFAULT_PARALLELISM) or DEFAULT_PARALLELISM)
+        parallelism = self.__parallelism()
         if parallelism > 1:
-            self.__make_document_parallel(parallelism)
+            self.__with_prefetch(parallelism, {}, self.__render_to_output)
         else:
             self.__render_to_output()
+
+    def render_documents(self, outputs: Mapping[str, Mapping[str, Any]], *, autoescape: bool | None = None) -> dict[str, str]:
+        """
+        Render the configured template once per output, in memory, and return output name -> text
+        in the order of ``outputs``. Writes no file and runs no rendering listener.
+
+        :param outputs: output name (a relative path inside the output folder) -> template variables
+        :param autoescape: when given, the environment's autoescaping for this batch only
+        :raises ValueError: a name outside the output folder, or a variable named ``conf``
+                            (the configuration stays the ``conf`` global); raised before any render
+        """
+        for name, variables in outputs.items():
+            self.__output_path(name)
+            if "conf" in variables:
+                raise ValueError(f"output {name!r}: the template variable 'conf' is reserved for the configuration")
+
+        previous_autoescape = self.template_env.autoescape
+        switch = autoescape is not None and autoescape != previous_autoescape
+        if switch:
+            self.__set_autoescape(autoescape)
+        try:
+            return {name: self.__render_text(variables) for name, variables in outputs.items()}
+        finally:
+            if switch:
+                self.__set_autoescape(previous_autoescape)
+
+    def __set_autoescape(self, autoescape) -> None:
+        # Jinja compiles autoescaping into the cached template, so drop the cache with the setting
+        self.template_env.autoescape = autoescape
+        if self.template_env.cache is not None:
+            self.template_env.cache.clear()
+
+    def __render_text(self, variables: Mapping[str, Any]) -> str:
+        def render() -> str:
+            return self.__get_template(self.template).render(**variables)
+
+        parallelism = self.__parallelism()
+        return self.__with_prefetch(parallelism, variables, render) if parallelism > 1 else render()
+
+    def __output_path(self, name: str) -> pathlib.Path:
+        """The path of output ``name``; it must lie inside the output folder and differ from it."""
+        folder = pathlib.Path(self.configuration_context["output_folder"]).resolve()
+        path = (folder / name).resolve()
+        if folder not in path.parents:
+            raise ValueError(f"output {name!r} is not a file name inside the output folder {str(folder)!r}")
+        return path
+
+    def __parallelism(self) -> int:
+        return int(self.configuration_context.get(PARALLELISM, DEFAULT_PARALLELISM) or DEFAULT_PARALLELISM)
 
     def __render_to_output(self):
         for listener in self.__before_rendering_listeners:
@@ -203,7 +256,8 @@ class ReportBuilder:
         for listener in self.__after_rendering_listeners:
             listener(self.configuration_context)
 
-    def __make_document_parallel(self, parallelism: int):
+    def __with_prefetch(self, parallelism: int, variables: Mapping[str, Any], render: Callable[[], T]) -> T:
+        """Run ``render`` with the data fetches pre-warmed in parallel; ``variables`` drive the record pass."""
         coordinator = FetchCoordinator()
         original_globals = dict(self.template_env.globals)
         try:
@@ -213,19 +267,18 @@ class ReportBuilder:
             # chokes on placeholder results) we fall back to a normal sequential render.
             coordinator.set_phase(Phase.RECORD)
             try:
-                self.__get_template(self.template).render()
+                self.__get_template(self.template).render(**variables)
             except Exception as record_error:
                 logger.warning("Parallel record pass failed (%s); rendering sequentially", record_error)
                 self.__restore_globals(original_globals)
-                self.__render_to_output()
-                return
+                return render()
 
             # Pre-warm in parallel — all-or-nothing: a failure here aborts the whole report.
             coordinator.prewarm(parallelism)
 
             # Real render: fetches are served from the cache (misses run live).
             coordinator.set_phase(Phase.RENDER)
-            self.__render_to_output()
+            return render()
         finally:
             coordinator.cleanup()
             self.__restore_globals(original_globals)
