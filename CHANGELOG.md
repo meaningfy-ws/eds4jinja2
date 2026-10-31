@@ -6,6 +6,25 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-10-31
+
+### Added
+- `ReportBuilder.render_documents(outputs, *, autoescape=None)` renders the configured template once
+  per named output, each with its own template variables, and returns _name → text_ in memory. It
+  writes no file and runs no listener. The batch is checked before anything is rendered: output names
+  must stay inside the output folder and must not clash (two names of one file, a name that is the
+  folder of another, or a name under an existing file), and a template variable may not hide an environment global such as `conf` or
+  `from_endpoint`. Autoescaping can be set per batch without changing the builder's
+  environment. It uses the parallel pre-fetch when `parallelism` > 1. (OpenSpec change
+  `render-documents`)
+- `ReportBuilder.make_documents(outputs, *, check=None, autoescape=None)` renders a batch the same
+  way, passes each text to `check(name, text)`, and writes the files only if every check passes. It
+  writes them as UTF-8, with no newline translation, under the output folder and returns their
+  absolute paths in order. The rendering
+  listeners run once per batch. The after-rendering listeners do not run when a check fails. The
+  writes are not atomic: a disk error partway through can leave some files. (OpenSpec change
+  `make-documents`)
+
 ## [2.0.0] - 2026-10-30
 
 Modernization release (OpenSpec change `modernize-library-py312`). Python 3.11 users: pin

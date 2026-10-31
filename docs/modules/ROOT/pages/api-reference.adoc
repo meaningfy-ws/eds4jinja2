@@ -84,6 +84,75 @@ ReportBuilder(
 ).make_document()
 ----
 
+.`render_documents(outputs, *, autoescape=None) -> dict[str, str]`
+Renders the entry template once per output, in memory, and returns _output name → text_ in the
+iteration order of `outputs`. Each output gets its own template variables, so one template package can produce
+several texts, for example one per named graph. It writes no file and runs no rendering listener.
+
+* `outputs` maps an output name to the variables of that render. A name is a relative file name
+  inside the output folder; sub-folders such as `g/a.txt` are allowed. The whole batch is checked
+  before anything is rendered, and each of these raises `ValueError` naming the output:
+** a name that is absolute, leaves the folder with `..`, is the folder itself, is an existing
+   directory, or sits under an existing file (`g/b.txt` while `out/g` is a file);
+** two names of the same file (`a.txt` and `./a.txt`), or a name that is the folder of another
+   (`g` and `g/b.txt`);
+** a name that cannot be used as a path, for example one containing a NUL byte.
++
+Names are compared after `Path.resolve()`, so a symlink inside the folder that points outside it is
+refused too.
+* A top-level template variable named like an environment global (`conf`, `from_endpoint`,
+  `from_file`, the helpers) raises `ValueError`: it would hide the global, and a hidden data-source
+  builder would skip the parallel pre-fetch. Nested keys such as `{"x": {"conf": …}}` are fine.
+* A name that is not a `str`, variables that are not a mapping, or a variable name that is not a
+  `str` raise `TypeError`, also before anything is rendered.
+* `autoescape`, when given, sets the autoescaping of this batch only. The builder's environment
+  keeps its own setting.
+* With `parallelism` > 1 each output goes through the parallel pre-fetch with its own variables. When
+  the record pass fails, that output is rendered sequentially, still in memory.
+
+[source,python]
+----
+builder = ReportBuilder(target_path="templates/diagram", output_path="out")
+texts = builder.render_documents(
+    {"diagram-g1.puml": {"view": g1}, "diagram-g2.puml": {"view": g2}}, autoescape=False
+)
+# {"diagram-g1.puml": "@startuml…", "diagram-g2.puml": "@startuml…"}; nothing in out/
+----
+
+All texts are held in memory. For a very large single report, use `make_document()`, which streams
+to disk. A builder is not safe to use from several threads at once: the parallel pre-fetch swaps the
+environment's globals while it runs.
+
+.`make_documents(outputs, *, check=None, autoescape=None) -> list[pathlib.Path]`
+Renders a batch exactly as `render_documents` does, then passes every text to `check(name, text)`.
+The files are written only when every check returns. Each text is written as UTF-8 at its output
+name under the output folder, with no newline translation, so the bytes on disk are exactly the text
+the check accepted. Sub-folders are created, an existing file at an output path is overwritten, and
+other files in the folder are left alone. The written paths (absolute, with symlinks resolved) are
+returned in the iteration order of `outputs`.
+
+* `check` is any callable, called in the order of `outputs`. It refuses an output by raising. The
+  exception propagates unchanged, later checks are not called, and no file of the batch is written.
+  Its return value is ignored. eds4jinja2 has no built-in format checks: bring your own parser.
+* The before-rendering listeners run once before the batch. The after-rendering listeners run once
+  after the files are written. Both get the builder's `configuration_context`, as with
+  `make_document()`. The after-rendering listeners do not run when rendering or a check fails.
+* An empty batch returns `[]` and runs no listener. Anything `render_documents` refuses raises its
+  `ValueError` or `TypeError` before any listener runs.
+* Writing is not atomic: a disk error partway through the writes can leave some files behind. The
+  guarantee covers the checks, not the disk.
+
+[source,python]
+----
+builder = ReportBuilder(target_path="templates/shapes", output_path="out")
+builder.make_documents(
+    {"shapes-g1.ttl": {"view": g1}, "shapes-g2.ttl": {"view": g2}},
+    check=lambda name, text: rdflib.Graph().parse(data=text, format="turtle"),
+    autoescape=False,
+)
+# -> the absolute paths of out/shapes-g1.ttl and out/shapes-g2.ttl, written only if both parse
+----
+
 == Data sources
 
 The classes behind the template builders. Each subclasses the `DataSource` ABC and exposes the
