@@ -43,9 +43,11 @@ parallel ones in a single pre-warm, and its result is served from memory.**
 ## Key decisions
 
 - **DEC-1**: Scope is the batch pre-fetch, the memory cache and sequential memoisation — reason: they
-  remove repeated work without changing any template or API; rejected for now: HTTP keep-alive,
-  overlay reuse, keeping parallelism after a failed record pass (seed items 5–7), and switching the
-  default engine to oxigraph (seed item 3).
+  remove repeated work without changing any template or API. Seed item 5 (keep parallelism after a
+  failed record pass) is adopted only as far as a batch needs it: the fetches recorded before the
+  failure stay in the batch's pre-warm (design P-2); the discovery "waves" of the closed
+  `parallel-executor-hardening` change are not. Rejected for now: HTTP keep-alive and overlay reuse
+  (seed items 6–7), and switching the default engine to oxigraph (seed item 3).
 - **DEC-2**: Memory cache by default, temp folder opt-in through a configuration key — reason: most
   reports' results fit in memory and the pickle round-trip is pure overhead; the temp folder was asked
   for by the original driver (rdf-differ) to bound memory and stays available; rejected: memory only
@@ -53,7 +55,8 @@ parallel ones in a single pre-warm, and its result is served from memory.**
 - **DEC-3**: Memoisation also applies with `parallelism` unset or 1 — reason: repeated queries are
   common in templates and cost a full round-trip each; the developer chose it over leaving the default
   path untouched. This is a **behaviour change** for the default path: a query that returns different
-  results on each call (`RAND()`, `NOW()`) returns the first result for the rest of that render.
+  results on each call (`RAND()`, `NOW()`) returns the first result for the rest of that render. The
+  "same output" promises of the specs therefore hold for deterministic queries, and say so.
 - **DEC-4**: A stored result is handed out as a copy — reason: templates and helpers may change a
   DataFrame in place (the template helper `simplify_uri_columns_in_tabular` defaults to `inplace=True`); today's pickle cache
   hands out a fresh object on each read and this must hold; rejected: sharing one object (a mutation

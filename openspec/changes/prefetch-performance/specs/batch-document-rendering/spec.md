@@ -34,3 +34,12 @@ unrecorded fetches run live, never written.
 - **GIVEN** `parallelism` 4, a counting data source and a batch of two outputs where only the second output's record pass raises
 - **WHEN** `render_documents` is called
 - **THEN** both texts are returned and the first output's query was executed once, through the pre-warm
+
+### Requirement: make_document is unchanged
+`make_document()` SHALL keep writing the configured template to `output/<template name>` with the
+same content and the same listener calls as in 2.0, for data sources that return the same result for
+the same query within one render.
+
+#### Scenario: Existing reports
+- **WHEN** the 2.0 `make_document` tests run against this version
+- **THEN** they pass unchanged

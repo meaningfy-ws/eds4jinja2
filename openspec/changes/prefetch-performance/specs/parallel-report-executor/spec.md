@@ -9,13 +9,13 @@
 
 `ReportBuilder` SHALL read a `parallelism` integer from the report configuration, defaulting to `1`.
 When `parallelism` is unset or `1` it SHALL render with no record pass and no thread pool, producing
-the same output as the prior sequential renderer, with identical fetches memoised as the requirement
+the same output as the prior sequential renderer for deterministic queries, with identical fetches memoised as the requirement
 "Identical queries are fetched once" states. When `parallelism` is greater than `1` it SHALL fetch the
 report's data on up to that many concurrent threads before rendering.
 
 #### Scenario: Default or unset parallelism preserves sequential output
 - **WHEN** `make_document` is called with `parallelism` unset or set to `1`
-- **THEN** the report is produced by a single sequential render with no record pass and no thread pool, and its content equals the prior sequential output
+- **THEN** the report is produced by a single sequential render with no record pass and no thread pool, and, for deterministic queries, its content equals the prior sequential output
 
 #### Scenario: Parallelism greater than one fetches concurrently
 - **WHEN** `make_document` is called with `parallelism` set to `N` greater than `1`
@@ -48,8 +48,9 @@ render or batch ends — on success and on an aborted run.
 
 ### Requirement: Identical queries are fetched once
 
-The library SHALL execute an identical fetch — the same data-source builder with the same arguments,
-the same query and the same fetch method — at most once within one render or one batch, with or
+The library SHALL execute an identical fetch — the same data-source builder (one of the framework's
+`DATA_SOURCE_BUILDERS` names, including a consumer's override of one) with the same arguments, the
+same query and the same fetch method — at most once within one render or one batch, with or
 without parallelism, keying the cache by the source identity, the query and the method. Every later
 identical request SHALL receive a copy of the stored result, so that changing it in place does not
 change what later requests receive. A fetch that returns an error SHALL NOT be stored: the next
