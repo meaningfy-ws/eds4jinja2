@@ -19,7 +19,7 @@
   ([api-reference.adoc](../../../docs/modules/ROOT/pages/api-reference.adoc)), with the example of
   design.md
 - [x] 2.2 Version 2.1.0 (with `render-documents`) and CHANGELOG entry; `make check-all` green
-- [ ] 2.3 PR (one PR with `render-documents`, branch `feature/batch-documents`)
+- [x] 2.3 PR #60 (one PR with `render-documents`, branch `feature/batch-documents`)
 - [x] 2.4 Clarity-gate corrections applied (in code: write with `newline=""`; refuse a name that is
   the folder of another, names an existing directory or sits under an existing file) and the gate
   re-run at ≥9/10
