@@ -19,3 +19,8 @@ What rdf-fingerprinter needs (its design P-6, `openspec/changes/domain-object-mo
    failed check leaves no partial output.
 4. Choose autoescaping per batch (on for HTML, off for Turtle and PlantUML).
 5. Keep the parallel pre-fetch (`parallelism > 1`) working for these renders.
+
+## Re-shape log
+
+- 2026-10-31: split from `batch-documents` at the developer's request. This change takes item 3 of
+  the request (check every output before writing any); it depends on `render-documents`.

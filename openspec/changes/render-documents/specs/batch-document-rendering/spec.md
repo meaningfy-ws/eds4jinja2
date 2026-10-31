@@ -10,7 +10,7 @@ a variable named `conf` SHALL be rejected with `ValueError` before any render.
 #### Scenario: Two outputs from one template
 - **GIVEN** a template package whose template prints `{{ name }}`
 - **WHEN** `render_documents({"a.txt": {"name": "A"}, "b.txt": {"name": "B"}})` is called
-- **THEN** it returns `{"a.txt": "A", "b.txt": "B"}` and the output folder contains no file
+- **THEN** it returns `{"a.txt": "A", "b.txt": "B"}`, the output folder holds no file and no listener ran
 
 #### Scenario: A variable named conf
 - **WHEN** `render_documents({"a.txt": {"conf": {}}})` is called
@@ -20,41 +20,22 @@ a variable named `conf` SHALL be rejected with `ValueError` before any render.
 - **WHEN** `render_documents({})` is called
 - **THEN** it returns an empty mapping
 
-### Requirement: Make a batch
-`ReportBuilder.make_documents(outputs, *, check=None, autoescape=None)` SHALL run the
-before-rendering listeners once, render every output as `render_documents` does, call
-`check(name, text)` for every output, and only when every check returns SHALL write every text as a
-UTF-8 file named by its output name under the builder's output folder, then run the after-rendering
-listeners once and return the written paths in the order of `outputs`. When a check raises, the
-exception SHALL propagate and no file SHALL be written.
-
-#### Scenario: All checks pass
-- **GIVEN** a builder with one before-listener and one after-listener
-- **WHEN** `make_documents({"a.txt": {"name": "A"}, "b.txt": {"name": "B"}}, check=ok)` is called
-- **THEN** `out/a.txt` and `out/b.txt` hold `A` and `B`, each listener ran exactly once, and the
-  paths are returned in that order
-
-#### Scenario: One check fails
-- **WHEN** `check` raises for `b.txt`
-- **THEN** the exception propagates, neither `a.txt` nor `b.txt` exists, and the after-listener did
-  not run
-
 ### Requirement: Output names stay inside the output folder
 Every output name SHALL resolve to a path inside the builder's output folder, other than the folder
-itself; sub-folders SHALL be created when written. Otherwise both methods SHALL raise `ValueError`
-naming the output before rendering anything.
+itself; sub-folders SHALL be allowed. Otherwise `ValueError` naming the output SHALL be raised before
+anything is rendered.
 
 #### Scenario: Names that leave the folder
 - **WHEN** an output is named `/tmp/x.txt`, `../x.txt` or `.`
-- **THEN** `ValueError` is raised naming it and no output is rendered or written
+- **THEN** `ValueError` is raised naming it and no output is rendered
 
 #### Scenario: A sub-folder
-- **WHEN** `make_documents({"g/a.txt": {"name": "A"}})` is called
-- **THEN** `out/g/a.txt` is written
+- **WHEN** `render_documents({"g/a.txt": {"name": "A"}})` is called
+- **THEN** it returns `{"g/a.txt": "A"}`
 
 ### Requirement: Autoescape per batch
-When `autoescape` is given, both methods SHALL render the batch with the environment's autoescaping
-set to it and SHALL restore the previous setting afterwards, also when rendering or a check fails.
+When `autoescape` is given, the batch SHALL be rendered with the environment's autoescaping set to it,
+and the previous setting SHALL be restored afterwards, also when rendering fails.
 
 #### Scenario: Escaping on for one batch only
 - **GIVEN** a template printing `{{ name }}` and an environment with autoescape off
@@ -66,7 +47,7 @@ set to it and SHALL restore the previous setting afterwards, also when rendering
 When the configuration sets `parallelism > 1`, each output of a batch SHALL be rendered through the
 parallel pre-fetch with that output's variables, with the same all-or-nothing pre-warm as
 `make_document()`. When the record pass of an output fails, that output SHALL be rendered
-sequentially to memory, never written directly.
+sequentially to memory, never written.
 
 #### Scenario: Parallel batch equals sequential batch
 - **GIVEN** a data-dependent template package
@@ -83,5 +64,5 @@ sequentially to memory, never written directly.
 same content and the same listener calls as in 2.0.
 
 #### Scenario: Existing reports
-- **WHEN** the 2.0 `make_document` tests run against 2.1
+- **WHEN** the 2.0 `make_document` tests run against this version
 - **THEN** they pass unchanged
