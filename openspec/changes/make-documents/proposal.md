@@ -25,7 +25,9 @@ one of them passed its check, with the rendering listeners run once for the batc
    check, and only if all pass write them all under the output folder.
 2. **Listeners once per batch**: the before-rendering listeners before the batch, the after-rendering
    listeners after the files are written — not per output, and not when nothing is written.
-3. **The written paths are returned**, in the order of the outputs, so the consumer can report them.
+3. **The written paths are returned** (absolute, in the order of the outputs) so the consumer can
+   report them.
+4. **The bytes on disk are the text that was checked**: UTF-8, no newline translation.
 
 ## Key decisions
 
@@ -39,18 +41,27 @@ one of them passed its check, with the rendering listeners run once for the batc
 - **DEC-4**: The after-rendering listeners do not run when a check fails — reason: they act on written
   output (copying static files beside it), and nothing was written; rejected: running them in a
   `finally`.
+- **DEC-5**: Files are written as UTF-8 with `newline=""` — reason: a check parses the text in
+  memory; the file must hold exactly those bytes on every platform; rejected: the platform default
+  (Windows would write `\r\n` for `\n`, and the locale encoding may not be UTF-8).
+- **DEC-6**: Released together with `render-documents` as 2.1.0 — reason: one consumer need
+  (rdf-fingerprinter task 6.1), one minor version.
 
 ## Rabbit-holes
 
 - Writing several files is not atomic; a disk error mid-batch can still leave some files. Checks
   are what this change guarantees, not transactional writes.
 - Sub-folders in names must be created before writing.
+- Two names can point to one file (`a.txt`, `./a.txt`) or one name can be the folder of another
+  (`g`, `g/b.txt`); `render-documents` refuses both before anything runs, so no output is lost
+  silently.
 
 ## No-gos
 
 - No transactional or temporary-folder writes, no rollback of files already on disk before the batch.
 - No built-in format checks (Turtle, XML, …): the consumer passes its own.
-- No change to `make_document()`, the CLI or `config.json`; no breaking change; a minor version.
+- No change to `make_document()`, the CLI or `config.json`; no breaking change; minor version 2.1.0
+  (DEC-6).
 
 ---
 

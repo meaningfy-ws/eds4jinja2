@@ -1,20 +1,29 @@
 <!-- PLAN (tasks half). PLAN = design.md + this file. The apply phase parses `- [ ] ` checkboxes. -->
 
-> Derives from: EPIC `make-documents` (`proposal.md`); design in `design.md`. Every task is TDD.
-> "Spec:" names the requirement in `specs/checked-document-writing/spec.md` the task proves.
-> Starts after `render-documents` is merged.
+> Derives from: EPIC `make-documents` ([proposal.md](proposal.md)); design in [design.md](design.md).
+> Every task is TDD. "Spec:" names the requirement in
+> [specs/checked-document-writing/spec.md](specs/checked-document-writing/spec.md) the task proves;
+> the test for each scenario is listed in design.md "Test cases". Builds on
+> [`render-documents`](../render-documents/design.md); both ship in one PR.
 
 ## 1. Checked writes
 
-- [x] 1.1 `make_documents`: render, check all, then write all, with sub-folders (P-1, P-2, P-3; Spec:
-  Write a batch only when every output passes)
-- [x] 1.2 Listeners once per batch; not after a refused batch (P-2; Spec: Listeners run once per batch)
+- [x] 1.1 `make_documents`: validate, render, check all, then write all as UTF-8 with `newline=""`,
+  with sub-folders (P-1, P-2, P-3; Spec: Write a batch only when every output passes)
+- [x] 1.2 Listeners once per batch, with `configuration_context`; none for a refused or empty batch;
+  no after-listener after a failed render or check (P-2; Spec: Listeners run once per batch)
 
 ## 2. Close
 
-- [x] 2.1 Docs: the method on the `ReportBuilder` page, with the example of design.md
+- [x] 2.1 Docs: the method on the `ReportBuilder` page
+  ([api-reference.adoc](../../../docs/modules/ROOT/pages/api-reference.adoc)), with the example of
+  design.md
 - [x] 2.2 Version 2.1.0 (with `render-documents`) and CHANGELOG entry; `make check-all` green
-- [ ] 2.3 PR; release only with the developer's go-ahead; archive the change
+- [ ] 2.3 PR (one PR with `render-documents`, branch `feature/batch-documents`)
+- [ ] 2.4 Clarity-gate corrections applied (A.2 newline and A.3 parent/child and directory names in
+  code); gate re-run ≥9/10
+- [ ] 2.5 Release 2.1.0 together with `render-documents` (DEC-6), on the developer's go-ahead
+- [ ] 2.6 Archive the change after the release
 
 ## Verification
 

@@ -26,8 +26,10 @@ eds4jinja2's own render path — sequential or parallel — with no file written
    text*.
 2. **Same render path as `make_document()`.** Each output goes through the sequential render, or the
    parallel pre-fetch when `parallelism > 1`, including its fallback, which renders to memory too.
-3. **Names that will be safe to write.** Output names are checked now, so the follow-up
-   `make-documents` and any caller can write them under the output folder without escaping it.
+3. **Names that will be safe to write.** Output names are checked before anything renders: each
+   stays inside the output folder, and no two names of a batch clash (same file, or one the parent
+   folder of another). The follow-up `make-documents` and any caller can then write them without
+   escaping the folder or losing an output.
 4. **Autoescaping per batch**, for consumers rendering HTML and non-HTML from the same library.
 
 ## Key decisions
@@ -47,25 +49,34 @@ eds4jinja2's own render path — sequential or parallel — with no file written
   to the other.
 - **DEC-5**: Rendering runs no listener — reason: the listeners copy static files next to written
   output, and nothing is written here; rejected: running them per render.
+- **DEC-6**: Autoescaping per batch is rendered on a Jinja overlay environment — reason: the
+  builder's shared environment is never changed, so a batch cannot leak its setting into
+  `make_document()` or another batch; rejected: setting and restoring `template_env.autoescape`
+  (needs clearing the shared template cache, and changes state other callers see).
+- **DEC-7**: Released together with `make-documents` as 2.1.0 — reason: the two changes are one
+  consumer need (rdf-fingerprinter task 6.1); one minor version announces both methods.
 
 ## Rabbit-holes
 
 - The parallel path today writes through `__render_to_output`; splitting "render" from "write" must
   leave `make_document()` byte-identical.
-- Autoescape set on the shared environment stays set; restore it after the batch.
+- A per-batch setting must not leak into the shared environment: the builder's environment is never
+  changed (DEC-6).
+- A template variable that shadows a data-source builder (`from_endpoint`) would silently bypass the
+  parallel pre-fetch; such variables are refused.
 
 ## No-gos
 
 - No change to `make_document()`, the CLI (`mkreport`), `config.json` or the data sources.
 - No writing of files (that is `make-documents`), no per-output template, no async API.
-- No breaking change; released as a minor version.
+- No breaking change; released as minor version 2.1.0, together with `make-documents` (DEC-7).
 
 ---
 
 ## What Changes
 
 - `ReportBuilder.render_documents(outputs, *, autoescape=None) -> dict[str, str]`.
-- The parallel path can render to memory; `make_document()` keeps writing as today.
+- The parallel path can render to memory (`__with_prefetch`); `make_document()` keeps writing as in 2.0.
 - CHANGELOG entry and a docs section for the method.
 
 ## Capabilities
@@ -79,5 +90,5 @@ eds4jinja2's own render path — sequential or parallel — with no file written
 ## Impact
 
 - Code: `eds4jinja2/services/report_builder.py`; tests under `tests/unit/services/`.
-- Docs: the `ReportBuilder` API page.
+- Docs: the `ReportBuilder` API page (`docs/modules/ROOT/pages/api-reference.adoc`).
 - Consumers: rdf-fingerprinter renders its representations through it (with `make-documents`).
